@@ -1,0 +1,2 @@
+syntax = "proto3";
+import "risk-operation/proto/application-public.proto";

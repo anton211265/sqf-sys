@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    app: notification
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+    - name: metrics
+      port: 5000
+      targetPort: 5000

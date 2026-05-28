@@ -1,0 +1,39 @@
+syntax = "proto3";
+import "trade-directory/proto/entity.proto";
+
+package trade_directory;
+
+service BankAccountGrpcService {
+  rpc GetAllGrpc(GetAllBankAccountDto) returns (BankAccountList) {}
+  rpc FindByIdGrpc(BankAccountByIdDto) returns (BankAccountList) {}
+  rpc FindByOrganizationIdGrpc(BankAccountByOrganizationIdDto)
+      returns (BankAccountList) {}
+  rpc CreateGrpc(CreateBankAccountDto) returns (BankAccount) {}
+  rpc UpdateGrpc(UpdateBankAccountDto) returns (BankAccount) {}
+}
+
+message GetAllBankAccountDto {
+  optional IncludeOrganization includeOrganization = 1;
+  optional IncludePerson includePerson = 2;
+}
+
+message BankAccountByIdDto {
+  repeated uint32 id = 1;
+  optional IncludeOrganization includeOrganization = 2;
+  optional IncludePerson includePerson = 3;
+}
+
+message BankAccountByOrganizationIdDto { int32 organizationId = 1; }
+
+message CreateBankAccountDto {
+  optional uint32 organizationId = 1;
+  optional uint32 personId = 2;
+  UpdatableBankAccount bankAccount = 3;
+}
+
+message UpdateBankAccountDto {
+  uint32 id = 1;
+  UpdatableBankAccount bankAccount = 2;
+}
+
+message BankAccountList { repeated BankAccount bankAccounts = 1; }

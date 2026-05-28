@@ -1,0 +1,11 @@
+syntax = "proto3";
+import "trade-directory/proto/entity.proto";
+import "trade-directory/proto/bank-account.proto";
+import "trade-directory/proto/client-persona.proto";
+import "trade-directory/proto/contract-awarder-persona.proto";
+import "trade-directory/proto/supplier-persona.proto";
+import "trade-directory/proto/factor-persona.proto";
+import "trade-directory/proto/organization-person.proto";
+import "trade-directory/proto/organization.proto";
+import "trade-directory/proto/person.proto";
+import "trade-directory/proto/auth.proto";

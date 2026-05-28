@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-relationship-management-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customer-relationship-management
+  template:
+    metadata:
+      labels:
+        app: customer-relationship-management
+    spec:
+      containers:
+        - image: 270075630987.dkr.ecr.ap-southeast-1.amazonaws.com/customer-relationship-management:latest
+          name: customer-relationship-management
+          ports:
+            - containerPort: 3000
+            - containerPort: 5000
+          env:
+            - name: ROOT_DIR
+              value: '/usr/src/app/customer-relationship-management'
+            - name: PORT
+              value: '3000'
+            - name: POSTGRES_HOST
+              value: 'sqfprod.cluster-cpwyyusiswsi.ap-southeast-1.rds.amazonaws.com'
+            - name: POSTGRES_PORT
+              value: '5432'
+            - name: POSTGRES_DATABASE
+              value: 'customer-relationship-management'
+            - name: POSTGRES_USERNAME
+              value: 'sqfprodadmin'
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-customer-relationship-management
+                  key: password
+            - name: POSTGRES_SYNCHRONIZE
+              value: 'false'
+            - name: KAFKA_BROKER_SSL
+              value: 'false'
+            - name: KAFKA_BROKERS
+              value: 'b-1.synliansqfprodmsk.fauaoq.c4.kafka.ap-southeast-1.amazonaws.com:9092,b-2.synliansqfprodmsk.fauaoq.c4.kafka.ap-southeast-1.amazonaws.com:9092,b-3.synliansqfprodmsk.fauaoq.c4.kafka.ap-southeast-1.amazonaws.com:9092'
+            - name: TRADE_DIRECTORY_URL
+              value: 'trade-directory-cluster-ip-service'
+            - name: FRONTEND_DOMAIN
+              value: 'https://portal.sqf.ai'

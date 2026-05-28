@@ -1,0 +1,352 @@
+[
+  {
+    "Registration No": "199301004780 (259517 - V)",
+    "Company Name": "ONE-TECH (M) SDN. BHD.",
+    "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+    "Incorporation Date": "1993-03-15",
+    "Status": "EXISTING",
+    "Business Address": "LOT P.T 12725 JALAN 16 KAMPUNG BARU AMPANG 68000 AMPANG SELANGOR",
+    "Registered Address": "E-1B, 1ST FLOOR, EXCELLA BUSINESS PARK JALAN AMPANG PUTRA, TAMAN AMPANG HILIR 55100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+    "Business Sector": "MANUFACTURING",
+    "Last Financial Filed": "2018-12-31",
+    "Nature of Business": "MANUFACTURING OF FURNITURE INTERIOR DESIGN",
+    "Share Capital": {
+      "Total Issued": 2000000.0,
+      "CASH": 2000000.0,
+      "OTHERWISE THAN CASH": 0.0
+    },
+    "Management Details": [
+      {
+        "Name": "HUDA @ NAJWA BT. IKHWAN",
+        "Address": "NO. 1A JALAN WAWASAN 2/1 BANDAR BARU AMPANG MALAYSIA 68000 AMPANG SELANGOR",
+        "IC/PP/Local No": "631206-01-6026 /5600587",
+        "Designation": "DIRECTOR",
+        "Appointment Date": "1993-03-15"
+      },
+      {
+        "Name": "HARITH BIN RIDZUAN",
+        "Address": "NO. 1A JALAN WAWASAN 2/1 BANDAR BARU AMPANG MALAYSIA 68000 AMPANG SELANGOR",
+        "IC/PP/Local No": "850511-71-5149",
+        "Designation": "DIRECTOR",
+        "Appointment Date": "2013-06-10"
+      },
+      {
+        "Name": "SUZANA BINTI CHE SARUJI",
+        "Address": "10 LORONG 1/1B KG AMPANG TASIK 68000 AMPANG SELANGOR",
+        "IC/PP/Local No": "811118-14-5432",
+        "Designation": "SECRETARY",
+        "Appointment Date": "2021-01-25"
+      }
+    ],
+    "Shareholders": [
+      {
+        "Name": "HUDA @ NAJWA BINTI IKHWAN",
+        "Address": "NO. 15, LORONG AMPANG ULU 55000 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "IC/PP/Local No": "631206-01-6026 / 5600587",
+        "Shareholding": 1100000.0,
+        "%": 55.0,
+        "As At": ""
+      },
+      {
+        "Name": "ABDUL GHAUS BIN ISMAIL",
+        "Address": "NO.31,JALAN SETIABAKTI 8 BUKIT DAMANSARA 50490 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "IC/PP/Local No": "531120-05-5245 / 4546643",
+        "Shareholding": 125000.0,
+        "%": 6.25,
+        "As At": ""
+      },
+      {
+        "Name": "AHMAD HANIFF BIN RIDZUAN",
+        "Address": "",
+        "IC/PP/Local No": "900512-14-5267",
+        "Shareholding": 200000.0,
+        "%": 10.0,
+        "As At": ""
+      },
+      {
+        "Name": "ASMA' BINTI RIDZUAN",
+        "Address": "",
+        "IC/PP/Local No": "871116-14-5708",
+        "Shareholding": 90000.0,
+        "%": 4.5,
+        "As At": ""
+      },
+      {
+        "Name": "HARITH BIN RIDZUAN",
+        "Address": "",
+        "IC/PP/Local No": "850511-71-5149",
+        "Shareholding": 485000.0,
+        "%": 24.25,
+        "As At": ""
+      }
+    ],
+    "Non Current Assets": 483836.0,
+    "Current Assets": 2030949.0,
+    "Total Assets": 2514785.0,
+    "Accumulated Profit Carried Forward": -1627656.0,
+    "Total Equity": 372344.0,
+    "Non Current Liabilities": 0.0,
+    "Current Liabilities": 2142441.0,
+    "Total Liabilities": 2142441.0,
+    "Total Equity & Liabilities": 2514785.0,
+    "Revenue": 2002591.0,
+    "Profit/(Loss) Before": 9236.0,
+    "Profit/(Loss) After": 156835.0,
+    "Current Ratio": 0.95,
+    "Company Charges": [
+      {
+        "Charge Number": "001",
+        "Total of Charge": "750,000.00",
+        "Date of Creation": "1996-03-05",
+        "Name of Chargee": "MALAYAN BANKING BERHAD",
+        "Charge Status": "FULLYSATISFIED"
+      },
+      {
+        "Charge Number": "002",
+        "Total of Charge": "336,443.82",
+        "Date of Creation": "2009-10-02",
+        "Name of Chargee": "BANK PERUSAHAAN KECIL & SEDERHANAMALAYSIA BERHAD",
+        "Charge Status": "UNSATISFIED"
+      },
+      {
+        "Charge Number": "003",
+        "Total of Charge": "2,000,000.00",
+        "Date of Creation": "2009-10-23",
+        "Name of Chargee": "BANK PERUSAHAAN KECIL & SEDERHANAMALAYSIA BERHAD",
+        "Charge Status": "UNSATISFIED"
+      },
+      {
+        "Charge Number": "004",
+        "Total of Charge": "446,313.60",
+        "Date of Creation": "2012-01-20",
+        "Name of Chargee": "BANK PERUSAHAAN KECIL & SEDERHANAMALAYSIA BERHAD",
+        "Charge Status": "FULLYSATISFIED"
+      },
+      {
+        "Charge Number": "005",
+        "Total of Charge": "182,328.60",
+        "Date of Creation": "2014-03-17",
+        "Name of Chargee": "SMALL MEDIUM ENTERPRISE DEVELOPMENTBANK MALAYSIA",
+        "Charge Status": "FULLYSATISFIED"
+      },
+      {
+        "Charge Number": "006",
+        "Total of Charge": "1,000,219.13",
+        "Date of Creation": "2020-07-17",
+        "Name of Chargee": "SMALL MEDIUM ENTERPRISE DEVELOPMENTBANK MALAYSIA",
+        "Charge Status": "UNSATISFIED"
+      }
+    ],
+    "Interest In Other Companies": [],
+    "Summary Credit Information": {
+      "Credit Applications Approved for Last 12 months": "2",
+      "Winding Up Record": "0",
+      "Credit Applications Pending": "0",
+      "Legal Suits": "0",
+      "Special Attention account": "0",
+      "Trade / Credit Reference": "1",
+      "Legal Action taken (from Banking)": "0",
+      "Total Enquiries for Last 12 months": "6",
+      "Existing No. of Facility (from Banking)": "5",
+      "Total Companies/Businesses Interest": "0"
+    },
+    "Detailed Credit Report": [
+      {
+        "Facility": "RVVGCRDT",
+        "Total Outstanding Balance (RM)": "310,486.00",
+        "Date Balance Updated": "2021-01-31",
+        "Limit /Inst.Amt (RM)": "309,810.00",
+        "Prin Repymt Term": "BUL",
+        "Col Type": "OTH\nFIN.ASSTS",
+        "Conduct of Account for the last 12 months": {
+          "2021": {
+            "February": "",
+            "January": "0"
+          },
+          "2020": {
+            "December": "0",
+            "November": "0",
+            "October": "0",
+            "September": "0",
+            "August": "0",
+            "July": "",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": ""
+          }
+        }
+      },
+      {
+        "Facility": "RVVGCRDT",
+        "Total Outstanding Balance (RM)": "11,513.00",
+        "Date Balance Updated": "2021-01-31",
+        "Limit /Inst.Amt (RM)": "0.00",
+        "Prin Repymt Term": "BUL",
+        "Col Type": "OTH\nFIN.ASSTS",
+        "Conduct of Account for the last 12 months": {
+          "2021": {
+            "February": "",
+            "January": "0"
+          },
+          "2020": {
+            "December": "0",
+            "November": "0",
+            "October": "0",
+            "September": "0",
+            "August": "",
+            "July": "",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": ""
+          }
+        }
+      },
+      {
+        "Facility": "RVVGCRDT",
+        "Total Outstanding Balance (RM)": "189,730.00",
+        "Date Balance Updated": "2021-01-31",
+        "Limit /Inst.Amt (RM)": "0.00",
+        "Prin Repymt Term": "BUL",
+        "Col Type": "OTH\nFIN.ASSTS",
+        "Conduct of Account for the last 12 months": {
+          "2021": {
+            "February": "",
+            "January": "0"
+          },
+          "2020": {
+            "December": "0",
+            "November": "0",
+            "October": "0",
+            "September": "",
+            "August": "",
+            "July": "",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": ""
+          }
+        }
+      },
+      {
+        "Facility": "RVVGCRDT",
+        "Total Outstanding Balance (RM)": "71,043.00",
+        "Date Balance Updated": "2021-01-31",
+        "Limit /Inst.Amt (RM)": "0.00",
+        "Prin Repymt Term": "BUL",
+        "Col Type": "OTH\nFIN.ASSTS",
+        "Conduct of Account for the last 12 months": {
+          "2021": {
+            "February": "",
+            "January": "0"
+          },
+          "2020": {
+            "December": "0",
+            "November": "0",
+            "October": "0",
+            "September": "",
+            "August": "",
+            "July": "",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": ""
+          }
+        }
+      },
+      {
+        "Facility": "RVVGCRDT",
+        "Total Outstanding Balance (RM)": "230,367.00",
+        "Date Balance Updated": "2021-01-31",
+        "Limit /Inst.Amt (RM)": "0.00",
+        "Prin Repymt Term": "BUL",
+        "Col Type": "OTH\nFIN.ASSTS",
+        "Conduct of Account for the last 12 months": {
+          "2021": {
+            "February": "",
+            "January": "0"
+          },
+          "2020": {
+            "December": "0",
+            "November": "",
+            "October": "",
+            "September": "",
+            "August": "",
+            "July": "",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": ""
+          }
+        }
+      },
+      {
+        "Facility": "TEMPOVDT",
+        "Total Outstanding Balance (RM)": "14.00",
+        "Date Balance Updated": "2021-01-31",
+        "Limit /Inst.Amt (RM)": "0.00",
+        "Prin Repymt Term": "IDF",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2021": {
+            "February": "",
+            "January": "1"
+          },
+          "2020": {
+            "December": "0",
+            "November": "",
+            "October": "",
+            "September": "",
+            "August": "",
+            "July": "",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": ""
+          }
+        }
+      },
+      {
+        "Facility": "OTLNFNCE",
+        "Total Outstanding Balance (RM)": "434,652.00",
+        "Date Balance Updated": "2021-01-31",
+        "Limit /Inst.Amt (RM)": "10,313.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "FIN. GTEE",
+        "Conduct of Account for the last 12 months": {
+          "2021": {
+            "February": "",
+            "January": "1"
+          },
+          "2020": {
+            "December": "1",
+            "November": "0",
+            "October": "1",
+            "September": "0",
+            "August": "0",
+            "July": "0",
+            "June": "0",
+            "May": "0",
+            "April": "0",
+            "March": "1"
+          }
+        }
+      }
+    ],
+    "Latest 3 Approved Facilites": "29-05-2020",
+    "Secured Facilities": "8",
+    "Unsecured Facilities": "1",
+    "Credit Card": "0%",
+    "Other Revolving Credits": "44.44%",
+    "Charge Card": "NIL",
+    "National Higher Educational Financing": "0",
+    "Local Lenders": "4",
+    "Foreign Lenders": "1",
+    "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+    "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+    "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+    "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+    "role": ["Client"]
+  }
+]

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification
+  template:
+    metadata:
+      labels:
+        app: notification
+    spec:
+      containers:
+        - image: 270075630987.dkr.ecr.ap-southeast-1.amazonaws.com/notification:latest
+          name: notification
+          ports:
+            - containerPort: 3000
+            - containerPort: 5000
+          env:
+            - name: ROOT_DIR
+              value: '/usr/src/app/notification'
+            - name: PORT
+              value: '3000'
+            - name: KAFKA_BROKER_SSL
+              value: 'false'
+            - name: KAFKA_BROKERS
+              value: 'b-1.synliansqfprodmsk.fauaoq.c4.kafka.ap-southeast-1.amazonaws.com:9092,b-2.synliansqfprodmsk.fauaoq.c4.kafka.ap-southeast-1.amazonaws.com:9092,b-3.synliansqfprodmsk.fauaoq.c4.kafka.ap-southeast-1.amazonaws.com:9092'
+            - name: FRONTEND_DOMAIN
+              value: 'https://portal.sqf.ai'
+            - name: EMAIL_HOST
+              value: 'email-smtp.ap-southeast-1.amazonaws.com'
+            - name: EMAIL_PORT
+              value: '465'
+            - name: EMAIL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: aws-ses
+                  key: user
+            - name: EMAIL_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: aws-ses
+                  key: password

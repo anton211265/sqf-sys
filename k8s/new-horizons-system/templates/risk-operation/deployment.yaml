@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: risk-operation-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: risk-operation
+  template:
+    metadata:
+      labels:
+        app: risk-operation
+    spec:
+      containers:
+        - image: 270075630987.dkr.ecr.ap-southeast-1.amazonaws.com/risk-operation:latest
+          name: risk-operation
+          ports:
+            - containerPort: 3000
+            - containerPort: 5000
+          env:
+            - name: ROOT_DIR
+              value: '/usr/src/app/risk-operation'
+            - name: PORT
+              value: '3000'
+            - name: POSTGRES_HOST
+              value: 'sqfprod.cluster-cpwyyusiswsi.ap-southeast-1.rds.amazonaws.com'
+            - name: POSTGRES_PORT
+              value: '5432'
+            - name: POSTGRES_DATABASE
+              value: 'risk-operation'
+            - name: POSTGRES_USERNAME
+              value: 'sqfprodadmin'
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-risk-operation
+                  key: password
+            - name: POSTGRES_SYNCHRONIZE
+              value: 'true'
+            - name: KAFKA_BROKER_SSL
+              value: 'false'
+            - name: KAFKA_BROKERS
+              value: 'b-1.synliansqfprodmsk.fauaoq.c4.kafka.ap-southeast-1.amazonaws.com:9092,b-2.synliansqfprodmsk.fauaoq.c4.kafka.ap-southeast-1.amazonaws.com:9092,b-3.synliansqfprodmsk.fauaoq.c4.kafka.ap-southeast-1.amazonaws.com:9092'
+            - name: TRADE_DIRECTORY_URL
+              value: 'trade-directory-cluster-ip-service'
+            - name: NOTIFICATION_URL
+              value: 'notification-cluster-ip-service'
+            - name: FRONTEND_DOMAIN
+              value: 'https://portal.sqf.ai'
+            - name: GENERAL_FILE_UPLOAD_BUCKET
+              value: 'https://b2buat.experian.com.my'
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-s3
+                  key: access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-s3
+                  key: secret-access-key
+            - name: AWS_S3_REGION
+              value: 'ap-southeast-1'
+            - name: AWS_SQF_BUCKET_NAME
+              value: 'prod.organization.document.sqf.ai'

@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package risk_operation;
+
+service ApplicationPublicGrpcService {
+  rpc ValidateGrpc(ValidateDto) returns (ValidateResponse) {}
+}
+
+message ValidateDto { string applicationPublicUuid = 1; }
+message ValidateResponse {
+  uint32 applicationPublicId = 1;
+  uint32 applicationId = 2;
+  uint32 clientPersonaId = 3;
+}

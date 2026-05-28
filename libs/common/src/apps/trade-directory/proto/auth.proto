@@ -1,0 +1,28 @@
+syntax = "proto3";
+import "trade-directory/proto/entity.proto";
+
+package trade_directory;
+
+service AuthGrpcService {
+  rpc AuthenticateGrpc(AuthenticateDto) returns (AuthenticateResponse) {}
+}
+
+message AuthenticateDto { string token = 1; }
+message AuthenticateResponse {
+  uint32 personId = 1;
+  string name = 2;
+  string preferredUsername = 3;
+  string identificationNumber = 4;
+  string mobileNumber = 5;
+  string email = 6;
+  string sub = 7;
+  uint32 organizationPersonId = 8;
+  repeated AuthOrganizationPersonRole organizationPersonRoles = 9;
+  uint32 organizationId = 10;
+  optional uint32 clientPersonaId = 11;
+  optional uint32 contractAwarderPersonaId = 12;
+  optional uint32 supplierPersonaId = 13;
+  optional uint32 factorPersonaId = 14;
+}
+
+message AuthOrganizationPersonRole { OrganizationPersonRoleEnum role = 1; }

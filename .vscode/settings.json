@@ -1,0 +1,5 @@
+{
+  "protoc": {
+    "options": ["--proto_path=${workspaceRoot}/libs/common/src/apps"]
+  }
+}

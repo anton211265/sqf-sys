@@ -1,0 +1,38 @@
+syntax = "proto3";
+import "trade-directory/proto/entity.proto";
+
+package trade_directory;
+
+service ContractAwarderPersonaGrpcService {
+  rpc GetAllGrpc(GetAllContractAwarderPersonaDto)
+      returns (ContractAwarderPersonaList) {}
+  rpc FindByIdGrpc(ContractAwarderPersonaByIdDto)
+      returns (ContractAwarderPersonaList) {}
+  rpc CreateGrpc(CreateContractAwarderPersonaDto)
+      returns (ContractAwarderPersona) {}
+  rpc UpdateGrpc(UpdateContractAwarderPersonaDto)
+      returns (ContractAwarderPersona) {}
+}
+
+message GetAllContractAwarderPersonaDto {
+  optional IncludeOrganization includeOrganization = 1;
+}
+
+message ContractAwarderPersonaByIdDto {
+  repeated uint32 id = 1;
+  optional IncludeOrganization includeOrganization = 2;
+}
+
+message CreateContractAwarderPersonaDto {
+  uint32 organizationId = 1;
+  UpdatableContractAwarderPersona contractAwarderPersona = 2;
+}
+
+message UpdateContractAwarderPersonaDto {
+  uint32 id = 1;
+  UpdatableContractAwarderPersona contractAwarderPersona = 2;
+}
+
+message ContractAwarderPersonaList {
+  repeated ContractAwarderPersona contractAwarderPersonas = 1;
+}

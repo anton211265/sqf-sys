@@ -1,0 +1,3595 @@
+[
+    {
+        "Registration No": "201601019804 (1190741 - K)",
+        "Company Name": "ADVGE HOLDINGS SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2016-06-08",
+        "Status": "EXISTING",
+        "Business Address": "D-8-03, BLOCK D, OASIS SQUARE 2 JALAN PJU 1A/7 ARA DAMANSARA 47301 PETALING JAYA SELANGOR",
+        "Registered Address": "HEDGEFORD GALLERIA, NO. 5-1, BLOCK B, PLAZA WANGSA MAJU, JALAN MAJU RIA 2, SEKSYEN 10, WANGSA MAJU, 53300 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "WHOLESALE",
+        "Last Financial Filed": "2021-12-31",
+        "Nature of Business": "INFORMATION TECHNOLOGY AND TRAINING; CLEANING AND FACILITIES MANAGEMENT, CATERING AND FOOD SERVICES ; ENGINEERING, CONSTRUCTION AND MANPOWER SERVICES",
+        "Share Capital": {
+            "Total Issued": 3000000.0,
+            "CASH": 3000000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "HAFIZZAMAN BIN MOHAMADFAUZI",
+                "Address": "NO 21 USJ 3/3G, UEP, 47600 SUBANG JAYA SELANGOR",
+                "IC/PP/Local No": "900720-14-5341",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2016-06-08"
+            },
+            {
+                "Name": "SITI NORLELA BINTI ABDULMALIK",
+                "Address": "NO. 21 USJ 3/3G UEP MALAYSIA 47600 SUBANG JAYA SELANGOR",
+                "IC/PP/Local No": "631230-07-5616 /7216231",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2022-09-01"
+            },
+            {
+                "Name": "MOHAMED NAJIB BIN ABDWAHAB",
+                "Address": "NO 49B JALAN PUNCAK SAUJANA 2/1 TAMAN PUNCAK SAUJANA, 43000 KAJANG SELANGOR",
+                "IC/PP/Local No": "810702-06-5031",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2019-07-01"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "HAFIZZAMAN BIN MOHAMADFAUZI",
+                "Address": "NO 21 USJ 3/3G, UEP, 47600 SUBANG JAYA SELANGOR",
+                "IC/PP/Local No": "900720-14-5341",
+                "Shareholding": 2965000.0,
+                "%": 98.83,
+                "As At": ""
+            },
+            {
+                "Name": "SITI NORLELA BINTI ABDULMALIK",
+                "Address": "NO 21 USJ 3/3G, UEP 47600 SUBANG JAYA SELANGOR",
+                "IC/PP/Local No": "631230-07-5616 / 7216231",
+                "Shareholding": 35000.0,
+                "%": 1.17,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2022-02-15",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "002",
+                "Total of Charge": "300,000.00",
+                "Date of Creation": "2022-01-17",
+                "Name of Chargee": "PERBADANAN USAHAWAN NASIONAL BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "2021-001",
+                "Total of Charge": "1,701,008.25",
+                "Date of Creation": "2021-07-28",
+                "Name of Chargee": "PEMBANGUNAN LEASING CORPORATION SDN. BHD.",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 106630,
+        "Current Assets": 2957338,
+        "Total Assets": 3063968,
+        "Accumulated Profit Carried Forward": 47599,
+        "Total Equity": 547599,
+        "Non Current Liabilities": 1130918,
+        "Current Liabilities": 1385451,
+        "Total Liabilities": 2516369,
+        "Total Equity & Liabilities": 3063968,
+        "Revenue": 2369868,
+        "Profit/(Loss) Before Tax": 50529,
+        "Profit/(Loss) After Tax": 50529,
+        "Current Ratio": 2.13,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201601021989 (1192928 - V)",
+        "Company Name": "AERO NETWORK & TECHNOLOGIES SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2016-06-28",
+        "Status": "EXISTING",
+        "Business Address": "22-1, JALAN SP1/2 BANDAR SAUJANA PUTRA 42610 JENJAROM SELANGOR",
+        "Registered Address": "SUITE 5.0, FLOOR 3B, WISMA HARWANT NO.106, JALAN TUANKU ABDUL RAHMAN 50100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "INFORMATION & COMMUNICATION (ICT)",
+        "Last Financial Filed": "2022-06-30",
+        "Nature of Business": "1. TO PROVIDE SERVICES IN INFORMATION TECHNOLOGIES. 2.TO ACT AS CONTRACTOR AND CONSULTANT IN CIVIL ENGINEERING SERVICES 3.TO ACT AS CONTRACTOR, CONSULTANT IN ALL KINDS OF BUSINESS RELATED TO CLEANING SERVICES",
+        "Share Capital": {
+            "Total Issued": 1000000.0,
+            "CASH": 1000000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "ABDUL MUTALIB BIN ABDULHAMID",
+                "Address": "H 159 RUMAH AWAM BATU 21/2, JALAN SIMPANG MALAYSIA 34000 TAIPING PERAK",
+                "IC/PP/Local No": "810208-08-5707",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2022-02-10"
+            },
+            {
+                "Name": "K.P. MURALI A/L T.H. GOVINDAN",
+                "Address": "17-6-10, OG COURT, 17 JALAN AWAN JAWA, TAMAN YARL, 58200 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "780416-08-5467",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2022-11-07"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "ABDUL MUTALIB BIN ABDULHAMID",
+                "Address": "",
+                "IC/PP/Local No": "810208-08-5707",
+                "Shareholding": 1000000.0,
+                "%": 100.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 101321,
+        "Current Assets": 272945,
+        "Total Assets": 374266,
+        "Accumulated Profit Carried Forward": 49366,
+        "Total Equity": 349366,
+        "Non Current Liabilities": 0,
+        "Current Liabilities": 24900,
+        "Total Liabilities": 24900,
+        "Total Equity & Liabilities": 374266,
+        "Revenue": 348569,
+        "Profit/(Loss) Before Tax": 76826,
+        "Profit/(Loss) After Tax": 76826,
+        "Current Ratio": 10.96,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201501007970 (1133303 - P)",
+        "Company Name": "AMJ TECHNIQUE SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2015-03-02",
+        "Status": "EXISTING",
+        "Business Address": "14695, 1ST FLOOR KAMPUNG JAYA, BATU 2 JALAN AIR PUTIH 24000 KEMAMAN TERENGGANU",
+        "Registered Address": "14695, 1ST. FLOOR, KAMPUNG JAYA, BATU 2, JALAN AIR PUTIH 24000 KEMAMAN TERENGGANU",
+        "Business Sector": "WHOLESALE",
+        "Last Financial Filed": "2022-06-30",
+        "Nature of Business": "GENERAL SUPPLY, ENGINEERING AND CONSTRUCTION.",
+        "Share Capital": {
+            "Total Issued": 2500000.0,
+            "CASH": 2500000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "AHMAD MAZRI SUAWARDI BINJUSOH",
+                "Address": "NO. 197 FELDA KERTEH 03 23100 PAKA TERENGGANU",
+                "IC/PP/Local No": "770508-11-5169",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2015-03-02"
+            },
+            {
+                "Name": "AHMAD FIRDAUS BIN JUSOH",
+                "Address": "NO. 197 FELDA KERTEH 03 23100 PAKA TERENGGANU",
+                "IC/PP/Local No": "891206-11-5201",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2015-03-02"
+            },
+            {
+                "Name": "FARIDAH BINTI MOHD YUSOP",
+                "Address": "LOT 2998, JALAN PULAI BUKIT KUANG MUKIM TELUK KALONG 24000 KEMAMAN TERENGGANU",
+                "IC/PP/Local No": "770209-01-6662 /A3638258",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2015-03-02"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "AHMAD FIRDAUS BIN JUSOH",
+                "Address": "NO. 197 FELDA KERTEH 03 23100 PAKA TERENGGANU",
+                "IC/PP/Local No": "891206-11-5201",
+                "Shareholding": 25000.0,
+                "%": 1.0,
+                "As At": ""
+            },
+            {
+                "Name": "AHMAD MAZRI SUAWARDIBIN JUSOH",
+                "Address": "NO. 197 FELDA KERTEH 03 23100 PAKA TERENGGANU",
+                "IC/PP/Local No": "770508-11-5169",
+                "Shareholding": 2475000.0,
+                "%": 99.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "675,000.00",
+                "Date of Creation": "2018-05-23",
+                "Name of Chargee": "PERBADANAN USAHAWAN NASIONAL BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "002",
+                "Total of Charge": "662,500.00",
+                "Date of Creation": "2020-06-07",
+                "Name of Chargee": "PERBADANAN USAHAWAN NASIONAL BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "003",
+                "Total of Charge": "2,000,000.00",
+                "Date of Creation": "2022-12-14",
+                "Name of Chargee": "PLC CREDIT & FACTORING SDN. BHD.",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "2020-001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2020-01-08",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "2022-001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2022-01-05",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "2022-002",
+                "Total of Charge": "100,000.00",
+                "Date of Creation": "2022-01-05",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "2022-003",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2022-11-02",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "2023-001",
+                "Total of Charge": "1,000,000.00",
+                "Date of Creation": "2022-12-07",
+                "Name of Chargee": "PERBADANAN USAHAWAN NASIONAL BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 3214342,
+        "Current Assets": 6784217,
+        "Total Assets": 9998559,
+        "Accumulated Profit Carried Forward": 379082,
+        "Total Equity": 2879082,
+        "Non Current Liabilities": 4387477,
+        "Current Liabilities": 2732000,
+        "Total Liabilities": 7119477,
+        "Total Equity & Liabilities": 9998559,
+        "Revenue": 7005371,
+        "Profit/(Loss) Before Tax": 128849,
+        "Profit/(Loss) After Tax": 102543,
+        "Current Ratio": 2.48,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201001043886 (927814 - W)",
+        "Company Name": "AXG INDUSTRIES SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2010-12-30",
+        "Status": "EXISTING",
+        "Business Address": "17, LORONG SULTAN MOHAMED 25D/KU18, TAMAN PERINDUSTRIAN BANDAR SULTAN SULEIMAN, 42000 PELABUHAN KLANG SELANGOR",
+        "Registered Address": "NO. 25-2 JALAN TANGKAK 1/KU1 41400 KLANG SELANGOR",
+        "Business Sector": "MANUFACTURING",
+        "Last Financial Filed": "2021-12-31",
+        "Nature of Business": "1. MANUFACTURE OF EXAMINATION GLOVES.",
+        "Share Capital": {
+            "Total Issued": 6147700.0,
+            "CASH": 5947700.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "YEOH CHEN KUAN",
+                "Address": "NO. 47 JALAN SETIA IMPIAN U13/5G SETIA ALAM SECTION U13 40170 SHAH ALAM SELANGOR",
+                "IC/PP/Local No": "820815-07-5067",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2010-12-30"
+            },
+            {
+                "Name": "YEOH LEEK KIA @ YEOH LEEKKHAI",
+                "Address": "17, JALAN MUHIBBAH 14 TAMAN MUHIBBAH 43300 SERI KEMBANGAN SELANGOR",
+                "IC/PP/Local No": "560602-07-5065",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2012-10-29"
+            },
+            {
+                "Name": "CHOW CHEE HAN",
+                "Address": "NO. 16, JALAN ENGGANG, OFF JALAN MERU, 41050 KLANG SELANGOR",
+                "IC/PP/Local No": "780326-03-5853 /A3858059",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2017-03-23"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "YEOH CHEN KUAN",
+                "Address": "A-3-10, LORONG INDAH 5 TAMAN SRI BUKIT INDAH 14000 BUKIT MERTAJAM PULAU PINANG",
+                "IC/PP/Local No": "820815-07-5067",
+                "Shareholding": 6047700.0,
+                "%": 98.37,
+                "As At": ""
+            },
+            {
+                "Name": "YEOH LEEK KIA @ YEOHLEEK KHAI",
+                "Address": "BLOCK A-3-10 LORONG INDAH 5 TAMAN SRI BUKIT INDAH 14000 BUKIT MERTAJAM PULAU PINANG",
+                "IC/PP/Local No": "560602-07-5065",
+                "Shareholding": 100000.0,
+                "%": 1.63,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "1,760,000.00",
+                "Date of Creation": "2013-03-26",
+                "Name of Chargee": "UNITED OVERSEAS BANK (MALAYSIA) BHD.",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "002",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2015-09-21",
+                "Name of Chargee": "UNITED OVERSEAS BANK (MALAYSIA) BHD.",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "003",
+                "Total of Charge": "1,813,050.00",
+                "Date of Creation": "2015-11-11",
+                "Name of Chargee": "MALAYAN BANKING BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "004",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2017-07-31",
+                "Name of Chargee": "AMBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "2022-001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2022-06-24",
+                "Name of Chargee": "MALAYAN BANKING BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 20356992,
+        "Current Assets": 7506228,
+        "Total Assets": 27863220,
+        "Accumulated Profit Carried Forward": 722875,
+        "Total Equity": 3212875,
+        "Non Current Liabilities": 6077656,
+        "Current Liabilities": 18572689,
+        "Total Liabilities": 24650345,
+        "Total Equity & Liabilities": 27863220,
+        "Revenue": 40497632,
+        "Profit/(Loss) Before Tax": 3057579,
+        "Profit/(Loss) After Tax": 3003366,
+        "Current Ratio": 0.4,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201701030360 (1244530 - D)",
+        "Company Name": "BRAVE OILFIELD SERVICES ENGINEERING SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2017-08-24",
+        "Status": "EXISTING",
+        "Business Address": "133, BLOCK 5 LAMAN SERI BUSINESS PARK SEKYSEN 13 40100 SHAH ALAM SELANGOR",
+        "Registered Address": "UNIT 718, BLOCK B, MENTARI BUSINESS PARK JALAN PJS 8/5, BANDAR SUNWAY (NULL) 46150 PETALING JAYA SELANGOR",
+        "Business Sector": "SERVICES",
+        "Last Financial Filed": "2021-12-31",
+        "Nature of Business": "OTHER MANAGEMENT CONSULTANCY ACTIVITIES N.E.C;EXPORT AND IMPORT OF A VARIETY OF GOODS WITHOUT ANY PARTICULAR SPECIALIZATION N.E.C.;ENGINEERING SERVICES",
+        "Share Capital": {
+            "Total Issued": 2250000.0,
+            "CASH": 100000.0,
+            "OTHERWISE THAN CASH": 2150000.0
+        },
+        "Management Details": [
+            {
+                "Name": "NOORHAFFDZANIZA BINTI BAHARUDIN",
+                "Address": "NO. 44, JALAN SRI DAMAK 57 KAWASAN 2, TAMAN SRI ANDALAS MALAYSIA 41200 KLANG SELANGOR",
+                "IC/PP/Local No": "770108-14-5502 /A3600993",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2020-09-15"
+            },
+            {
+                "Name": "RITHAVUDIN AHAMED BIN BADRUDIN",
+                "Address": "NO. 34 JALAN PJS 5/5 TAMAN DESA RIA 46150 PETALING JAYA SELANGOR",
+                "IC/PP/Local No": "780710-71-5001",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2019-09-30"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "MD SYAFIQ BIN IHSAN",
+                "Address": "",
+                "IC/PP/Local No": "940122-14-5065",
+                "Shareholding": 877500.0,
+                "%": 39.0,
+                "As At": ""
+            },
+            {
+                "Name": "NOORHAFFDZANIZA BINTI BAHARUDIN",
+                "Address": "",
+                "IC/PP/Local No": "770108-14-5502 / A3600993",
+                "Shareholding": 1372500.0,
+                "%": 61.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 1619533,
+        "Current Assets": 2433063,
+        "Total Assets": 4052596,
+        "Accumulated Profit Carried Forward": 183088,
+        "Total Equity": 2433088,
+        "Non Current Liabilities": 814831,
+        "Current Liabilities": 804677,
+        "Total Liabilities": 1619508,
+        "Total Equity & Liabilities": 4052596,
+        "Revenue": 2301543,
+        "Profit/(Loss) Before Tax": 72438,
+        "Profit/(Loss) After Tax": 49179,
+        "Current Ratio": 3.02,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [
+            {
+                "Defendant Name": "BRAVE OILFIELD SERVICES ENGINEERING SDN. BHD ",
+                "Local No.": "201701030360 (1244530-D)",
+                "Case No.": "BA-A72NCVC-1209-09-2022 MAGISTRATE COURT SELANGOR",
+                "Plantiff": "LEMBAGA KUMPULAN WANG SIMPANAN PEKERJA",
+                "Plantiff Local No.": "No Respond",
+                "Case Status 1": "HEARING",
+                "Hearing Date": "2022-10-20",
+                "Case Status 2": "SUMMONS",
+                "Summon Date": "05 Sep 2022",
+                "Case Status 3": "JUDGEMENT IN CONSENT",
+                "JIC Date": "20 Oct 2022",
+                "Suit Ref.": "COURT LIST / 25 Oct 2022",
+                "Amount Claimed": "42,989.00",
+                "Claim Category": "CONTRACT & SERVICE RELATED"
+            },
+            {
+                "Defendant Name": "BRAVE OILFIELD SERVICES ENGINEERING SDN. BHD ",
+                "Local No.": "201701030360 (1244530-D)",
+                "Case No.": "BA-A72NCVC-1500-11-2022 MAGISTRATE COURT SELANGOR",
+                "Plantiff": "MOHD HASNI BIN MOHD TAMIN",
+                "Plantiff Local No.": "No Respond",
+                "Case Status 1": "HEARING",
+                "Hearing Date": "2023-05-30",
+                "Case Status 2": "SUMMONS",
+                "Summon Date": "14 Nov 2022",
+                "Suit Ref.": "COURT LIST / 25 Oct 2022",
+                "Amount Claimed": "16,165.63",
+                "Claim Category": "CONTRACT & SERVICE RELATED"
+            },
+            {
+                "Defendant Name": "BRAVE OILFIELD SERVICES ENGINEERING SDN BHD ",
+                "Local No.": "201701030360 (1244530-D)",
+                "Case No.": "WA-A52NCC-1027-04-2023 SESSIONS COURT KUALA LUMPUR",
+                "Plantiff": "HONG LEONG BANK BERHAD",
+                "Plantiff Local No.": "No Respond",
+                "Case Status": "HEARING",
+                "Hearing Date": "2023-05-18",
+                "Suit Ref.": "COURT LIST / 16 May 2023"
+            }
+        ],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201301014096 (1043934 - K)",
+        "Company Name": "DNS MEGA SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2013-04-25",
+        "Status": "EXISTING",
+        "Business Address": "D-05-2, DATARAN PALMA JALAN SELAMAN 1 OFF JALAN AMPANG 68000 AMPANG SELANGOR",
+        "Registered Address": "2770-A JALAN CHANGKAT PERMATA TAMAN PERMATA 53300 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "SERVICES",
+        "Last Financial Filed": "2022-06-30",
+        "Nature of Business": "1) TO CARRY BUSINESS AS CONSULTANT AND ADVISOR FOR MINERALS, OIL AND GAS INDUSTRIES, 2) TO CARRY ON BUSINESS AS GENERAL CONTRACTORS, 3) TO CARRY ON BUSINESS ON GENERAL TRADING",
+        "Share Capital": {
+            "Total Issued": 750000.0,
+            "CASH": 750000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "FAHMI BIN ARFANUDDIN",
+                "Address": "270 TAMAN MALAYSIA 05250 ALOR SETAR KEDAH",
+                "IC/PP/Local No": "840524-02-6095",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2013-04-25"
+            },
+            {
+                "Name": "SITI NOREZAH BINTI SUDIN",
+                "Address": "BATU 11 3/4 KAMPUNG SERKAM ANAK AIR 77600 MERLIMAU MELAKA",
+                "IC/PP/Local No": "820807-04-5386",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2013-04-25"
+            },
+            {
+                "Name": "ZULKEFLY BIN OMAR",
+                "Address": "NO.17, JALAN SU 1 TAMAN SELAYANG UTAMA 68100 BATU CAVES SELANGOR",
+                "IC/PP/Local No": "640514-01-5759 /7341160",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2013-04-25"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "FAHMI BIN ARFANUDDIN",
+                "Address": "270 TAMAN MALAYSIA 05250 ALOR SETAR KEDAH",
+                "IC/PP/Local No": "840524-02-6095",
+                "Shareholding": 675000.0,
+                "%": 90.0,
+                "As At": ""
+            },
+            {
+                "Name": "SITI NOREZAH BINTI SUDIN",
+                "Address": "BATU 11 3/4, KAMPUNG SERKAM ANAK AIR 77600 MERLIMAU MELAKA",
+                "IC/PP/Local No": "820807-04-5386",
+                "Shareholding": 75000.0,
+                "%": 10.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2018-10-24",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 138484,
+        "Current Assets": 1253756,
+        "Total Assets": 1392240,
+        "Accumulated Profit Carried Forward": 544164,
+        "Total Equity": 1294164,
+        "Non Current Liabilities": 0,
+        "Current Liabilities": 98076,
+        "Total Liabilities": 98076,
+        "Total Equity & Liabilities": 1392240,
+        "Revenue": 1051857,
+        "Profit/(Loss) Before Tax": 23856,
+        "Profit/(Loss) After Tax": 17329,
+        "Current Ratio": 12.78,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201101012391 (940531 - X)",
+        "Company Name": "EDS COMMUNICATION SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2011-04-14",
+        "Status": "EXISTING",
+        "Business Address": "B9-45-1A, JALAN PAHAT J 15/J SEKSYEN 15 DATARAN OTOMOBIL 40200 SHAH ALAM SELANGOR",
+        "Registered Address": "35A JALAN SG 3/1 TAMAN SRI GOMBAK 68100 BATU CAVES SELANGOR",
+        "Business Sector": "INFORMATION & COMMUNICATION (ICT)",
+        "Last Financial Filed": "2022-03-31",
+        "Nature of Business": "TELECOMMUNICATION WORKS, GENERAL CONSTRUCTION AND CIVIL & ELECTRICAL ENGINEERING.",
+        "Share Capital": {
+            "Total Issued": 500000.0,
+            "CASH": 500000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "AHMAD JAILANI BIN TUGIMAN",
+                "Address": "NO. 83, LENGKOK SRI SIANTAN 51 TAMAN SRI ANDALAS 41200 KLANG SELANGOR",
+                "IC/PP/Local No": "620126-10-6351 /6402831",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2011-04-14"
+            },
+            {
+                "Name": "RAJA SHAHNIZAM BIN RAJAARIFIN",
+                "Address": "C-6-2 KOMPLEKS HOSPITAL SERDANG 43300 SERI KEMBANGAN SELANGOR",
+                "IC/PP/Local No": "770704-14-6069 /A3655236",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2011-04-14"
+            },
+            {
+                "Name": "HAMIDAH BINTI JOHARI",
+                "Address": "G17 BLOK C PANGSAPURI WIRA UKAY PERDANA 68000 AMPANG SELANGOR",
+                "IC/PP/Local No": "650630-01-5392",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2017-09-07"
+            },
+            {
+                "Name": "NURUL HUDA BINTI ZULKIFLI",
+                "Address": "3158B JALAN HAJI ALI OFF JALAN SATU TAMAN GREENWOOD 68100 BATU CAVES SELANGOR",
+                "IC/PP/Local No": "851008-10-5874",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2015-06-02"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "AHMAD JAILANI BIN TUGIMAN",
+                "Address": "NO. 83, LENGKUK SRI SIANTAN 51 TAMAN SRI ANDALAS 41200 KLANG SELANGOR",
+                "IC/PP/Local No": "620126-10-6351 / 6402831",
+                "Shareholding": 275000.0,
+                "%": 55.0,
+                "As At": ""
+            },
+            {
+                "Name": "RAJA SHAHNIZAM BIN RAJAARIFIN",
+                "Address": "C-6-2 KOMPLEKS HOSPITAL SERDANG 43300 SERI KEMBANGAN SELANGOR",
+                "IC/PP/Local No": "770704-14-6069 / A3655236",
+                "Shareholding": 225000.0,
+                "%": 45.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2022-11-11",
+                "Name of Chargee": "SA PUNCAK MANAGEMENT SDN. BHD.",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 452539,
+        "Current Assets": 1206800,
+        "Total Assets": 1659339,
+        "Accumulated Profit Carried Forward": -437247,
+        "Total Equity": 62753,
+        "Non Current Liabilities": 622678,
+        "Current Liabilities": 973908,
+        "Total Liabilities": 1596586,
+        "Total Equity & Liabilities": 1659339,
+        "Revenue": 5603092,
+        "Profit/(Loss) Before Tax": 60109,
+        "Profit/(Loss) After Tax": 47498,
+        "Current Ratio": 1.24,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "202101011914 (1412213 - U)",
+        "Company Name": "ENERGY EQUIPMENT TECH SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2021-04-01",
+        "Status": "EXISTING",
+        "Business Address": "TOWER 9, AVENUE 5, LEVEL 8-1, BANGSAR SOUTH (THE HORIZON), NO.8, JALAN KERINCHI 59200 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Registered Address": "6-1, JALAN ANGSANA 2, TAMAN BUKIT ANGSANA, CHERAS, 56000 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "WHOLESALE",
+        "Last Financial Filed": "2021-10-31",
+        "Nature of Business": "ANY OTHER PROFESSIONAL, SCIENTIFIC AND TECHNICAL ACTIVITIES N.E.C.",
+        "Share Capital": {
+            "Total Issued": 100000.0,
+            "CASH": 100000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "NORHASRUL NIZAM BIN MOHDISA",
+                "Address": "NO. 20, JALAN HALAMANDA HALAMANDA, GOMBAK 53100 KUALA LUMPUR SELANGOR",
+                "IC/PP/Local No": "761031-08-5147 /A3444563",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-04-01"
+            },
+            {
+                "Name": "HEW CHEE HAU",
+                "Address": "26-7-5, PRIMA MIDAH HEIGHTS, JALAN MIDAH 8, TAMAN MIDAH, 56000 CHERAS WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "770729-05-5673 /A3750972",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2021-04-01"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "ACCENSYS SDN. BHD",
+                "Address": "",
+                "IC/PP/Local No": "202001019673 (1375993-P) ",
+                "Shareholding": 40000.0,
+                "%": 40.0,
+                "As At": ""
+            },
+            {
+                "Name": "NORHASRUL NIZAM BIN MOHD ISA",
+                "Address": "",
+                "IC/PP/Local No": "761031-08-5147 / A3444563",
+                "Shareholding": 60000.0,
+                "%": 60.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 0,
+        "Current Assets": 152919,
+        "Total Assets": 152919,
+        "Accumulated Profit Carried Forward": 34507,
+        "Total Equity": 134507,
+        "Non Current Liabilities": 0,
+        "Current Liabilities": 18412,
+        "Total Liabilities": 18412,
+        "Total Equity & Liabilities": 152919,
+        "Revenue": 50000,
+        "Profit/(Loss) Before Tax": 42128,
+        "Profit/(Loss) After Tax": 34507,
+        "Current Ratio": 8.31,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201401043008 (1119186 - D)",
+        "Company Name": "GLOBAL MAHAWANGSA SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2014-11-21",
+        "Status": "EXISTING",
+        "Business Address": "A-13-3, PLAZA GLOMAC NO. 6, JALAN SS7/19 KELANA JAYA 47301 PETALING JAYA SELANGOR",
+        "Registered Address": "WBG PENTHOUSE, WIDAD SEMANTAN (WISE) NO. 3, JALAN SEMANTAN DAMANSARA HEIGHTS 50490 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "MANUFACTURING",
+        "Last Financial Filed": "2020-12-31",
+        "Nature of Business": "MILITARY AND CIVIL DEFENCE SERVICES; OTHER TELECOMMUNICATIONS ACTIVITIES N.E.C; BROKERAGE FOR SHIP AND AIRCRAFT SPACE",
+        "Share Capital": {
+            "Total Issued": 4071800.0,
+            "CASH": 4071800.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "CHAM NONG A/L ALIAP",
+                "Address": "KAMPUNG PADANG, KUALA PEGANG MUKIM PULAI 09110 BALING KEDAH",
+                "IC/PP/Local No": "760114-02-5225 / A3431331",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2015-12-02"
+            },
+            {
+                "Name": "SHUHILAWATI BINTI TAJUDDIN",
+                "Address": "NO. 22, JALAN SG6/6, TAMAN SRI GOMBAK, 68100 BATU CAVES SELANGOR",
+                "IC/PP/Local No": "751007-02-6252",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2019-04-28"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "CHAM NONG A/L ALIAP",
+                "Address": "KAMPUNG PADANG, KUALA PEGANG MUKIM PULAI 09110 BALING KEDAH",
+                "IC/PP/Local No": "760114-02-5225 / A3431331",
+                "Shareholding": 4051800.0,
+                "%": 99.51,
+                "As At": ""
+            },
+            {
+                "Name": "DATO' OTHMAN BIN OMAR",
+                "Address": "",
+                "IC/PP/Local No": "550521-03-5177 / 4782681",
+                "Shareholding": 20000.0,
+                "%": 0.49,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2023-02-17",
+                "Name of Chargee": "SA PUNCAK MANAGEMENT SDN. BHD.",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 68538,
+        "Current Assets": 7791080,
+        "Total Assets": 7859618,
+        "Accumulated Profit Carried Forward": -67807,
+        "Total Equity": 1982193,
+        "Non Current Liabilities": 0,
+        "Current Liabilities": 5877425,
+        "Total Liabilities": 5877425,
+        "Total Equity & Liabilities": 7859618,
+        "Revenue": 372870,
+        "Profit/(Loss) Before Tax": 21707,
+        "Profit/(Loss) After Tax": 2833,
+        "Current Ratio": 1.33,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201001022309 (906079 - P)",
+        "Company Name": "INSPIRA RESOURCES SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2010-06-28",
+        "Status": "EXISTING",
+        "Business Address": "NO 92-1 BIZ AVENUE, 2, NEOCYBER LINGKARAN CYBER POINT BARAT 63000 CYBERJAYA SELANGOR",
+        "Registered Address": "NO.92-1 BIZ AVENUE 2, NEOCYBER LINGKARAN CYBER POINT BARAT, 63000 CYBERJAYA SELANGOR",
+        "Business Sector": "CONSTRUCTION",
+        "Last Financial Filed": "2021-06-30",
+        "Nature of Business": "CONSTRUCTION OF OTHER ENGINEERING PROJECTS N.E.C.;REPAIR AND MAINTENANCE OF OTHER EQUIPMENT N.E.C.",
+        "Share Capital": {
+            "Total Issued": 1222103.0,
+            "CASH": 600003.0,
+            "OTHERWISE THAN CASH": 622100.0
+        },
+        "Management Details": [
+            {
+                "Name": "AZRIN ARFIZOUAN BIN RAMLI",
+                "Address": "A-3-02 PANGSAPURI SRI SENTOSA JALAN P 3/1 SAUJANA PUCHONG 47110 PUCHONG SELANGOR",
+                "IC/PP/Local No": "880708-03-5355",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2013-07-16"
+            },
+            {
+                "Name": "WAN ZAIRUDIN BIN WAN ISMAIL",
+                "Address": "1203-E, KAMPUNG NIBONG JALAN PANJI ALAM 21100 KUALA TERENGGANU TERENGGANU",
+                "IC/PP/Local No": "610126-03-5371 /6119200",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2018-02-19"
+            },
+            {
+                "Name": "NORLIZA BINTI BOHARI",
+                "Address": "NO. 1, JALAN SERENE 1/5, SERENE 1, SERENE HEIGHT, MALAYSIA 43500 SEMENYIH SELANGOR",
+                "IC/PP/Local No": "740919-71-5110 /A2932077",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2016-04-01"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "AZRIN ARFIZOUAN BIN RAMLI",
+                "Address": "A-3-02, PANGSAPURI SERI SENTOSA JALAN P 3/1 SAUJANA PUCHONG 47110 PUCHONG SELANGOR",
+                "IC/PP/Local No": "880708-03-5355",
+                "Shareholding": 922103.0,
+                "%": 75.45,
+                "As At": ""
+            },
+            {
+                "Name": "NUR ASMIDAR BINTI MOHAMED YUSOF",
+                "Address": "",
+                "IC/PP/Local No": "890918-11-5432",
+                "Shareholding": 300000.0,
+                "%": 24.55,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "2022-001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2022-09-07",
+                "Name of Chargee": "CIMB ISLAMIC BANK BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 1,
+        "Current Assets": 3366008,
+        "Total Assets": 3366009,
+        "Accumulated Profit Carried Forward": 694735,
+        "Total Equity": 1616838,
+        "Non Current Liabilities": 10253,
+        "Current Liabilities": 1738918,
+        "Total Liabilities": 1749171,
+        "Total Equity & Liabilities": 3366009,
+        "Revenue": 6524336,
+        "Profit/(Loss) Before Tax": 364269,
+        "Profit/(Loss) After Tax": 300267,
+        "Current Ratio": 1.94,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [
+            {
+                "Defendant Name": "INSPIRA RESOURCES SDN. BHD",
+                "Local No.": "201001022309 (906079-P)",
+                "Case No.": "BA-22C-26-05-2023 HIGH COURT SELANGOR",
+                "Plantiff": "JYS DAGANG SDN. BHD",
+                "Plantiff Local No.": "200501024991 (707124-U)",
+                "Case Status": "HEARING",
+                "Hearing Date": "2023-06-14",
+                "Suit Ref.": "COURT LIST / 02 Jun 2023"
+            },
+            {
+                "Defendant Name": "INSPIRA RESOURCES SDN. BHD.",
+                "Local No.": "201001022309 (906079-P)",
+                "Case No.": "NA-A52NCVC-35-04-2023 SESSIONS COURT NEGERI SEMBILAN",
+                "Plantiff": "LEMBAGA KUMPULAN WANG SIMPANAN PEKERJA",
+                "Plantiff Local No.": "No Respond",
+                "Case Status": "HEARING",
+                "Hearing Date": "2023-05-17",
+                "Suit Ref.": "COURT LIST / 17 May 2023"
+            },
+            {
+                "Defendant Name": "INSPIRA RESOURCES SDN. BHD",
+                "Local No.": "201001022309 (906079-P)",
+                "Case No.": "NA-A72NCVC-285-09-2022 MAGISTRATE COURT NEGERI SEMBILAN",
+                "Plantiff": "LEMBAGA KUMPULAN WANG SIMPANAN PEKERJA",
+                "Plantiff Local No.": "No Respond",
+                "Case Status": "HEARING",
+                "Hearing Date": "2023-01-17",
+                "Suit Ref.": "COURT LIST / 18 Jan 2023"
+            },
+            {
+                "Defendant Name": "INSPIRA RESOURCES SDN. BHD.",
+                "Local No.": "201001022309 (906079-P)",
+                "Case No.": "NA-A72NCC-200-08-2022 MAGISTRATE COURT NEGERI SEMBILAN",
+                "Plantiff": "LEMBAGA KUMPULAN WANG SIMPANAN PEKERJA",
+                "Plantiff Local No.": "No Respond",
+                "Case Status": "HEARING",
+                "Hearing Date": "2023-01-12",
+                "Suit Ref.": "COURT LIST / 04 Jan 2023"
+            }
+        ],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [
+            {
+                "Plaintiff Name": "INSPIRA RESOURCES SDN. BHD.",
+                "Local No.": "201001022309 (906079-P)",
+                "Case No.": "BB-A72NCVC-386-04-2023 MAGISTRATE COURT PETALING JAYA",
+                "Case Status": "HEARING",
+                "Hearing Date": "2023-05-29",
+                "Suit Ref.": "Court Listing / 17 May 2023"
+            },
+            {
+                "Plaintiff Name": "INSPIRA RESOURCES SDN. BHD.",
+                "Local No.": "201001022309 (906079-P)",
+                "Case No.": "BA-24NCVC-1686-10-2022 HIGH COURT SELANGOR",
+                "Case Status": "HEARING",
+                "Hearing Date": "2022-10-06",
+                "Suit Ref.": "COURT LIST / 25 Oct 2022"
+            },
+            {
+                "Plaintiff Name": "INSPIRA RESOURCES SDN. BHD.",
+                "Local No.": "201001022309 (906079-P)",
+                "Case No.": "BA-24C-62-10-2022 HIGH COURT SELANGOR",
+                "Case Status": "HEARING",
+                "Hearing Date": "2022-10-20",
+                "Suit Ref.": "COURT LIST / 25 Oct 2022"
+            }
+        ],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "199301018318 (273056 - W)",
+        "Company Name": "JORA - AKI TECHNOLOGY SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "1993-08-12",
+        "Status": "EXISTING",
+        "Business Address": "NO.42/2A, JALAN EMAS 5 TAMAN EMAS, BATU 8 CHERAS 43200 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Registered Address": "NO.4,JALAN SG 3/2 PUSAT BANDAR SERI GOMBAK TAMAN SERI GOMBAK 68100 BATU CAVES SELANGOR",
+        "Business Sector": "SERVICES",
+        "Last Financial Filed": "2019-08-31",
+        "Nature of Business": "(1) THE PRINCIPAL ACTIVITY OF THE COMPANY IS THE SUPPLY, MAINTENANCE AND CALIBRATION OF MEDICAL AND RESEARCH LABORATORY EQUIPMENT. (2) TO CONSTRUCT, MAINTAINS, ALTER AND IMPROVE OR SUBSCRIBE TO THE CONSTRUCTION, MAINTENANCE AND IMPROVEMENT OF ANY BUILDINGS(3) TO UNDERTAKE AND TRANSACT ALL KINDS OF TRUST AND AGENCY BUSINESS AND TO ACT AS EXECUTORS, ADMINISTRATORS,",
+        "Share Capital": {
+            "Total Issued": 550000.0,
+            "CASH": 550000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "ASHOK JEFFRY ALOYSIUS",
+                "Address": "23 JALAN USJ 22/2A 47620 SUBANG JAYA SELANGOR",
+                "IC/PP/Local No": "660801-06-5183 /A0606265",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2011-06-06"
+            },
+            {
+                "Name": "S NAVINDRAN A/LSATHIYABALAN",
+                "Address": "NO 8 JALAN KOOP 3E TAMAN CUEPACS BATU 9 43200 CHERAS SELANGOR",
+                "IC/PP/Local No": "890424-14-6327",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2013-02-08"
+            },
+            {
+                "Name": "MOHD.BILAL BIN ABDULLAH",
+                "Address": "NO. 56A, JALAN BP 3 TAMAN BUKIT PERMATA OFF SRI GOMBAK 68100 BATU CAVES SELANGOR",
+                "IC/PP/Local No": "671226-07-5281 /A0878069",
+                "Designation": "SECRETARY",
+                "Appointment Date": "1993-08-12"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "ASHOK JEFFRY ALOYSIUS",
+                "Address": "NO 23, JALAN USJ 22/2A 47630 SUBANG JAYA SELANGOR",
+                "IC/PP/Local No": "660801-06-5183 / A0606265",
+                "Shareholding": 275000.0,
+                "%": 50.0,
+                "As At": ""
+            },
+            {
+                "Name": "S NAVINDRAN A/LSATHIYABALAN",
+                "Address": "NO 8 JALAN KOOP 3E TAMAN CUEPACS BATU 9 43200 CHERAS SELANGOR",
+                "IC/PP/Local No": "890424-14-6327",
+                "Shareholding": 275000.0,
+                "%": 50.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "250,000.00",
+                "Date of Creation": "2001-12-29",
+                "Name of Chargee": "BUMIPUTRACOMMERCE BANK BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 2362,
+        "Current Assets": 431784,
+        "Total Assets": 434146,
+        "Accumulated Profit Carried Forward": -529581,
+        "Total Equity": -229581,
+        "Non Current Liabilities": 121836,
+        "Current Liabilities": 541891,
+        "Total Liabilities": 663727,
+        "Total Equity & Liabilities": 434146,
+        "Revenue": 232392,
+        "Profit/(Loss) Before Tax": -50326,
+        "Profit/(Loss) After Tax": -50326,
+        "Current Ratio": 0.8,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+            ]
+    },
+    {
+        "Registration No": "201901000339 (1309665 - V)",
+        "Company Name": "KURNIA DINAMIK SYNERGY SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2019-01-04",
+        "Status": "EXISTING",
+        "Business Address": "NO. 19-1, JALAN MR 1/4 TAMAN M-RESIDENSI 48020 RAWANG SELANGOR",
+        "Registered Address": "NO 2-2 JALAN SELASIH J U12/J TAMAN CAHAYA ALAM 40170 SHAH ALAM SELANGOR",
+        "Business Sector": "HOSPITALITY & FOOD/BEVERAGES",
+        "Last Financial Filed": "2022-05-31",
+        "Nature of Business": "ELECTRICAL ANG ENGINEERING WORKS, CONSTRUCTION OF BUILDINGS N.E.C, WHOLESALE OF A VARIETY OF GOODS WITHOUT ANY PARTICULAR SPECIALIZATION N.E.C",
+        "Share Capital": {
+            "Total Issued": 1000000.0,
+            "CASH": 1000000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "DATIN AISYAH BINTI AMIR",
+                "Address": "NO 25 JALAN ANGGERIK 3D/2 SEKSYEN BS 7 BUKIT SENTOSA MALAYSIA 48300 RAWANG SELANGOR",
+                "IC/PP/Local No": "830118-02-5784",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2019-01-04"
+            },
+            {
+                "Name": "JUNAINAH BINTI HJ. ISMAIL",
+                "Address": "MC-1-13 JALAN SB UTAMA TAMAN SERI BAYAN 76100 DURIAN TUNGGAL MELAKA",
+                "IC/PP/Local No": "750226-04-5192 /A2971366",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2019-01-04"
+            },
+            {
+                "Name": "NADIAH BINTI BAHARRUDDIN",
+                "Address": "81-1 JALAN KU 2 TAMAN KLEBANG UTAMA 75200 MELAKA MELAKA",
+                "IC/PP/Local No": "940427-04-5110",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2023-08-15"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "AISYAH BINTI AMIR",
+                "Address": "",
+                "IC/PP/Local No": "830118-02-5784",
+                "Shareholding": 1000000.0,
+                "%": 100.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2023-07-27",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "2023-001",
+                "Total of Charge": "700,000.00",
+                "Date of Creation": "2023-07-04",
+                "Name of Chargee": "BANK MUAMALAT MALAYSIA BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 0,
+        "Current Assets": 1936261,
+        "Total Assets": 1936261,
+        "Accumulated Profit Carried Forward": 754953,
+        "Total Equity": 1754953,
+        "Non Current Liabilities": 98508,
+        "Current Liabilities": 82800,
+        "Total Liabilities": 181308,
+        "Total Equity & Liabilities": 1936261,
+        "Revenue": 5538479,
+        "Profit/(Loss) Before Tax": 745552,
+        "Profit/(Loss) After Tax": 745552,
+        "Current Ratio": 23.38,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "200801001055 (802339 - T)",
+        "Company Name": "MAYURA BUMI ENGINEERING SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2008-01-09",
+        "Status": "EXISTING",
+        "Business Address": "NO 96, 1ST FLOOR, LEBUH TURI TAMAN CHI LIUNG 41200 KLANG SELANGOR",
+        "Registered Address": "SUITE 4.33A, LEVEL 4 PERTAMA OFFICE TOWER PERTAMA COMPLEX, JALAN TUANKU ABDUL RAHMAN 50100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "WHOLESALE",
+        "Last Financial Filed": "2021-12-31",
+        "Nature of Business": "DEALERSHIP OF BOLTING SYSTEM SOLUTIONENGINEERING SUPPLY AND SERVICES",
+        "Share Capital": {
+            "Total Issued": 151200.0,
+            "CASH": 151200.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "MUHAMMAD HAMIMIEDHIYAULHAQ BIN ROZMIE",
+                "Address": "LOT 3059, KAMPUNG PULAU MELAYU, MALAYSIA 98000 MIRI SARAWAK",
+                "IC/PP/Local No": "961229-13-6495",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2019-06-28"
+            },
+            {
+                "Name": "SURESH KUMAR A/L MUNUSAMYREDDIE",
+                "Address": "NO. 58, LORONG DELIMA 5, BANDAR PARKLANDS, MALAYSIA 41200 KLANG SELANGOR",
+                "IC/PP/Local No": "790910-02-5637",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-09-06"
+            },
+            {
+                "Name": "SHAMSUL BIN HUSAIN",
+                "Address": "F 163, KAMPUNG KEDAH, MALAYSIA 34200 PARIT BUNTAR PERAK",
+                "IC/PP/Local No": "800412-08-5203",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2022-07-28"
+            },
+            {
+                "Name": "HOW CHEE KEONG",
+                "Address": "UNIT 16, ZENIA NO. 3, JALAN RESIDEN 2 DESA PARKCITY 52200 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "770202-14-5437 /A3601438",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2016-12-29"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "MUHAMMAD HAMIMIEDHIYAULHAQ BIN ROZMIE",
+                "Address": "",
+                "IC/PP/Local No": "961229-13-6495",
+                "Shareholding": 68040.0,
+                "%": 45.0,
+                "As At": ""
+            },
+            {
+                "Name": "SHAMSUL BIN HUSAIN",
+                "Address": "",
+                "IC/PP/Local No": "800412-08-5203",
+                "Shareholding": 9072.0,
+                "%": 6.0,
+                "As At": ""
+            },
+            {
+                "Name": "SURESH KUMAR A/LMUNUSAMY REDDIE",
+                "Address": "",
+                "IC/PP/Local No": "790910-02-5637",
+                "Shareholding": 74088.0,
+                "%": 49.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 6948,
+        "Current Assets": 1004238,
+        "Total Assets": 1011186,
+        "Accumulated Profit Carried Forward": 0,
+        "Total Equity": 313696,
+        "Non Current Liabilities": 950,
+        "Current Liabilities": 696540,
+        "Total Liabilities": 697490,
+        "Total Equity & Liabilities": 1011186,
+        "Revenue": 1045303,
+        "Profit/(Loss) Before Tax": 125914,
+        "Profit/(Loss) After Tax": 103398,
+        "Current Ratio": 1.44,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "200701024820 (782841 - W)",
+        "Company Name": "NEO MARINE PRO-TEAM (M) SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2007-07-30",
+        "Status": "EXISTING",
+        "Business Address": "LOT F.R 1091 JALAN SRI BOMBALAI LAUT KAMPUNG SUNGAI IMAM 91008 TAWAU SABAH",
+        "Registered Address": "NO. 10, TINGKAT 1, WISMA TIAN SIANG, JALAN DATUK AHMAD YUNUS, 32000 SITIAWAN PERAK",
+        "Business Sector": "WHOLESALE",
+        "Last Financial Filed": "2022-12-31",
+        "Nature of Business": "GENERAL TRADING",
+        "Share Capital": {
+            "Total Issued": 500000.0,
+            "CASH": 500000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "AZUHAR BIN MOKHTAR @AHMAD",
+                "Address": "NO.89 PERSIARAN MANJUNG 7 DESA MANJUNG POINT 32200 SERI MANJUNG PERAK",
+                "IC/PP/Local No": "751215-03-5575 /A2899556",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2007-07-30"
+            },
+            {
+                "Name": "ROHANI BINTI GHANI",
+                "Address": "NO.89 PERSIARAN MANJUNG 7 DESA MANJUNG POINT 32200 SERI MANJUNG PERAK",
+                "IC/PP/Local No": "830620-03-6294",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2007-07-30"
+            },
+            {
+                "Name": "HANIA BINTI ROSLAN",
+                "Address": "KAMPUNG ARONGAN LADANG TABLE PETI SURAT 135 MALAYSIA 91007 TAWAU SABAH",
+                "IC/PP/Local No": "900909-12-6320",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2020-09-17"
+            },
+            {
+                "Name": "MOHD NORHAFIDZ BIN BUYONG",
+                "Address": "NO. 25, LORONG JAYA SATU, BANDAR TUN RAZAK, CHERAS, 56000 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "761009-14-5959 /A3444063",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2023-08-01"
+            },
+            {
+                "Name": "NURULNADIAH BINTI ISMAIL",
+                "Address": "NO 10, TINGKAT 1, WISMA TIAN SIANG, JALAN DATUK AHMAD YUNUS, 32000 SITIAWAN PERAK",
+                "IC/PP/Local No": "910929-08-5238",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2023-08-01"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "AZUHAR BIN MOKHTAR @AHMAD",
+                "Address": "NO.89 PERSIARAN MANJUNG 7 32200 SERI MANJUNG PERAK",
+                "IC/PP/Local No": "751215-03-5575 / A2899556",
+                "Shareholding": 255000.0,
+                "%": 51.0,
+                "As At": ""
+            },
+            {
+                "Name": "ROHANI BINTI GHANI",
+                "Address": "NO.89 PERSIARAN MANJUNG 7 32200 SERI MANJUNG PERAK",
+                "IC/PP/Local No": "830620-03-6294",
+                "Shareholding": 240000.0,
+                "%": 48.0,
+                "As At": ""
+            },
+            {
+                "Name": "HANIA BINTI ROSLAN",
+                "Address": "",
+                "IC/PP/Local No": "900909-12-6320",
+                "Shareholding": 5000.0,
+                "%": 1.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "2022-001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2022-07-21",
+                "Name of Chargee": "SA PUNCAK MANAGEMENT SDN. BHD.",
+                "Charge Status": "FULLY SATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 4626,
+        "Current Assets": 967780,
+        "Total Assets": 972406,
+        "Accumulated Profit Carried Forward": 41735,
+        "Total Equity": 541735,
+        "Non Current Liabilities": 0,
+        "Current Liabilities": 430671,
+        "Total Liabilities": 430671,
+        "Total Equity & Liabilities": 972406,
+        "Revenue": 3109505,
+        "Profit/(Loss) Before Tax": 53593,
+        "Profit/(Loss) After Tax": 42307,
+        "Current Ratio": 2.25,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201401006566 (1082649 - W)",
+        "Company Name": "NEXGEN SOLUTIONS SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2014-02-27",
+        "Status": "EXISTING",
+        "Business Address": "G-8-3A, 4TH FLOOR, BLOCK G, SETIA WALK PERSIARAN WAWASAN PUSAT BANDAR PUCHONG 47160 PUCHONG SELANGOR",
+        "Registered Address": "HEDGEFORD GALLERIA, NO.5-1, BLOCK B, PLAZA WANGSA MAJU, JALAN MAJU RIA 2, SEKSYEN 10, WANGSA MAJU, 53300 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "WHOLESALE",
+        "Last Financial Filed": "2023-01-31",
+        "Nature of Business": "WHOLESALE OF INDUSTRIAL MACHINERY, EQUIPMENT AND SUPPLIES; WHOLESALE OF FITTINGS AND FIXTURES; ENGINEERING SERVICES",
+        "Share Capital": {
+            "Total Issued": 200000.0,
+            "CASH": 200000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "MUHAMMAD IMRAN BIN IDRIS",
+                "Address": "6, JALAN PUTRA PERMAI 10/3G PUTRA HEIGHT MALAYSIA 47650 SUBANG JAYA SELANGOR",
+                "IC/PP/Local No": "730703-08-5851 /A2456060",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-04-28"
+            },
+            {
+                "Name": "RIMI MASPUTERIA BINTI MOHARI",
+                "Address": "52, JALAN TROPIKA 2/4 TAMAN TROPIKA 2 MALAYSIA 43000 KAJANG SELANGOR",
+                "IC/PP/Local No": "790122-14-5558",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-04-28"
+            },
+            {
+                "Name": "MOHAMED NAJIB BIN ABDWAHAB",
+                "Address": "NO. 49B, JALAN PUNCAK SAUJANA 2/1, TAMAN PUNCAK SAUJANA, 43000 KAJANG SELANGOR",
+                "IC/PP/Local No": "810702-06-5031",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2022-01-26"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "MUHAMMAD IMRAN BIN IDRIS",
+                "Address": "",
+                "IC/PP/Local No": "730703-08-5851 / A2456060",
+                "Shareholding": 100000.0,
+                "%": 50.0,
+                "As At": ""
+            },
+            {
+                "Name": "RIMI MASPUTERIA BINTI MOHARI",
+                "Address": "",
+                "IC/PP/Local No": "790122-14-5558",
+                "Shareholding": 100000.0,
+                "%": 50.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 175724,
+        "Current Assets": 338635,
+        "Total Assets": 514359,
+        "Accumulated Profit Carried Forward": -111671,
+        "Total Equity": 88329,
+        "Non Current Liabilities": 124651,
+        "Current Liabilities": 301379,
+        "Total Liabilities": 426030,
+        "Total Equity & Liabilities": 514359,
+        "Revenue": 1082732,
+        "Profit/(Loss) Before Tax": 49716,
+        "Profit/(Loss) After Tax": 48209,
+        "Current Ratio": 1.12,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201601027180 (1198119 - M)",
+        "Company Name": "RFS CEKAL SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2016-08-12",
+        "Status": "EXISTING",
+        "Business Address": "",
+        "Registered Address": "NO. 8-1, JALAN MELAKA RAYA 35, TAMAN MELAKA RAYA, 75000 MELAKA MELAKA",
+        "Business Sector": "CONSTRUCTION",
+        "Last Financial Filed": "2022-12-31",
+        "Nature of Business": "CONSTRUCTION OF BUILDINGS N.E.C.",
+        "Share Capital": {
+            "Total Issued": 1000000.0,
+            "CASH": 1000000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "MAZURAH BINTI MAT DIAH",
+                "Address": "NO. 22, JALAN DI 11 TAMAN DESA IDAMAN MALAYSIA 76100 DURIAN TUNGGAL MELAKA",
+                "IC/PP/Local No": "820115-04-5318",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2018-10-04"
+            },
+            {
+                "Name": "KHILMY BIN DUWASA",
+                "Address": "NO. 18, JALAN DP7 TAMAN DUYUNG PERMAI 75460 MELAKA MELAKA",
+                "IC/PP/Local No": "701105-10-5645 /A1666285",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2023-08-03"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "SHAZLI BIN SHABUDIN",
+                "Address": "1508 LORONG 20, TAMAN REMBIA PERKASA, 78000 ALOR GAJAH MELAKA",
+                "IC/PP/Local No": "750205-01-5533 / A3082522",
+                "Shareholding": 890000.0,
+                "%": 89.0,
+                "As At": ""
+            },
+            {
+                "Name": "MAZURAH BINTI MAT DIAH",
+                "Address": "",
+                "IC/PP/Local No": "820115-04-5318",
+                "Shareholding": 10000.0,
+                "%": 1.0,
+                "As At": ""
+            },
+            {
+                "Name": "MOHAMAD SALEH BIN SHABUDIN",
+                "Address": "",
+                "IC/PP/Local No": "871220-01-5399",
+                "Shareholding": 100000.0,
+                "%": 10.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 753445,
+        "Current Assets": 4696296,
+        "Total Assets": 5449741,
+        "Accumulated Profit Carried Forward": 600368,
+        "Total Equity": 1600368,
+        "Non Current Liabilities": 1779,
+        "Current Liabilities": 3847594,
+        "Total Liabilities": 3849373,
+        "Total Equity & Liabilities": 5449741,
+        "Revenue": 7506966,
+        "Profit/(Loss) Before Tax": 348512,
+        "Profit/(Loss) After Tax": 287897,
+        "Current Ratio": 1.22,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [
+            {
+                "Defendant Name": "RFS CEKAL SDN BHD",
+                "Local No.": "201601027180 (1198119-M)",
+                "Case No.": "BA-24C(ARB)-5-05-2023 HIGH COURT SELANGOR",
+                "Plantiff": "PEMBINAAN LIMPAH BERSATU SDN BHD",
+                "Plantiff Local No.": "200901033404 (876517-P)",
+                "Case Status": "HEARING",
+                "Hearing Date": "2023-09-15",
+                "Suit Ref.": "COURT LIST / 30 Aug 2023"
+            }
+        ],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "200401011932 (650435 - X)",
+        "Company Name": "ROYCE PHARMA MANUFACTURING SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2004-04-26",
+        "Status": "EXISTING",
+        "Business Address": "P..T 1663,NILAI INDUSTRIAL ESTATE 71800 NILAI NEGERI SEMBILAN",
+        "Registered Address": "7A 7TH FLOOR PEARL COURT 61 JALAN THAMBY ABDULLAH 50470 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "RETAIL",
+        "Last Financial Filed": "2022-06-30",
+        "Nature of Business": "MANUFACTURER AND DISTRIBUTOR OF ALL KINDS OF PHARMACEUTICAL PRODUCTS",
+        "Share Capital": {
+            "Total Issued": 27049998.87,
+            "CASH": 4165994.0,
+            "OTHERWISE THAN CASH": 7834754.0
+        },
+        "Management Details": [
+            {
+                "Name": "ZAINAL ARIFF BIN MAHMOOD",
+                "Address": "NO. 8 JALAN SEMANTAN DUA DAMANSARA HEIGHTS 50490 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "550503-08-5517 /4783199",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2012-10-01"
+            },
+            {
+                "Name": "CHANDRASEKAR A/L SUPPIAH",
+                "Address": "NO.10,LORONG DESA MURNI 2 TMN DESA OFF JALAN KELANG LAMA 58100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "620630-10-6385 /6881119",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2015-03-05"
+            },
+            {
+                "Name": "TAN SRI DATO' PROF. DR. JAMESALFRED A. DAVID",
+                "Address": "NO.1, JALAN ANGGERIK ONCIDIUM 31/80D, KOTA KEMUNING MALAYSIA 40460 SHAH ALAM SELANGOR",
+                "IC/PP/Local No": "470330-08-5593 /H0817888",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2020-12-24"
+            },
+            {
+                "Name": "NGU TIENG UNG",
+                "Address": "NO 22 JALAN SETIABAKTI 5 DAMANSARA HEIGHTS MALAYSIA 50490 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "670420-13-5765 /K0160943",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2020-12-24"
+            },
+            {
+                "Name": "MOHAMED AZMAN BIN MOHAMEDARIFF, DR",
+                "Address": "12A,JALAN MERANTI,SD 13/8C BDR SRI DAMANSARA KUALA.LUMPUR MALAYSIA 52200 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "600417-06-5387 /5865245",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2022-09-01"
+            },
+            {
+                "Name": "RAJA MANICKAM A/L K.V.GANAPATHY",
+                "Address": "11-7 MUTIARA RESIDENCY 69 JALAN THAMBY ABDULLAH BRICKFIELDS 50470 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "620622-04-5017 /A0405257",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2014-01-06"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "FARMASI EXPRESS (M) SDN. BHD.",
+                "Address": "",
+                "IC/PP/Local No": "200401026751 (665259-K)",
+                "Shareholding": 1617250.0,
+                "%": 11.0,
+                "As At": ""
+            },
+            {
+                "Name": "JELITA SERBANEKA SDN. BHD.",
+                "Address": "",
+                "IC/PP/Local No": "201501025756 (1151079-K)",
+                "Shareholding": 4403551.0,
+                "%": 29.96,
+                "As At": ""
+            },
+            {
+                "Name": "MOHAMED AZMAN BIN MOHAMED ARIFF, DR",
+                "Address": "",
+                "IC/PP/Local No": "600417-06-5387 / 5865245",
+                "Shareholding": 100000.0,
+                "%": 0.68,
+                "As At": ""
+            },
+            {
+                "Name": "ONE SUNRISE CITY SDN. BHD",
+                "Address": "",
+                "IC/PP/Local No": "201401042571 (1118739-T)",
+                "Shareholding": 3600000.0,
+                "%": 24.5,
+                "As At": ""
+            },
+            {
+                "Name": "TA WIN COPPER BIOHEALTH SDN. BHD",
+                "Address": "",
+                "IC/PP/Local No": "202001028493 (1384813-T)",
+                "Shareholding": 4975364.0,
+                "%": 33.85,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "5,000,000.00",
+                "Date of Creation": "2005-08-29",
+                "Name of Chargee": "MALAYAN BANKING BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "002",
+                "Total of Charge": "15,351,301.00",
+                "Date of Creation": "2005-08-29",
+                "Name of Chargee": "MALAYAN BANKING BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "003",
+                "Total of Charge": "6,000,000.00",
+                "Date of Creation": "2008-07-03",
+                "Name of Chargee": "MALAYAN BANKING BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "004",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2022-04-28",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 26293240,
+        "Current Assets": 19959147,
+        "Total Assets": 46252387,
+        "Accumulated Profit Carried Forward": -10381303,
+        "Total Equity": 18678985,
+        "Non Current Liabilities": 11783557,
+        "Current Liabilities": 15789845,
+        "Total Liabilities": 27573402,
+        "Total Equity & Liabilities": 46252387,
+        "Revenue": 27570530,
+        "Profit/(Loss) Before Tax": 665890,
+        "Profit/(Loss) After Tax": 103295,
+        "Current Ratio": 1.26,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [
+            {
+                "Defendant Name": "ROYCE PHARMA MANUFACTURING SDN.BHD",
+                "Local No.": "200401011932 (650435-X)",
+                "Case No.": "WA-A72NCVC-140-01-2022 MAGISTRATE COURT KUALA LUMPUR",
+                "Plantiff": "ZASTRA SDN. BHD",
+                "Plantiff Local No.": "198601000989 (150133-K)",
+                "Case Status": "HEARING",
+                "Hearing Date": "2022-02-14",
+                "Suit Ref.": "COURT LIST / 03 Feb 2022"
+            }
+        ],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "199601018828 (391180 - A)",
+        "Company Name": "SETIA MAKMUR GEMILANG SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "1996-06-20",
+        "Status": "EXISTING",
+        "Business Address": "NO. 15A, JALAN 6/4 PANDAN INDAH COMMERCIAL PARK PANDAN INDAH 55100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Registered Address": "NO. 21M, JALAN PANDAN INDAH 4/2 PANDAN INDAH 55100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "WHOLESALE",
+        "Last Financial Filed": "2020-12-31",
+        "Nature of Business": "GENERAL TRADING, SERVICES AND OTHER RELATED ACTIVITIES; GENERAL CLEANING OF BUILDING; REPAIR AND MAINTENANCE OF OTHER EQUIPMENT",
+        "Share Capital": {
+            "Total Issued": 1001000.0,
+            "CASH": 768000.0,
+            "OTHERWISE THAN CASH": 233000.0
+        },
+        "Management Details": [
+            {
+                "Name": "OMAR BIN OTHMAN",
+                "Address": "NO 63, JALAN 11/27A SEKSYEN 5 WANGSA MAJU, KUALA LUMPUR MALAYSIA 53300 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "640102-06-5477 /7190941",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "1996-06-20"
+            },
+            {
+                "Name": "MOHAMAD AZROL BIN OMAR",
+                "Address": "NO. 63, JALAN 11/27A, SEKSYEN 5 WANGSA MAJU MALAYSIA 53300 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "941105-14-5711",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2017-02-24"
+            },
+            {
+                "Name": "NORMAZIAH BINTI MOHIDEEN",
+                "Address": "NO. 16, LORONG KIRI 14 KAMPUNG DATO KERAMAT 54000 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "730320-09-5016 /A2468510",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2015-04-15"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "OMAR BIN OTHMAN",
+                "Address": "NO. 17, JALAN 13/27A SEKSYEN 5, WANGSA MAJU 55300 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "640102-06-5477 / 7190941",
+                "Shareholding": 600000.0,
+                "%": 59.94,
+                "As At": ""
+            },
+            {
+                "Name": "MOHAMAD AZROL BIN OMAR",
+                "Address": "",
+                "IC/PP/Local No": "941105-14-5711",
+                "Shareholding": 401000.0,
+                "%": 40.06,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "1,000,000.00",
+                "Date of Creation": "2001-02-21",
+                "Name of Chargee": "MALAYAN BANKING BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "002",
+                "Total of Charge": "2,280,000.00",
+                "Date of Creation": "2002-08-30",
+                "Name of Chargee": "MALAYAN BANKING BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "003",
+                "Total of Charge": "300,000.00",
+                "Date of Creation": "2007-07-16",
+                "Name of Chargee": "CIMB BANK BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "004",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2012-03-12",
+                "Name of Chargee": "AFFIN BANK BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "005",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2012-03-12",
+                "Name of Chargee": "AFFIN BANK BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "006",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2012-03-12",
+                "Name of Chargee": "AFFIN BANK BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "007",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2013-09-02",
+                "Name of Chargee": "AFFIN BANK BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "008",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2020-04-06",
+                "Name of Chargee": "SMALL MEDIUM ENTERPRISE DEVELOPMENT BANKMALAYSIA",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "2022-001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2022-07-07",
+                "Name of Chargee": "BANK ISLAM MALAYSIA BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 11416,
+        "Current Assets": 4060882,
+        "Total Assets": 4072298,
+        "Accumulated Profit Carried Forward": 951170,
+        "Total Equity": 1952170,
+        "Non Current Liabilities": 10933,
+        "Current Liabilities": 2109195,
+        "Total Liabilities": 2120128,
+        "Total Equity & Liabilities": 4072298,
+        "Revenue": 5546705,
+        "Profit/(Loss) Before Tax": 57164,
+        "Profit/(Loss) After Tax": 47282,
+        "Current Ratio": 1.93,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [
+            {
+                "Defendant Name": "SETIA MAKMUR GEMILANG SDN BHD",
+                "Local No.": "199601018828 (391180-A)",
+                "Case No.": "WA-22M-539-08-2022 HIGH COURT KUALA LUMPUR",
+                "Plantiff": "RHB ISLAMIC BANK BERHAD",
+                "Plantiff Local No.": "200501003283 (680329-V)",
+                "Case Status 1": "HEARING",
+                "Hearing Date": "2022-09-29",
+                "Case Status 2": "SUMMONS",
+                "Summon Date": "19 Aug 2022",
+                "Suit Ref.": "COURT LIST / 17 Sep 2022",
+                "Plaintiff Local No.": "200501003283 (680329-V)",
+                "Amount Claimed": "1,045,044.17",
+                "Claim Category": "CREDIT RELATED"
+            },
+            {
+                "Defendant Name": "SETIA MAKMUR GEMILANG SDN BHD",
+                "Local No.": "199601018828 (391180-A)",
+                "Case No.": "WA-71GS-5-01-2022 MAGISTRATE KUALA COURT LUMPUR",
+                "Plantiff": "KERAJAAN MALAYSIA",
+                "Plantiff Local No.": "No Respond",
+                "Case Status 1": "HEARING",
+                "Hearing Date": "2022-03-21",
+                "Case Status 2": "SUMMONS",
+                "Summon Date": "11 Jan 2022",
+                "Suit Ref.": "COURT LIST / 17 Mar 2022",
+                "Amount Claimed": "66,178.99",
+                "Claim Category": "GOVERNMENT RELATED"
+            },
+            {
+                "Defendant Name": "SETIA MAKMUR GEMILANG SDN BHD",
+                "Local No.": "199601018828 (391180-A)",
+                "Case No.": "WA-A72NCC-15680-05-2023 MAGISTRATE COURT KUALA LUMPUR",
+                "Plantiff": "DENNIS ONG TAT CHUAN (BERNIAGA ATAS NAMA DAN GAYA 'CITY BUILDING HARDWARE')",
+                "Plantiff Local No.": "No Respond",
+                "Case Status": "HEARING",
+                "Hearing Date": "2023-06-12",
+                "Suit Ref.": "COURT LIST / 02 Jun 2023"
+            },
+            {
+                "Defendant Name": "SETIA MAKMUR GEMILANG SDN BHD",
+                "Local No.": "199601018828 (391180-A)",
+                "Case No.": "WA-A52NCC-23-01-2023 SESSIONS COURT KUALA LUMPUR",
+                "Plantiff": "JIT HOE RESOURCES SDN BHD",
+                "Plantiff Local No.": "199401041280 (326967-W)",
+                "Case Status": "HEARING",
+                "Hearing Date": "2023-05-23",
+                "Suit Ref.": "COURT LIST / 16 May 2023"
+            },
+            {
+                "Defendant Name": "SETIA MAKMUR GEMILANG SDN BHD",
+                "Local No.": "199601018828 (391180-A)",
+                "Case No.": "WA-B52M-210-02-2023 SESSIONS COURT KUALA LUMPUR",
+                "Plantiff": "RHB ISLAMIC BANK BERHAD",
+                "Plantiff Local No.": "No Respond",
+                "Case Status": "HEARING",
+                "Hearing Date": "2023-03-23",
+                "Suit Ref.": "COURT LIST / 16 Mar 2023"
+            },
+            {
+                "Defendant Name": "SETIA MAKMUR GEMILANG SDN BHD",
+                "Local No.": "199601018828 (391180-A)",
+                "Case No.": "BA-A52NCC-175-10-2022 SESSIONS COURT SELANGOR",
+                "Plantiff": "JIT HOE RESOURCES SDN BHD",
+                "Plantiff Local No.": "199401041280 (326967-W)",
+                "Case Status": "HEARING",
+                "Hearing Date": "2022-12-05",
+                "Suit Ref.": "COURT LIST / 05 Dec 2022"
+            },
+            {
+                "Defendant Name": "SETIA MAKMUR GEMILANG SDN. BHD.",
+                "Local No.": "199601018828 (391180-A)",
+                "Case No.": "WA-B51NCVC-30-02-2021 SESSIONS COURT KUALA LUMPUR",
+                "Plantiff": "KERAJAAN MALAYSIA",
+                "Plantiff Local No.": "No Respond",
+                "Case Status": "HEARING",
+                "Hearing Date": "2021-06-23",
+                "Suit Ref.": "COURT LIST / 01 Jul 2021"
+            }
+        ],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "200601006197 (725946 - U)",
+        "Company Name": "TAIPEX (M) SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2006-03-07",
+        "Status": "EXISTING",
+        "Business Address": "NO. 71, LINTANG KAMPUNG JAWA BAYAN LEPAS INDUSTRIAL ESTATE 11900 BAYAN LEPAS PULAU PINANG",
+        "Registered Address": "53 (GROUND FLOOR) LORONG PERDA SELATAN 1 BANDAR PERDA 14000 BUKIT MERTAJAM PULAU PINANG",
+        "Business Sector": "MANUFACTURING",
+        "Last Financial Filed": "2022-03-31",
+        "Nature of Business": "THE COMPANY IS PRINCIPALLY ENGAGED AS MANUFACTURER AND DEALER OF PLASTIC INJECTED REEL",
+        "Share Capital": {
+            "Total Issued": 2500000.0,
+            "CASH": 1400002.0,
+            "OTHERWISE THAN CASH": 1099998.0
+        },
+        "Management Details": [
+            {
+                "Name": "GOH YAH CHEW",
+                "Address": "NO. 3, JALAN DAMAR 2 PERMATANG DAMAR LAUT 11960 BAYAN LEPAS PULAU PINANG",
+                "IC/PP/Local No": "730822-07-5357 /A2550337",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2006-03-07"
+            },
+            {
+                "Name": "KANG BEE LOON",
+                "Address": "3, JALAN DAMAR 2 PERMATANG DAMAR LAUT 11960 BAYAN LEPAS PULAU PINANG",
+                "IC/PP/Local No": "731019-07-5176 /A2554278",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2006-03-07"
+            },
+            {
+                "Name": "HENG PEI CHIEN",
+                "Address": "12A, LORONG IMPIAN RIA 1 TAMAN IMPIAN RIA 14000 BUKIT MERTAJAM PULAU PINANG",
+                "IC/PP/Local No": "840910-07-5178",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2018-06-28"
+            },
+            {
+                "Name": "ONG PHAIK KUN",
+                "Address": "653 LORONG DESA MAKMUR 9/4 TAMAN DESA MAKMUR 2 09600 LUNAS KEDAH",
+                "IC/PP/Local No": "870529-38-5158",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2018-06-28"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "GOH YAH CHEW",
+                "Address": "NO. 3, JALAN DAMAR 2, PERMATANG DAMAR LAUT 11960 BAYAN LEPAS PULAU PINANG",
+                "IC/PP/Local No": "730822-07-5357 / A2550337",
+                "Shareholding": 1250000.0,
+                "%": 50.0,
+                "As At": ""
+            },
+            {
+                "Name": "KANG BEE LOON",
+                "Address": "NO. 3, JALAN DAMAR 2, PERMATANG DAMAR LAUT 11960 BAYAN LEPAS PULAU PINANG",
+                "IC/PP/Local No": "731019-07-5176 / A2554278",
+                "Shareholding": 1250000.0,
+                "%": 50.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "1,000,000.00",
+                "Date of Creation": "2023-05-03",
+                "Name of Chargee": "SA PUNCAK MANAGEMENT SDN. BHD.",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "2020-001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2020-05-13",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 5413222,
+        "Current Assets": 3318331,
+        "Total Assets": 8731553,
+        "Accumulated Profit Carried Forward": -1840564,
+        "Total Equity": -340564,
+        "Non Current Liabilities": 4751633,
+        "Current Liabilities": 4320484,
+        "Total Liabilities": 9072117,
+        "Total Equity & Liabilities": 8731553,
+        "Revenue": 12911669,
+        "Profit/(Loss) Before Tax": 112244,
+        "Profit/(Loss) After Tax": 66244,
+        "Current Ratio": 0.77,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201801014866 (1276882 - P)",
+        "Company Name": "TECHNORAD SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2018-04-17",
+        "Status": "EXISTING",
+        "Business Address": "208, BLOCK G, PUSAT PERDAGANGAN PHILEO DAMANSARA 1,NO. 9, JALAN 16/11 OFF JALAN DAMANSARA 46350 PETALING JAYA SELANGOR",
+        "Registered Address": "NO.73-1B, OG BUSINESS PARK, JALAN TAMAN TAN YEW LAI 58200 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "WHOLESALE",
+        "Last Financial Filed": "2022-03-31",
+        "Nature of Business": "TO CARRY ON ALL OR ANY BUSINESS OF IMPORTERS, EXPORTERS, BUYERS, DISTRIBUTORS, WHOLESALERS, RETAILERS, SUPPLIERS, DEALERS AND AGENTS OF ALL KINDS OF IRRADIATION, ELECTRO MEDICAL, ELECTROTHERAPEUTIC EQUIPMENT, HOSPITALIZATION EQUIPMENT, SPARE PARTS, MEDIA, RELEVANT DOCUMENTATIONS AND ALL OTHER ASSOCIATED COMPONENTS AND PERIPHERALS.",
+        "Share Capital": {
+            "Total Issued": 1000000.0,
+            "CASH": 1000000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "FATIMAH BINTI IBRAHIM",
+                "Address": "77, JALAN SS 19/6M, SUBANG JAYA 47500 PETALING JAYA SELANGOR",
+                "IC/PP/Local No": "640225-01-5322",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2018-04-17"
+            },
+            {
+                "Name": "MANAZREE BIN MANAN",
+                "Address": "1564 JALAN E 3/3 TAMAN EHSAN MALAYSIA 52100 KEPONG WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "800203-14-5353",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2019-09-04"
+            },
+            {
+                "Name": "MOHD AZIM HASRAF BIN RAMLI",
+                "Address": "NO.33 JALAN EMAS PERDANA 1 TAMAN EMAS PERDANA PEKAN KUALA SAWAH MALAYSIA 71200 RANTAU NEGERI SEMBILAN",
+                "IC/PP/Local No": "840901-14-5787",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2019-09-04"
+            },
+            {
+                "Name": "MOHD SHAHRIN BIN MOHDSOFIYAN",
+                "Address": "4 JALAN 30/10 TAMAN KOPERASI POLIS FASA 2 MALAYSIA 68100 BATU CAVES SELANGOR",
+                "IC/PP/Local No": "760926-05-5585 /A3526735",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2022-05-15"
+            },
+            {
+                "Name": "CHONG SEW LEA",
+                "Address": "NO.18, JALAN PUJ 7/19A TAMAN PUNCAK JALIL 43300 SERI KEMBANGAN SELANGOR",
+                "IC/PP/Local No": "760223-10-5582 /A3351543",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2018-04-17"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "FATIMAH BINTI IBRAHIM",
+                "Address": "",
+                "IC/PP/Local No": "640225-01-5322",
+                "Shareholding": 250000.0,
+                "%": 25.0,
+                "As At": ""
+            },
+            {
+                "Name": "MANAZREE BIN MANAN",
+                "Address": "",
+                "IC/PP/Local No": "800203-14-5353",
+                "Shareholding": 250000.0,
+                "%": 25.0,
+                "As At": ""
+            },
+            {
+                "Name": "MOHD AZIM HASRAF BIN RAMLI",
+                "Address": "",
+                "IC/PP/Local No": "840901-14-5787",
+                "Shareholding": 250000.0,
+                "%": 25.0,
+                "As At": ""
+            },
+            {
+                "Name": "MOHD SHAHRIN BIN MOHD SOFIYAN",
+                "Address": "",
+                "IC/PP/Local No": "760926-05-5585 / A3526735",
+                "Shareholding": 250000.0,
+                "%": 25.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "1,000,000.00",
+                "Date of Creation": "2023-06-02",
+                "Name of Chargee": "PERBADANAN USAHAWAN NASIONAL BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "2023-001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2023-04-11",
+                "Name of Chargee": "BANK MUAMALAT MALAYSIA BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 590938,
+        "Current Assets": 2868880,
+        "Total Assets": 3459818,
+        "Accumulated Profit Carried Forward": -221946,
+        "Total Equity": 278054,
+        "Non Current Liabilities": 1666988,
+        "Current Liabilities": 1514776,
+        "Total Liabilities": 3181764,
+        "Total Equity & Liabilities": 3459818,
+        "Revenue": 5166361,
+        "Profit/(Loss) Before Tax": -309550,
+        "Profit/(Loss) After Tax": -393360,
+        "Current Ratio": 1.89,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201801024005 (1286025 - T)",
+        "Company Name": "UMD ENERGY SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2018-07-04",
+        "Status": "EXISTING",
+        "Business Address": "OFFICE SUITE W-07-01 LEVEL 7, WEST WING, THE ICON NO 1, JALAN 1/68F, JALAN TUN RAZAK 55000 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Registered Address": "240A, JALAN BANDAR 13 PUSAT BANDAR MELAWATI 53100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "MINING & QUARRYING",
+        "Last Financial Filed": "2022-06-30",
+        "Nature of Business": "OIL AND GAS EXTRACTION SERVICE ACTIVITIES PROVIDED ON A FEE OR CONTRACT BASIS",
+        "Share Capital": {
+            "Total Issued": 5000000.0,
+            "CASH": 5000000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "ABDUL RAZAK BIN ISMAIL",
+                "Address": "NO. 16 JALAN SS 1/20 KAMPUNG TUNKU SUNGAI WAY 47300 PETALING JAYA SELANGOR",
+                "IC/PP/Local No": "601228-10-5305 /6110465",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2019-10-01"
+            },
+            {
+                "Name": "RAMLAN BIN HAMZAH",
+                "Address": "NO. 9, JALAN DESA 7/8 BANDAR COUNTRY HOMES MALAYSIA 48000 RAWANG SELANGOR",
+                "IC/PP/Local No": "661102-06-5007 /A0499948",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-07-21"
+            },
+            {
+                "Name": "MOHAMMED ZUBER BIN HASHIM",
+                "Address": "240A JALAN BANDAR 13 PUSAT BANDAR MELAWATI KUALA LUMPUR 53100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "630814-04-5301 /7087844",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2018-07-05"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "ABDUL RAZAK BIN ISMAIL",
+                "Address": "",
+                "IC/PP/Local No": "601228-10-5305 / 6110465",
+                "Shareholding": 2750000.0,
+                "%": 55.0,
+                "As At": ""
+            },
+            {
+                "Name": "YUHASMADIE BIN YUSOF",
+                "Address": "",
+                "IC/PP/Local No": "910404-11-5393",
+                "Shareholding": 2250000.0,
+                "%": 45.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2020-09-30",
+                "Name of Chargee": "AMBANK ISLAMIC BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "002",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2020-11-17",
+                "Name of Chargee": "AMBANK ISLAMIC BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "003",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2022-11-29",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [
+            {
+                "Local No": "202001028934(1385254 - K)",
+                "Company": "HARTA GLOBAL ENERGY SDN. BHD.",
+                "Shareholding": 1000002.0,
+                "Remarks": "",
+                "As At": "2023-10-04",
+                "Shareholding Percentage": 100
+            },
+            {
+                "Local No": "202001021029(1377349 - V)",
+                "Company": "UMD MARINE SDN. BHD",
+                "Shareholding": 900000.0,
+                "Remarks": "",
+                "As At": "2023-09-15",
+                "Shareholding Percentage": 90
+            }
+        ],
+        "Non Current Assets": 311170,
+        "Current Assets": 78904447,
+        "Total Assets": 79215617,
+        "Accumulated Profit Carried Forward": -1707310,
+        "Total Equity": 3292690,
+        "Non Current Liabilities": 448562,
+        "Current Liabilities": 75474365,
+        "Total Liabilities": 75922927,
+        "Total Equity & Liabilities": 79215617,
+        "Revenue": 85010500,
+        "Profit/(Loss) Before Tax": -629333,
+        "Profit/(Loss) After Tax": -1154500,
+        "Current Ratio": 1.05,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [
+            {
+                "Defendant Name": "UMD ENERGY SDN BHD",
+                "Local No.": "201801024005 (1286025-T)",
+                "Case No.": "TB-56J-4-06-2022 SESSIONS COURT KEMAMAN",
+                "Plantiff": "KETUA PENGARAH, JABATAN TENAGA KERJA SEMENANJUNG MALAYSIA",
+                "Plantiff Local No.": "No Respond",
+                "Case Status 1": "HEARING",
+                "Hearing Date": "2022-07-19",
+                "Case Status 2": "SETTLED",
+                "Settled Date": "21 Sep 2023",
+                "Suit Ref.": "COURT LIST / 05 Oct 2023",
+                "Claim Category": "CONTRACT & SERVICE RELATED"
+            },
+            {
+                "Defendant Name": "UMD ENERGY SDN BHD",
+                "Local No.": "201801024005 (1286025-T)",
+                "Case No.": "WA-27NCC-26-06-2022 HIGH COURT KUALA LUMPUR",
+                "Plantiff": "JN TEGUH ENERGY SDN BHD",
+                "Plantiff Local No.": "201901026024 (1335353-T)",
+                "Case Status": "HEARING",
+                "Hearing Date": "2024-02-05",
+                "Plaintiff Local No.": "201901026024 (1335353-T)",
+                "Claim Category": "CONTRACT & SERVICE RELATED",
+                "Suit Ref.": "COURT LIST / 05 Oct 2023"
+            },
+            {
+                "Defendant Name": "UMD ENERGY SDN. BHD",
+                "Local No.": "201801024005 (1286025-T)",
+                "Case No.": "WA-22NCC-299-05-2023 HIGH COURT KUALA LUMPUR",
+                "Plantiff": "CITAGLOBAL ENERGY SDN BHD",
+                "Plantiff Local No.": "200101003176 (538932-W)",
+                "Case Status": "HEARING",
+                "Hearing Date": "2023-10-10",
+                "Plaintiff Local No.": "200101003176 (538932-W)",
+                "Claim Category": "CONTRACT & SERVICE RELATED",
+                "Suit Ref.": "COURT LIST / 05 Oct 2023"
+            }
+        ],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [
+            {
+                "Plaintiff Name": "UMD ENERGY SDN. BHD",
+                "Local No.": "201801024005 (1286025-T)",
+                "Case No.": "WA-24NCC-165-03-2022 HIGH COURT KUALA LUMPUR",
+                "Case Status 1": "HEARING",
+                "Hearing Date": "2022-03-24",
+                "Case Status 2": "SETTLED",
+                "Settled Date": "21 Sep 2023",
+                "Suit Ref.": "COURT LIST / 05 Oct 2023",
+                "Claim Category": "CONTRACT & SERVICE RELATED"
+            }
+        ],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "200701018400 (776411 - W)",
+        "Company Name": "WARISAN WIRA TRADING SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2007-06-08",
+        "Status": "EXISTING",
+        "Business Address": "NO. 41, JALAN SEROJA 60 BUKIT SENTOSA 48300 RAWANG SELANGOR",
+        "Registered Address": "NO. 41 JALAN SEROJA 60 BUKIT SENTOSA 48300 RAWANG SELANGOR",
+        "Business Sector": "CONSTRUCTION",
+        "Last Financial Filed": "2019-09-30",
+        "Nature of Business": "SCRAP METAL, TRANSPORATATION, PALM OIL, IMPORT AND EXPORT OF TOBACCO AND CIGARATTES, BUILDING MANAGEMENT AND FACILITY, BUILDING MAINTENANCE, PARKING MANAGEMENT, RETAIL MANAGEMENT.",
+        "Share Capital": {
+            "Total Issued": 1000000.0,
+            "CASH": 1000000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "NAGOOR BIN SELLAN @ SAIDMOHAMED",
+                "Address": "NO.529, LEMBAH MUTIARA SELAYANG BARU 68100 BATU CAVES SELANGOR",
+                "IC/PP/Local No": "580107-10-5771",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2013-01-30"
+            },
+            {
+                "Name": "MARIMUTHU A/L C.PACHAYAPPAN",
+                "Address": "92, JALAN BU 4/1 BANDAR UTAMA 47800 PETALING JAYA SELANGOR",
+                "IC/PP/Local No": "690115-08-5077 /A1182742",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2012-06-13"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "MESNI BINTI IBRAHIM",
+                "Address": "NO. 529, LEMBAH MUTIARA SELAYANG BARU 68100 BATU CAVES SELANGOR",
+                "IC/PP/Local No": "570702-10-6120 / 5218627",
+                "Shareholding": 150000.0,
+                "%": 15.0,
+                "As At": ""
+            },
+            {
+                "Name": "MOHD SAHRULNIZAM BINNAGOOR",
+                "Address": "LOT 3955, JALAN MASJID KAMPUNG BUKIT HIJAU 45800 JERAM SELANGOR",
+                "IC/PP/Local No": "830414-10-5631",
+                "Shareholding": 150000.0,
+                "%": 15.0,
+                "As At": ""
+            },
+            {
+                "Name": "MOHD TAUFIQ BIN NAGOOR",
+                "Address": "",
+                "IC/PP/Local No": "900618-10-5159",
+                "Shareholding": 150000.0,
+                "%": 15.0,
+                "As At": ""
+            },
+            {
+                "Name": "NAGOOR BIN SELLAN @ SAIDMOHAMED",
+                "Address": "",
+                "IC/PP/Local No": "580107-10-5771",
+                "Shareholding": 550000.0,
+                "%": 55.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2010-04-19",
+                "Name of Chargee": "PUBLIC BANK BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 148616,
+        "Current Assets": 11223,
+        "Total Assets": 159839,
+        "Accumulated Profit Carried Forward": -437818,
+        "Total Equity": -137818,
+        "Non Current Liabilities": 66065,
+        "Current Liabilities": 231592,
+        "Total Liabilities": 297657,
+        "Total Equity & Liabilities": 159839,
+        "Revenue": 201177,
+        "Profit/(Loss) Before Tax": 27165,
+        "Profit/(Loss) After Tax": 27165,
+        "Current Ratio": 0.05,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "200501030043 (712180 - V)",
+        "Company Name": "WELLNESS TRENDS SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2005-10-10",
+        "Status": "EXISTING",
+        "Business Address": "B-36-05, BLOCK B, THE HERZ KEPONG JALAN 3/33A, KEPONG BARU 52100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Registered Address": "SUITE 22-12B, 22ND FLOOR, WISMA ZELAN, NO. 1 JALAN TASIK PERMAISURI 2, BANDAR TUN RAZAK, 56000 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "MANUFACTURING",
+        "Last Financial Filed": "2022-12-31",
+        "Nature of Business": "1. MANAGEMENT CONSULTANCY SERVICES, OTHER INFORMATION TECHNOLOGY SERVICE ACTIVITIES2. BUSINESS SUPPORT SERVICES SUCH AS RECRUITMENT OF WORKERS FOR CLIENT BUSINESSES AND ETC.",
+        "Share Capital": {
+            "Total Issued": 300000.0,
+            "CASH": 300000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "HEONG CHEE WEI",
+                "Address": "B-1-10 D'RIMBA APARTMENT KOTA DAMANSARA MALAYSIA 47810 PETALING JAYA SELANGOR",
+                "IC/PP/Local No": "760604-08-6629 /A3404106",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2008-10-06"
+            },
+            {
+                "Name": "CHONG MAY LIAN",
+                "Address": "12-8-3, KONDO PETALING INDAH, JALAN 1C/149, BANDAR BARU SRI PETALING, MALAYSIA 57000 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "700925-10-5216 /A1617966",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2019-10-03"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "HEONG CHEE WEI",
+                "Address": "NO. 28 JALAN RISHAH 7 30100 IPOH PERAK",
+                "IC/PP/Local No": "760604-08-6629 / A3404106",
+                "Shareholding": 300000.0,
+                "%": 100.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 0,
+        "Current Assets": 461864,
+        "Total Assets": 461864,
+        "Accumulated Profit Carried Forward": -278660,
+        "Total Equity": 21340,
+        "Non Current Liabilities": 0,
+        "Current Liabilities": 440524,
+        "Total Liabilities": 440524,
+        "Total Equity & Liabilities": 461864,
+        "Revenue": 67663,
+        "Profit/(Loss) Before Tax": 16981,
+        "Profit/(Loss) After Tax": 16981,
+        "Current Ratio": 1.05,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "202101021026 (1421326 - T)",
+        "Company Name": "XRONEX SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2021-06-10",
+        "Status": "EXISTING",
+        "Business Address": "NO. 3, JALAN 3/10, TAMAN KOPERASI POLIS FASA 1, 68100 BATU CAVES SELANGOR",
+        "Registered Address": "VO5-03A-07, SIGNATURE 1 (VO5), LINGKARAN SV, SUNWAY VELOCITY, 55100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "INFORMATION & COMMUNICATION (ICT)",
+        "Last Financial Filed": "",
+        "Nature of Business": "OTHER TELECOMMUNICATIONS ACTIVITIES N.E.C.;INFORMATION COMMUNICATION TECHNOLOGY (ICT) SYSTEM SECURITY",
+        "Share Capital": {
+            "Total Issued": 101000.0,
+            "CASH": 101000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "MOHD SHAMSUL RIDZWAN BINMOHD RAZAK",
+                "Address": "NO. 3, JALAN 3/10, TAMAN KOPERASI POLIS FASA 1, MALAYSIA 68100 BATU CAVES SELANGOR",
+                "IC/PP/Local No": "870404-05-5075",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-06-10"
+            },
+            {
+                "Name": "MOHAMAD HAZIZI BINMOHAMAD RASIB",
+                "Address": "NO. 23, JALAN 5/7, TAMAN CHANGKAT DESA, MALAYSIA 68100 BATU CAVES SELANGOR",
+                "IC/PP/Local No": "870909-04-5147",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-06-10"
+            },
+            {
+                "Name": "LEE CHON WENG",
+                "Address": "NO. 81, JALAN DAMAI PERDANA 1/4, BANDAR DAMAI PERDANA, 56000 CHERAS WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "830817-14-5451",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2021-06-10"
+            },
+            {
+                "Name": "CHOW YEE MIN",
+                "Address": "NO. 7, JALAN ABADI 1/9, ABADI HEIGHT, 47100 PUCHONG SELANGOR",
+                "IC/PP/Local No": "830518-14-6251",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2022-06-16"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "MOHAMAD HAZIZI BINMOHAMAD RASIB",
+                "Address": "",
+                "IC/PP/Local No": "870909-04-5147",
+                "Shareholding": 25250.0,
+                "%": 25.0,
+                "As At": ""
+            },
+            {
+                "Name": "MOHD SHAMSUL RIDZWANBIN MOHD RAZAK",
+                "Address": "",
+                "IC/PP/Local No": "870404-05-5075",
+                "Shareholding": 60600.0,
+                "%": 60.0,
+                "As At": ""
+            },
+            {
+                "Name": "NORUL NADIA BINTI NASIR",
+                "Address": "",
+                "IC/PP/Local No": "860502-33-5178",
+                "Shareholding": 15150.0,
+                "%": 15.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [],
+        "Interest In Other Companies": [],
+        "Non Current Assets": "",
+        "Current Assets": "",
+        "Total Assets": "",
+        "Accumulated Profit Carried Forward": "",
+        "Total Equity": "",
+        "Non Current Liabilities": "",
+        "Current Liabilities": "",
+        "Total Liabilities": "",
+        "Total Equity & Liabilities": "",
+        "Revenue": "",
+        "Profit/(Loss) Before Tax": "",
+        "Profit/(Loss) After Tax": "",
+        "Current Ratio": "",
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "201501037613 (1162934 - H)",
+        "Company Name": "ZABSI INDUSTRIAL VENTILATION SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2015-10-20",
+        "Status": "EXISTING",
+        "Business Address": "PT 15975, TINGKAT ATAS JALAN AIR PUTIH, CUKAI 24000 KEMAMAN TERENGGANU",
+        "Registered Address": "A-1 PT 21073, TINGKAT 1, JALAN CENDERAWASIH, TAMAN CHUKAI UTAMA, 24000 KEMAMAN TERENGGANU",
+        "Business Sector": "INFORMATION & COMMUNICATION (ICT)",
+        "Last Financial Filed": "2021-12-31",
+        "Nature of Business": "ENGAGED IN INSTALLATION AND MAINTENANCE OF LOCAL EXHAUST VENTITALTION, GENERAL TRADERS, ASSEMLES, REPAIR AND DEALERS IN ELECTRICAL AND ELECTRONICS APPLIANCES, APPARATUS AND OTHER RELATED ACTIVITIES",
+        "Share Capital": {
+            "Total Issued": 886000.0,
+            "CASH": 544898.0,
+            "OTHERWISE THAN CASH": 341102.0
+        },
+        "Management Details": [
+            {
+                "Name": "IR MOHD ZAINUDIN BIN ABAKAR",
+                "Address": "12906 PERSIARAN BANDAR BARU BUKIT MENTOK 24000 KEMAMAN TERENGGANU",
+                "IC/PP/Local No": "750518-06-5099 /A3033692",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2015-10-20"
+            },
+            {
+                "Name": "NUR AFIQAH ZAHRA BINTIMOHD ZAINUDIN",
+                "Address": "NO 12906 JALAN BANDAR BARU BUKIT MENTOK KAMPUNG JAYA MALAYSIA 24000 CUKAI TERENGGANU",
+                "IC/PP/Local No": "010529-11-0090",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2020-07-16"
+            },
+            {
+                "Name": "FARIDAH BINTI MOHD YUSOP",
+                "Address": "LOT 2998, JALAN PULAI, BUKIT KUANG, MUKIM TELUK KALONG, MALAYSIA 24000 KEMAMAN TERENGGANU",
+                "IC/PP/Local No": "770209-01-6662 /A3638258",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2020-01-02"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "IR MOHD ZAINUDIN BIN ABAKAR",
+                "Address": "12906 PERSIARAN BANDAR BARU BUKIT MENTOK 24000 KEMAMAN TERENGGANU",
+                "IC/PP/Local No": "750518-06-5099 / A3033692",
+                "Shareholding": 398700.0,
+                "%": 45.0,
+                "As At": ""
+            },
+            {
+                "Name": "NUR AFIQAH ZAHRA BINTIMOHD ZAINUDIN",
+                "Address": "",
+                "IC/PP/Local No": "010529-11-0090",
+                "Shareholding": 487300.0,
+                "%": 55.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2018-06-12",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "002",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2018-07-05",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "003",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2019-11-21",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "004",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2023-06-07",
+                "Name of Chargee": "SA PUNCAK MANAGEMENT SDN. BHD.",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "2019-001",
+                "Total of Charge": "662,500.00",
+                "Date of Creation": "2019-09-25",
+                "Name of Chargee": "PERBADANAN USAHAWAN NASIONAL BERHAD",
+                "Charge Status": "UNSATISFIED"
+            },
+            {
+                "Charge Number": "2021-001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2021-09-13",
+                "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [
+            {
+                "Local No": "202101016178(1416478 - H)",
+                "Company": "ZABSI AIRCOND PARTS 2U SDN. BHD.",
+                "Shareholding": 120000.0,
+                "Shareholding Percentage": 60.0,
+                "Remarks": "",
+                "As At": "2022-08-09"
+            }
+        ],
+        "Non Current Assets": 1608212,
+        "Current Assets": 3841563,
+        "Total Assets": 5449775,
+        "Accumulated Profit Carried Forward": 136669,
+        "Total Equity": 936669,
+        "Non Current Liabilities": 1894482,
+        "Current Liabilities": 2618624,
+        "Total Liabilities": 4513106,
+        "Total Equity & Liabilities": 5449775,
+        "Revenue": 4621226,
+        "Profit/(Loss) Before Tax": 48456,
+        "Profit/(Loss) After Tax": -1490,
+        "Current Ratio": 1.47,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "202101034045 (1434345 - A)",
+        "Company Name": "ZEDCON GLOBAL SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2021-10-14",
+        "Status": "EXISTING",
+        "Business Address": "ARAS 1, LOT 1558, JALAN DATO'' LUNDANG 15200 KOTA BHARU KELANTAN",
+        "Registered Address": "LOT 345, ARAS 2 SEKSYEN 27 JALAN PENGKALAN CHEPA 15400 KOTA BHARU KELANTAN",
+        "Business Sector": "SERVICES",
+        "Last Financial Filed": "",
+        "Nature of Business": "CONSULTANCY SERVICES FOR DEFENCE, SECURITY AND SURVEILLANCE PRODUCTS, SYSTEM AND NETWORKS AND PROJECT MANAGEMENT, CONDUCT RESERACH, MARKET ANALYSIS AND INDUSTRIAL AND DATA FORECAST PRODUCTION AND CONSUMPTION OF AVIATION PRODUCTS, FIXTURES AND FITTINGS; MONEY CREDIT AND OPERATION OF BANKSAND FINANCIAL INSTITUTIONS TO DEVELOP MONETARY POLICIES.",
+        "Share Capital": {
+            "Total Issued": 2500000.0,
+            "CASH": 2.0,
+            "OTHERWISE THAN CASH": 2499998.0
+        },
+        "Management Details": [
+            {
+                "Name": "MOHD ZAIDEE BIN CHEHASSAN",
+                "Address": "LOT 282 TAMAN BENTARA KIRI JALAN HOSPITAL 15200 KOTA BHARU KELANTAN",
+                "IC/PP/Local No": "630615-03-5039 /7053540",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-10-14"
+            },
+            {
+                "Name": "SURINDER KAUR A/PGURBAKSH SINGH",
+                "Address": "LOT 345, ARAS 2 SEKSYEN 27 JALAN PENGKALAN CHEPA 15400 KOTA BHARU KELANTAN",
+                "IC/PP/Local No": "560919-03-5344 /5196719",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2021-10-14"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "MOHD ZAIDEE BIN CHEHASSAN",
+                "Address": "",
+                "IC/PP/Local No": "630615-03-5039 / 7053540",
+                "Shareholding": 2500000.0,
+                "%": 100.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [],
+        "Interest In Other Companies": [],
+        "Non Current Assets": "",
+        "Current Assets": "",
+        "Total Assets": "",
+        "Accumulated Profit Carried Forward": "",
+        "Total Equity": "",
+        "Non Current Liabilities": "",
+        "Current Liabilities": "",
+        "Total Liabilities": "",
+        "Total Equity & Liabilities": "",
+        "Revenue": "",
+        "Profit/(Loss) Before Tax": "",
+        "Profit/(Loss) After Tax": "",
+        "Current Ratio": "",
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "200701016350 (774357 - A)",
+        "Company Name": "ZETA SCIENTIFIC SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2007-05-22",
+        "Status": "EXISTING",
+        "Business Address": "NO 23-1B JALAN PAHAT H 15/H KOMPLEKS OTOMOBIL SEKSYEN 15 40200 SHAH ALAM SELANGOR",
+        "Registered Address": "K5-2, EXCELLA BUSINESS PARK JALAN AMPANG PUTRA TAMAN AMPANG HILIR 55100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "WHOLESALE",
+        "Last Financial Filed": "2021-12-31",
+        "Nature of Business": "GENERAL TRADING",
+        "Share Capital": {
+            "Total Issued": 328000.0,
+            "CASH": 328000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "MOKHTAR BIN SAID",
+                "Address": "NO. 26 JALAN MEMPARI 6 TAMAN MERUJAYA MERU 41050 KLANG SELANGOR",
+                "IC/PP/Local No": "571124-10-6093",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2007-05-22"
+            },
+            {
+                "Name": "MAHAMAD FUAD BINKASAHARI @ NOOR",
+                "Address": "NO 61 JALAN DESIRAN MALAWATI 1/6 TAMAN DESIRAN MALAWATI MALAYSIA 45000 KUALA SELANGOR SELANGOR",
+                "IC/PP/Local No": "710220-08-6667 /A1799862",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2023-08-08"
+            },
+            {
+                "Name": "SITI ZULAIKHA BINTI ZAITON",
+                "Address": "39, JALAN KAMPAR OFF JALAN TUN RAZAK 50400 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "800326-04-5184",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2016-03-07"
+            },
+            {
+                "Name": "ZAFUAN BIN NORDIN",
+                "Address": "K5-2, EXCELLA BUSINESS PARK JALAN AMPANG PUTRA TAMAN AMPANG HILIR MALAYSIA 55100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "700929-14-5223 /A1623995",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2018-02-08"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "MAHAMAD FUAD BINKASAHARI @ NOOR",
+                "Address": "",
+                "IC/PP/Local No": "710220-08-6667 / A1799862",
+                "Shareholding": 65600.0,
+                "%": 20.0,
+                "As At": ""
+            },
+            {
+                "Name": "MOKHTAR BIN SAID",
+                "Address": "NO. 26, JALAN MEMPARI 6 TAMAN MERUJAYA MERU 41050 KLANG SELANGOR",
+                "IC/PP/Local No": "571124-10-6093",
+                "Shareholding": 262400.0,
+                "%": 80.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "OPEN CHARGE",
+                "Date of Creation": "2013-12-03",
+                "Name of Chargee": "AFFIN BANK BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 9034,
+        "Current Assets": 150215,
+        "Total Assets": 159249,
+        "Accumulated Profit Carried Forward": -820003,
+        "Total Equity": -492003,
+        "Non Current Liabilities": 39792,
+        "Current Liabilities": 611460,
+        "Total Liabilities": 651252,
+        "Total Equity & Liabilities": 159249,
+        "Revenue": 755655,
+        "Profit/(Loss) Before Tax": -436498,
+        "Profit/(Loss) After Tax": -466607,
+        "Current Ratio": 0.25,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "202001019673 (1375993 - P)",
+        "Company Name": "ACCENSYS SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2020-07-21",
+        "Status": "EXISTING",
+        "Business Address": "TOWER 9, AVENUE 5, LEVEL 8-1 BANGSAR SOUTH (THE HORIZON) NO. 8, JALAN KERINCHI 59200 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Registered Address": "6-1, JALAN ANGSANA 2, TAMAN BUKIT ANGSANA, CHERAS, 56000 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "FINANCIAL SERVICES",
+        "Last Financial Filed": "2021-10-31",
+        "Nature of Business": "1. ACTIVITIES OF HOLDING COMPANIES 2. FINANCIAL CONSULTANCY SERVICES 3. ENGINEERING SERVICES",
+        "Share Capital": {
+            "Total Issued": 200000.0,
+            "CASH": 200000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "KARYN ONG",
+                "Address": "NO. 80, JALAN INTAN 1/4, TAMAN INTAN, MALAYSIA 86000 KLUANG JOHOR",
+                "IC/PP/Local No": "820418-01-6194",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-10-13"
+            },
+            {
+                "Name": "HEW CHEE HAU",
+                "Address": "26-7-5, PRIMA MIDAH HEIGHTS, JALAN MIDAH 8, TAMAN MIDAH, 56000 CHERAS WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "770729-05-5673 /A3750972",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2021-08-24"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "KARYN ONG",
+                "Address": "",
+                "IC/PP/Local No": "820418-01-6194",
+                "Shareholding": 200000.0,
+                "%": 100.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [],
+        "Interest In Other Companies": [
+            {
+                "Local No": "202101011914(1412213 - U)",
+                "Company": "ENERGY EQUIPMENT TECH SDN. BHD.",
+                "Shareholding": 40000.0,
+                "Shareholding Percentage": 40.0,
+                "Remarks": "",
+                "As At": "2023-04-12"
+            },
+            {
+                "Local No": "202101005454(1405753 - P)",
+                "Company": "RCADE STUDIO SDN. BHD.",
+                "Shareholding": 60.0,
+                "Shareholding Percentage": 60.0,
+                "Remarks": "",
+                "As At": "2022-08-30"
+            },
+            {
+                "Local No": "201501035397(1160717 - X)",
+                "Company": "S PLUS CONSULTING SDN. BHD.",
+                "Shareholding": 297500.0,
+                "Shareholding Percentage": 37.19,
+                "Remarks": "",
+                "As At": "2023-03-03"
+            }
+        ],
+        "Non Current Assets": 460702,
+        "Current Assets": 112315,
+        "Total Assets": 573017,
+        "Accumulated Profit Carried Forward": -20191,
+        "Total Equity": 115760,
+        "Non Current Liabilities": 0,
+        "Current Liabilities": 457257,
+        "Total Liabilities": 457257,
+        "Total Equity & Liabilities": 573017,
+        "Revenue": 0,
+        "Profit/(Loss) Before": -84280,
+        "Profit/(Loss) After": -84280,
+        "Current Ratio": 0.25,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": []
+    },
+    {
+        "Registration No": "201701023583 (1237749 - K)",
+        "Company Name": "FARDAM ENGINEERING SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2017-07-06",
+        "Status": "EXISTING",
+        "Business Address": "MP9-1, JALAN LESUNG BATU JAYA UTAMA, TAMAN LESUNG BATU 78000 ALOR GAJAH MELAKA",
+        "Registered Address": "NO. 8-1, JALAN MELAKA RAYA 35, TAMAN MELAKA RAYA, 75000 MELAKA MELAKA",
+        "Business Sector": "",
+        "Last Financial Filed": "2018-06-30",
+        "Nature of Business": "GENERAL CONTRACTOR, CONSTRUCTION AND PROPERTY DEVELOPMENT AND GENERAL TRADING.",
+        "Share Capital": {
+            "Total Issued": 802400.0,
+            "CASH": 802400.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "PORUMAN BIN ANDURONG",
+                "Address": "KM3810 JALAN KEBAYA 10 TAMAN KEBAYA MALAYSIA 78000 ALOR GAJAH MELAKA",
+                "IC/PP/Local No": "860614-49-5045",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2019-01-28"
+            },
+            {
+                "Name": "NORAZNIDA BINTI KHARUDDIN",
+                "Address": "KM3810 JALAN KEBAYA 10 TAMAN KEBAYA MALAYSIA 78000 ALOR GAJAH MELAKA",
+                "IC/PP/Local No": "930824-10-6256",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2019-01-28"
+            },
+            {
+                "Name": "MOHD FA'ISAL BIN A KARIM",
+                "Address": "NO 23 JALAN KUINI 4/2D SEKSYEN 4 MALAYSIA 40000 SHAH ALAM SELANGOR",
+                "IC/PP/Local No": "821010-08-6919",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-03-23"
+            },
+            {
+                "Name": "KHILMY BIN DUWASA",
+                "Address": "NO. 18, JALAN DP7 TAMAN DUYUNG PERMAI 75460 MELAKA MELAKA",
+                "IC/PP/Local No": "701105-10-5645 /A1666285",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2023-08-10"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "NORAZNIDA BINTI KHARUDDIN",
+                "Address": "",
+                "IC/PP/Local No": "930824-10-6256",
+                "Shareholding": 754256.0,
+                "%": 94.0,
+                "As At": ""
+            },
+            {
+                "Name": "PORUMAN BIN ANDURONG",
+                "Address": "",
+                "IC/PP/Local No": "860614-49-5045",
+                "Shareholding": 48144.0,
+                "%": 6.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [],
+        "Interest In Other Companies": [],
+        "Non Current Assets": 0,
+        "Current Assets": 4060,
+        "Total Assets": 4060,
+        "Accumulated Profit Carried Forward": -51309,
+        "Total Equity": 1091,
+        "Non Current Liabilities": 0,
+        "Current Liabilities": 2969,
+        "Total Liabilities": 2969,
+        "Total Equity & Liabilities": 4060,
+        "Revenue": 22735,
+        "Profit/(Loss) Before": -51309,
+        "Profit/(Loss) After": -51309,
+        "Current Ratio": 1.37,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Supplier"
+        ]
+    },
+    {
+        "Registration No": "198901013420 (190730 - W)",
+        "Company Name": "FIBERAIL SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "1989-12-12",
+        "Status": "EXISTING",
+        "Business Address": "LEVEL 1 (RIGHT WING) COPLACE 11 BLOCK 2340, CENTURY SQUARE JALAN USAHAWAN, CYBER 6 63000 CYBERJAYA SELANGOR",
+        "Registered Address": "LEVEL 51,NORTH WING MENARA TM JALAN PANTAI BAHARU 50672 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "WHOLESALE",
+        "Last Financial Filed": "2022-12-31",
+        "Nature of Business": "TO PROVIDE NETWORK CONNECTIVITY & BANDWIDTH SERVICES IN MALAYSIA & PROVISION OF PROJECT MANAGEMENT SERVICES RELATING TO TELECOMMUNICATIONS MARKET, MANAGE, OPERATE AND MAINTAIN LEASED LINES AND OTHER TELECOMMUNICATION SERVICES",
+        "Share Capital": {
+            "Total Issued": 15780000.0,
+            "CASH": 14200000.0,
+            "OTHERWISE THAN CASH": 1580000.0
+        },
+        "Management Details": [
+            {
+                "Name": "AMAR HUZAIMI BIN MD DERIS",
+                "Address": "NO. 42, JALAN LE 2, TAMAN LAKE EDGE MALAYSIA 47160 PUCHONG SELANGOR",
+                "IC/PP/Local No": "750614-04-5231 /A3046907",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2018-08-21"
+            },
+            {
+                "Name": "WAN SHAMILAH BINTI WAN MUHAMMAD SAIDI",
+                "Address": "17, BAYU TIMUR SERI PILMOOR, JALAN PJU 1A/1, ARA DAMANSARA MALAYSIA 47301 PETALING JAYA SELANGOR",
+                "IC/PP/Local No": "701117-03-5410 /A1707233",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-08-09"
+            },
+            {
+                "Name": "MOHD RANI HISHAM BIN SAMSUDIN",
+                "Address": "16, JALAN MEMANAH 13/55D LAMAN SERI MALAYSIA 40100 SHAH ALAM SELANGOR",
+                "IC/PP/Local No": "620822-10-5555 /6884583",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-10-06"
+            },
+            {
+                "Name": "MOHAMMED SUHAIMI BIN YAACOB",
+                "Address": "32 JALAN BUKIT INDAH 3/8 AMPANG JAYA MALAYSIA 68000 AMPANG SELANGOR",
+                "IC/PP/Local No": "650926-71-5267 /A0288459",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2022-08-29"
+            },
+            {
+                "Name": "MOHD ARIFIN BIN HASAN",
+                "Address": "NO. 22A, JALAN TIJANI 2/A TIJANI UKAY MALAYSIA 68000 AMPANG SELANGOR",
+                "IC/PP/Local No": "721002-04-5393 /A2274369",
+                "Designation": "MANAGER",
+                "Appointment Date": "2022-03-01"
+            },
+            {
+                "Name": "MOHAMMAD YAZMI BIN MAT RASCHID",
+                "Address": "LOT 100 JALAN 42 KAMPUNG CHERAS BARU 56100 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "730526-04-5057",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2020-01-01"
+            },
+            {
+                "Name": "HAMIZAH BINTI ABIDIN",
+                "Address": "NO. 9, JALAN SUARASA 1/2 AVENUE ONE, LAKE VALLEY BANDAR TUN HUSSEIN ONN, BATU 9 43200 CHERAS SELANGOR",
+                "IC/PP/Local No": "701220-03-5080 /A1774984",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2020-09-23"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "KERETAPI TANAH MELAYU BERHAD",
+                "Address": "CORPORATE HEADQUARTERS JALAN HISAHAMUDDIN 50621 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "199101015631 (225943-T)",
+                "Shareholding": 5680000.0,
+                "%": 35.99,
+                "As At": ""
+            },
+            {
+                "Name": "PETROFIBRE NETWORK (M) SDN. BHD.",
+                "Address": "TOWER 1 PETRONAS TWIN TOWER KUALA LUMPUR CITY CENTRE 50088 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "199601010083 (382431-D)",
+                "Shareholding": 1580000.0,
+                "%": 10.01,
+                "As At": ""
+            },
+            {
+                "Name": "TELEKOM MALAYSIA BERHAD",
+                "Address": "LEVEL 51, NORTH WING MENARA TM JALAN PANTAI BAHARU 50672 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "198401016183 (128740-P)",
+                "Shareholding": 8520000.0,
+                "%": 53.99,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "51,000,000.00",
+                "Date of Creation": "1995-04-21",
+                "Name of Chargee": "ARABMALAYSIAN MERCHANT BANK BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "002",
+                "Total of Charge": "51,000,000.00",
+                "Date of Creation": "1995-04-21",
+                "Name of Chargee": "ARABMALAYSIAN MERCHANT BANK BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [
+            {
+                "Local No": "201101007489(935627 - D)",
+                "Company": "KONSORTIUM RANGKAIAN SERANTAU SDN. BHD.",
+                "Shareholding": 50000.0,
+                "Shareholding Percentage": 4.17,
+                "Remarks": "WU",
+                "As At": "2023-02-08"
+            }
+        ],
+        "Non Current Assets": 307499474,
+        "Current Assets": 180814207,
+        "Total Assets": 488313681,
+        "Accumulated Profit Carried Forward": 188012413,
+        "Total Equity": 216737350,
+        "Non Current Liabilities": 130062762,
+        "Current Liabilities": 141513569,
+        "Total Liabilities": 271576331,
+        "Total Equity & Liabilities": 488313681,
+        "Revenue": 132844845,
+        "Profit/(Loss) Before": 14797709,
+        "Profit/(Loss) After": 10262365,
+        "Current Ratio": 1.28,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Contract Awarder"
+        ]
+    },
+    {
+        "Registration No": "199801016509 (472638 - X)",
+        "Company Name": "MY EG SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "1998-11-23",
+        "Status": "EXISTING",
+        "Business Address": "LEVEL 43A, MYEG TOWER NO. 8 JALAN DAMANSARA EMPIRE CITY, PJU 8 47820 PETALING JAYA SELANGOR",
+        "Registered Address": "12TH FLOOR, MENARA SYMPHONY NO. 5, JALAN PROF. KHOO KAY KIM SEKSYEN 13 46200 PETALING JAYA SELANGOR",
+        "Business Sector": "SERVICES",
+        "Last Financial Filed": "2021-12-31",
+        "Nature of Business": "ENGAGED IN THE BUSINESS OF DEVELOPMENT AND IMPLEMENTATION OF THE ELECTRONIC GOVERNMENT SERVICES PROJECT AND THE PROVISION OF OTHER RELATED SERVICES FOR THE ELECTRONIC GOVERNMENT SERVICES PROJECT",
+        "Share Capital": {
+            "Total Issued": 9250000.0,
+            "CASH": 8012674.0,
+            "OTHERWISE THAN CASH": 1237326.0
+        },
+        "Management Details": [
+            {
+                "Name": "WONG THEAN SOON",
+                "Address": "LOT 13A THE RESIDENCE CHANGKAT SURIA 1 NO. 6 JALAN KIARA 2 MONT KIARA MALAYSIA 50480 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "710604-08-5153 /A1868910",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2007-07-01"
+            },
+            {
+                "Name": "NORRAESAH BINTI HAJI MOHAMAD, DATO' DR.",
+                "Address": "45 PERSIARAN BURHANUDDIN HELMI TAMAN TUN DR ISMAIL MALAYSIA 60000 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "480514-07-5436 /0964025",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2015-03-31"
+            },
+            {
+                "Name": "TAI YIT CHAN",
+                "Address": "79, JALAN SS22/32 DAMANSARA JAYA MALAYSIA 47400 PETALING JAYA SELANGOR",
+                "IC/PP/Local No": "690118-10-6160 /A1167797",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2010-07-19"
+            },
+            {
+                "Name": "TAN AI NING",
+                "Address": "7-8-1 MENARA HARTAMAS JALAN SRI HARTAMAS 3 50480 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "710325-10-5406 /A1846076",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2010-07-19"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "MY E.G. SERVICES BERHAD",
+                "Address": "LOT 6.05 LEVEL 6 KPMG TOWER 8 FIRST AVENUE PERSIARAN BANDAR UTAMA BANDAR UTAMA 47800 PETALING JAYA SELANGOR",
+                "IC/PP/Local No": "200001003034 (505639-K)",
+                "Shareholding": 9250000.0,
+                "%": 100.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "7,000,000.00",
+                "Date of Creation": "2013-05-28",
+                "Name of Chargee": "MALAYAN BANKING BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "002",
+                "Total of Charge": "7,000,000.00",
+                "Date of Creation": "2013-05-28",
+                "Name of Chargee": "MALAYAN BANKING BERHAD",
+                "Charge Status": "FULLY SATISFIED"
+            },
+            {
+                "Charge Number": "003",
+                "Total of Charge": "318,000.00",
+                "Date of Creation": "2016-03-09",
+                "Name of Chargee": "MALAYAN BANKING BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [
+            {
+                "Local No": "201601024220(1195159 - W)",
+                "Company": "MY EG LODGING SDN. BHD.",
+                "Shareholding": 275000.0,
+                "Shareholding Percentage": 55.0,
+                "Remarks": "",
+                "As At": "2022-07-26"
+            },
+            {
+                "Local No": "201701044617(1258790 - H)",
+                "Company": "MYEG AUTO ASSIST SDN. BHD.",
+                "Shareholding": 3000000.0,
+                "Shareholding Percentage": 100.0,
+                "Remarks": "",
+                "As At": "2022-01-26"
+            },
+            {
+                "Local No": "201501026850(1152174 - P)",
+                "Company": "MYEG TRADE SDN. BHD.",
+                "Shareholding": 3000000.0,
+                "Shareholding Percentage": 100.0,
+                "Remarks": "",
+                "As At": "2022-07-15"
+            },
+            {
+                "Local No": "202101009774(1410073 - U)",
+                "Company": "MYEG TWOCAR SDN. BHD.",
+                "Shareholding": 80000.0,
+                "Shareholding Percentage": 80.0,
+                "Remarks": "",
+                "As At": "2023-01-30"
+            }
+        ],
+        "Non Current Assets": 284499468,
+        "Current Assets": 409643110,
+        "Total Assets": 694142578,
+        "Accumulated Profit Carried Forward": 177226386,
+        "Total Equity": 183054010,
+        "Non Current Liabilities": 4117868,
+        "Current Liabilities": 506970700,
+        "Total Liabilities": 511088568,
+        "Total Equity & Liabilities": 694142578,
+        "Revenue": 474035262,
+        "Profit/(Loss) Before": 129706755,
+        "Profit/(Loss) After": 127456803,
+        "Current Ratio": 0.81,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    },
+    {
+        "Registration No": "199801017754 (473883 - H)",
+        "Company Name": "USAINS HOLDING SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "1998-12-17",
+        "Status": "EXISTING",
+        "Business Address": "LEVEL 2, BLOCK C, SAINS @ USM NO.10 PERSIARAN BUKIT JAMBUL 11900 BAYAN LEPAS PULAU PINANG",
+        "Registered Address": "SUITE A, LEVEL 9 WAWASAN OPEN UNIVERSITY 54, JALAN SULTAN AHMAD SHAH 10050 GEORGETOWN PULAU PINANG",
+        "Business Sector": "RETAIL",
+        "Last Financial Filed": "2021-12-31",
+        "Nature of Business": "PROVIDING LABORATORY AND CONSULTANCY SERVICES, CONTRACT RESEARCH AND DEVELOPMENT, CONDUCTING SHORT COURSES AND SEMINARS, MANAGEMENT SERVICES, SUB-LETTING OF OFFICE UNITS AND EQUIPMENT AND TRADING",
+        "Share Capital": {
+            "Total Issued": 5000000.0,
+            "CASH": 4940000.0,
+            "OTHERWISE THAN CASH": 60000.0
+        },
+        "Management Details": [
+            {
+                "Name": "PROFESSOR DR ABDUL RAHMAN BIN MOHAMED",
+                "Address": "2, JALAN PERMAI 3/3 TAMAN KERIAN PERMAI MALAYSIA 34200 PARIT BUNTAR PERAK",
+                "IC/PP/Local No": "640114-07-5779",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2018-07-16"
+            },
+            {
+                "Name": "FARID WAJIDI BIN MAT YUSOFF",
+                "Address": "5-3-1 TWIN TOWERS CONDO PERSIARAN TANJUNG BUNGAH MALAYSIA 11200 TANJONG BUNGAH PULAU PINANG",
+                "IC/PP/Local No": "710318-09-5027 /A1870857",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2019-01-01"
+            },
+            {
+                "Name": "DATUK (DR) HAFSAH BINTI HASHIM",
+                "Address": "11, JALAN AMINUDDIN BAKI TAMAN TUN DR. ISMAIL MALAYSIA 60000 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+                "IC/PP/Local No": "570815-01-5014",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2020-07-15"
+            },
+            {
+                "Name": "MOHD RAZLAN BIN MOHAMED",
+                "Address": "11, JALAN PJU 3/15 TROPICANA INDAH MALAYSIA 47410 PETALING JAYA SELANGOR",
+                "IC/PP/Local No": "660210-10-6019 /A0358135",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2021-03-04"
+            },
+            {
+                "Name": "PROFESSOR MADYA DR. MOHD AZMIR BIN MOHD NIZAH",
+                "Address": "KM 205 JALAN KASA HEIGHTS 2 TAMAN KASA HEIGHTS MALAYSIA 78000 ALOR GAJAH MELAKA",
+                "IC/PP/Local No": "800327-04-5223",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2022-11-17"
+            },
+            {
+                "Name": "MOHD ZAHIR BIN ZAHUR HUSSAIN",
+                "Address": "28, USJ 11/3P UEP SUBANG JAYA MALAYSIA 47620 PETALING JAYA SELANGOR",
+                "IC/PP/Local No": "750710-07-5449 /A3136308",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2022-12-15"
+            },
+            {
+                "Name": "FARID WAJIDI BIN MAT YUSOFF",
+                "Address": "5-3-1 TWIN TOWERS CONDO, PERSIARAN TANJUNG BUNGAH, MALAYSIA 11200 TANJUNG BUNGAH PULAU PINANG",
+                "IC/PP/Local No": "710318-09-5027 /A1870857",
+                "Designation": "MANAGER",
+                "Appointment Date": "2019-01-01"
+            },
+            {
+                "Name": "CHEW SIEW CHENG",
+                "Address": "1-V, LORONG DELIMA 17 ISLAND GLADES 11700 GEORGETOWN PULAU PINANG",
+                "IC/PP/Local No": "720405-07-5218 /A2170032",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2011-12-01"
+            },
+            {
+                "Name": "LIM CHOO TAN",
+                "Address": "7-8-24 LINTANG PAYA TERUBONG 3 PAYA TERUBONG MALAYSIA 11060 AYER ITAM PULAU PINANG",
+                "IC/PP/Local No": "680920-07-5198 /A1117801",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2018-07-13"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "UNIVERSITI SAINS MALAYSIA",
+                "Address": "UNIVERSITI SAINS MALAYSIA 11800 GELUGOR PULAU PINANG",
+                "IC/PP/Local No": "",
+                "Shareholding": 5000000.0,
+                "%": 100.0,
+                "As At": ""
+            }
+        ],
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "1,100,000.00",
+                "Date of Creation": "2010-03-15",
+                "Name of Chargee": "CIMB BANK BERHAD",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [
+            {
+                "Local No": "201101042170(970290 - X)",
+                "Company": "DIAGNOSTICS INNOVATIONS SDN. BHD.",
+                "Shareholding": 2.0,
+                "Shareholding Percentage": 100.0,
+                "Remarks": "",
+                "As At": "2021-05-05"
+            },
+            {
+                "Local No": "199301009793(264530 - P)",
+                "Company": "ICC CONSULTANT CENTRE SDN. BHD.",
+                "Shareholding": 75000.0,
+                "Shareholding Percentage": 15.0,
+                "Remarks": "",
+                "As At": "2016-12-31"
+            },
+            {
+                "Local No": "199401001519(287197 - W)",
+                "Company": "MALAYSIAN BIO-DIAGNOSTICS RESEARCH SDN. BHD.",
+                "Shareholding": 100000.0,
+                "Shareholding Percentage": 1.86,
+                "Remarks": "DS",
+                "As At": "2021-08-09"
+            },
+            {
+                "Local No": "199601027777(400129 - K)",
+                "Company": "MASTER-PACK LABS SDN. BHD.",
+                "Shareholding": 120000.0,
+                "Shareholding Percentage": 11.25,
+                "Remarks": "WU",
+                "As At": "2016-12-31"
+            },
+            {
+                "Local No": "200101030517(566276 - W)",
+                "Company": "USAINS BIO-ENGINEERING SDN. BHD.",
+                "Shareholding": 2.0,
+                "Shareholding Percentage": 100.0,
+                "Remarks": "",
+                "As At": "2021-05-05"
+            },
+            {
+                "Local No": "201101009497(937636 - D)",
+                "Company": "USAINS BIOMICS LABORATORY TESTING SERVICES SDN. BHD.",
+                "Shareholding": 1252750.0,
+                "Shareholding Percentage": 100.0,
+                "Remarks": "",
+                "As At": "2021-09-09"
+            },
+            {
+                "Local No": "200201020976(588639 - A)",
+                "Company": "USAINS INFOTECH SENDIRIAN BERHAD",
+                "Shareholding": 1000000.0,
+                "Shareholding Percentage": 100.0,
+                "Remarks": "",
+                "As At": "2023-03-27"
+            },
+            {
+                "Local No": "199801017780(473909 - D)",
+                "Company": "USAINS TECH CAPITAL SDN. BHD.",
+                "Shareholding": 500000.0,
+                "Shareholding Percentage": 100.0,
+                "Remarks": "",
+                "As At": "2021-05-05"
+            },
+            {
+                "Local No": "199801017758(473887 - K)",
+                "Company": "USAINS TECH SERVICES SDN. BHD.",
+                "Shareholding": 500000.0,
+                "Shareholding Percentage": 100.0,
+                "Remarks": "",
+                "As At": "2023-06-16"
+            },
+            {
+                "Local No": "200501024640(706773 - M)",
+                "Company": "USM ENTERPRISE SDN. BHD.",
+                "Shareholding": 2.0,
+                "Shareholding Percentage": 100.0,
+                "Remarks": "",
+                "As At": "2021-05-06"
+            }
+        ],
+        "Non Current Assets": 8751365,
+        "Current Assets": 85153051,
+        "Total Assets": 93904416,
+        "Accumulated Profit Carried Forward": 30243485,
+        "Total Equity": 35243485,
+        "Non Current Liabilities": 978877,
+        "Current Liabilities": 57682054,
+        "Total Liabilities": 58660931,
+        "Total Equity & Liabilities": 93904416,
+        "Revenue": 37765979,
+        "Profit/(Loss) Before": 5298380,
+        "Profit/(Loss) After": 3898770,
+        "Current Ratio": 1.48,
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [
+            {
+                "Defendant Name": "USAINS HOLDING SDN BHD",
+                "Defendant Local No.": "199801017754 (473883-H)",
+                "Case No.": "TB-56J-4-06-2022 SESSIONS COURT KEMAMAN",
+                "Plantiff": "PENANG NOR ATIKAH BINTI HUSSIEN",
+                "Plantiff Local No.": "No Respond",
+                "Case Status": "HEARING",
+                "Hearing Date": "2023-06-09",
+                "Suit Ref.": "COURT LIST / 02 Jun 2023"
+            }
+        ],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [
+            {
+                "Plaintiff Name": "USAINS HOLDING SDN BHD",
+                "Plaintiff Local No.": "199801017754 (473883-H)",
+                "Case No.": "PA-25-13-03-2023 HIGH COURT PENANG",
+                "Case Status": "HEARING",
+                "Hearing Date": "2022-12-14",
+                "Suit Ref.": "COURT LIST / 04 Dec 2022"
+            }
+        ],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [
+            {
+                "Petitioner": "Local No",
+                "Local No": "199801017754 (473883-H)",
+                "Case No": "PA-B52NCVC-25-01-2021 SESSIONS COURT PENANG",
+                "Type/Court": "HIGH COURT",
+                "Solicitor Address": "NO. 150, JALAN SULTAN ABDUL SAMAD, BRICKFIELDS 50470 KUALA",
+                "Defendant Name": "ANIKA ASAS SDN. BHD.",
+                "Defendant Local No": "199501015073 (344274-U)"
+            }
+        ],
+        "role": [
+            "Contract Awarder"
+        ]
+    }
+]

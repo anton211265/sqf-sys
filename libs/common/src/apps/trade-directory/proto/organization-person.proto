@@ -1,0 +1,32 @@
+syntax = "proto3";
+import "trade-directory/proto/entity.proto";
+
+package trade_directory;
+
+service OrganizationPersonGrpcService {
+  rpc FindByOrganizationIdGrpc(OrganizationPersonByOrganizationIdDto)
+      returns (OrganizationPersonList) {}
+  rpc CreateGrpc(CreateOrganizationPersonDto) returns (OrganizationPerson) {}
+  rpc UpdateGrpc(UpdateOrganizationPersonDto) returns (OrganizationPerson) {}
+}
+
+message OrganizationPersonByOrganizationIdDto {
+  uint32 organizationId = 1;
+  optional IncludeOrganization includeOrganization = 2;
+  optional IncludePerson includePerson = 3;
+}
+
+message CreateOrganizationPersonDto {
+  uint32 organizationId = 1;
+  uint32 personId = 2;
+  UpdatableOrganizationPerson organizationPerson = 3;
+}
+
+message UpdateOrganizationPersonDto {
+  uint32 id = 1;
+  UpdatableOrganizationPerson organizationPerson = 2;
+}
+
+message OrganizationPersonList {
+  repeated OrganizationPerson organizationPersons = 2;
+}

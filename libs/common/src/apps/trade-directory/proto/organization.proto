@@ -1,0 +1,93 @@
+syntax = "proto3";
+import "trade-directory/proto/entity.proto";
+
+package trade_directory;
+
+service OrganizationGrpcService {
+  rpc GetAllGrpc(GetAllOrganizationDto) returns (OrganizationList) {}
+  rpc FindByIdGrpc(OrganizationByIdDto) returns (OrganizationList) {}
+  rpc FindByClientPersonaIdGrpc(OrganizationByClientPersonaIdDto)
+      returns (OrganizationList) {}
+  rpc FindByContractAwarderPersonaIdGrpc(
+      OrganizationByContractAwarderPersonaIdDto) returns (OrganizationList) {}
+  rpc FindBySupplierPersonaIdGrpc(OrganizationBySupplierPersonaIdDto)
+      returns (OrganizationList) {}
+  rpc FindByFactorPersonaIdGrpc(OrganizationByFactorPersonaIdDto)
+      returns (OrganizationList) {}
+  rpc FindByNameGrpc(OrganizationByNameDto) returns (OrganizationList) {}
+  rpc CreateGrpc(CreateOrganizationDto) returns (Organization) {}
+  rpc UpdateGrpc(UpdateOrganizationDto) returns (Organization) {}
+}
+
+message GetAllOrganizationDto {
+  optional IncludeOrganizationPerson includeOrganizationPerson = 1;
+  optional IncludeBankAccount includeBankAccount = 2;
+  optional IncludeClientPersona includeClientPersona = 3;
+  optional IncludeContractAwarderPersona includeContractAwarderPersona = 4;
+  optional IncludeSupplierPersona includeSupplierPersona = 5;
+  optional IncludeFactorPersona includeFactorPersona = 6;
+}
+
+message OrganizationByIdDto {
+  repeated uint32 id = 1;
+  optional IncludeOrganizationPerson includeOrganizationPerson = 2;
+  optional IncludeBankAccount includeBankAccount = 3;
+  optional IncludeClientPersona includeClientPersona = 4;
+  optional IncludeContractAwarderPersona includeContractAwarderPersona = 5;
+  optional IncludeSupplierPersona includeSupplierPersona = 6;
+  optional IncludeFactorPersona includeFactorPersona = 7;
+}
+
+message OrganizationByClientPersonaIdDto {
+  repeated uint32 clientPersonaId = 1;
+  optional IncludeOrganizationPerson includeOrganizationPerson = 2;
+  optional IncludeBankAccount includeBankAccount = 3;
+  optional IncludeContractAwarderPersona includeContractAwarderPersona = 4;
+  optional IncludeSupplierPersona includeSupplierPersona = 5;
+  optional IncludeFactorPersona includeFactorPersona = 6;
+}
+
+message OrganizationByContractAwarderPersonaIdDto {
+  repeated uint32 contractAwarderPersonaId = 1;
+  optional IncludeOrganizationPerson includeOrganizationPerson = 2;
+  optional IncludeBankAccount includeBankAccount = 3;
+  optional IncludeClientPersona includeClientPersona = 4;
+  optional IncludeSupplierPersona includeSupplierPersona = 5;
+  optional IncludeFactorPersona includeFactorPersona = 6;
+}
+
+message OrganizationBySupplierPersonaIdDto {
+  repeated uint32 supplierPersonaId = 1;
+  optional IncludeOrganizationPerson includeOrganizationPerson = 2;
+  optional IncludeBankAccount includeBankAccount = 3;
+  optional IncludeClientPersona includeClientPersona = 4;
+  optional IncludeContractAwarderPersona includeContractAwarderPersona = 5;
+  optional IncludeFactorPersona includeFactorPersona = 6;
+}
+
+message OrganizationByFactorPersonaIdDto {
+  repeated uint32 factorPersonaId = 1;
+  optional IncludeOrganizationPerson includeOrganizationPerson = 2;
+  optional IncludeBankAccount includeBankAccount = 3;
+  optional IncludeClientPersona includeClientPersona = 4;
+  optional IncludeContractAwarderPersona includeContractAwarderPersona = 5;
+  optional IncludeFactorPersona includeSupplierPersona = 6;
+}
+
+message OrganizationByNameDto {
+  string name = 1;
+  optional IncludeOrganizationPerson includeOrganizationPerson = 2;
+  optional IncludeBankAccount includeBankAccount = 3;
+  optional IncludeClientPersona includeClientPersona = 4;
+  optional IncludeContractAwarderPersona includeContractAwarderPersona = 5;
+  optional IncludeSupplierPersona includeSupplierPersona = 6;
+}
+
+message CreateOrganizationDto { UpdatableOrganization organization = 1; }
+
+message UpdateOrganizationDto {
+  uint32 id = 1;
+  UpdatableOrganization organization = 2;
+}
+
+message OrganizationList { repeated Organization organizations = 1; }

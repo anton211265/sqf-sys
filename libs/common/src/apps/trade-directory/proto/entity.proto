@@ -1,0 +1,312 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+import "common/proto/countries.proto";
+import "common/proto/currencies.proto";
+
+package trade_directory;
+
+message Organization {
+  uint32 id = 1;
+  string organizationName = 2;
+  optional string alias = 3;
+  CountryCodeEnum country = 4;
+  optional OrganizationTypeEnum organizationType = 5;
+  optional string organizationTypeOther = 6;
+  optional string businessRegistrationNumber = 7;
+  optional string taxIdentificationNumber = 8;
+  optional string sstRegistrationNumber = 9;
+  optional OrganizationBusinessSectorEnum businessSector = 10;
+  optional string experianBusinessSector = 11;
+  optional OrganizationNatureOfBusinessEnum natureOfBusiness = 12;
+  optional string experianNatureOfBusiness = 13;
+  optional string coreBusiness = 14;
+  optional google.protobuf.Timestamp incorporationDate = 15;
+  optional google.protobuf.Timestamp operationStartDate = 16;
+  optional string businessAddress = 17;
+  optional string registeredAddress = 18;
+  optional OrganizationMalaysiaRegionEnum malaysiaRegion = 19;
+  optional string factoryAddress = 20;
+  optional string organizationWebsite = 21;
+  optional string organizationLogo = 22;
+  google.protobuf.Timestamp createdAt = 23;
+  google.protobuf.Timestamp updatedAt = 24;
+  repeated OrganizationPerson organizationPersons = 25;
+  repeated BankAccount bankAccounts = 26;
+  optional ClientPersona clientPersona = 27;
+  optional uint32 clientPersonaId = 28;
+  optional ContractAwarderPersona contractAwarderPersona = 29;
+  optional uint32 contractAwarderPersonaId = 30;
+  optional SupplierPersona supplierPersona = 31;
+  optional uint32 supplierPersonaId = 32;
+  optional FactorPersona factorPersona = 33;
+  optional uint32 factorPersonaId = 34;
+  optional string yearEstablished = 35;
+  CurrencyCodeEnum revenueCurrency = 36;
+  optional uint32 revenueAmount = 37;
+  optional string emailAddress = 38;
+  optional string contactNumber = 39;
+  optional string postcode = 40;
+  optional string companySize = 41;
+
+}
+
+message UpdatableOrganization {
+  string organizationName = 1;
+  optional string alias = 2;
+  optional CountryCodeEnum countryCode = 3;
+  optional OrganizationTypeEnum organizationType = 4;
+  optional string organizationTypeOther = 5;
+  optional string businessRegistrationNumber = 6;
+  optional string taxIdentificationNumber = 7;
+  optional string sstRegistrationNumber = 8;
+  optional OrganizationBusinessSectorEnum businessSector = 9;
+  optional string experianBusinessSector = 10;
+  optional OrganizationNatureOfBusinessEnum natureOfBusiness = 11;
+  optional string experianNatureOfBusiness = 12;
+  optional string coreBusiness = 13;
+  optional google.protobuf.Timestamp incorporationDate = 14;
+  optional google.protobuf.Timestamp operationStartDate = 15;
+  optional string businessAddress = 16;
+  optional string registeredAddress = 17;
+  optional OrganizationMalaysiaRegionEnum malaysiaRegion = 18;
+  optional string factoryAddress = 19;
+  optional string organizationWebsite = 20;
+  optional string organizationLogo = 21;
+  optional uint32 clientPersonaId = 22;
+  optional uint32 contractAwarderPersonaId = 23;
+  optional uint32 supplierPersonaId = 24;
+  optional uint32 factorPersonaId = 25;
+  optional string yearEstablished = 26;
+
+}
+
+enum OrganizationTypeEnum {
+  ORGANIZATION_TYPE_ENUM_GOVERNMENT_EP = 0;
+  ORGANIZATION_TYPE_ENUM_GOVERNMENT_NON_EP = 1;
+  ORGANIZATION_TYPE_ENUM_GOVERNMENT_LINKED_COMPANY = 2;
+  ORGANIZATION_TYPE_ENUM_MULTINATIONAL_CORPORATION = 3;
+  ORGANIZATION_TYPE_ENUM_PUBLIC_LIMITED = 4;
+  ORGANIZATION_TYPE_ENUM_PRIVATE_LIMITED = 5;
+  ORGANIZATION_TYPE_ENUM_PARTNERSHIP = 6;
+  ORGANIZATION_TYPE_ENUM_SOLE_PROPRIETORSHIP = 7;
+  ORGANIZATION_TYPE_ENUM_COOPERATIVE = 8;
+  ORGANIZATION_TYPE_ENUM_OTHERS = 9;
+}
+
+enum OrganizationBusinessSectorEnum {
+  ORGANIZATION_BUSINESS_SECTOR_ENUM_SUPPLY = 0;
+  ORGANIZATION_BUSINESS_SECTOR_ENUM_SERVICES = 1;
+  ORGANIZATION_BUSINESS_SECTOR_ENUM_SUPPLY_AND_SERVICES = 2;
+  ORGANIZATION_BUSINESS_SECTOR_ENUM_RETAIL = 3;
+  ORGANIZATION_BUSINESS_SECTOR_ENUM_WHOLESALE = 4;
+  ORGANIZATION_BUSINESS_SECTOR_ENUM_MANUFACTURING = 5;
+  ORGANIZATION_BUSINESS_SECTOR_ENUM_CONSTRUCTION = 6;
+  ORGANIZATION_BUSINESS_SECTOR_ENUM_INFORMATION_AND_COMMUNICATION = 7;
+  ORGANIZATION_BUSINESS_SECTOR_ENUM_OTHERS = 8;
+}
+
+enum OrganizationNatureOfBusinessEnum {
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_AGRICULTURE = 0;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_AUTOMOBILE = 1;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_AVIATION = 2;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_BUSINESS_SERVICES = 3;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_COMMUNICATION_AND_DIGITAL = 4;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_CONSTRUCTION = 5;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_DEFENCE = 6;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_EDUCATION = 7;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_ENERGY = 8;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_ENTREPRENEUR_AND_COOPERATIVE_DEVELOPMENT =
+      9;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_ENVIRONMENT_AND_SUSTAINABILITY = 10;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_FINANCE = 11;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_HEALTHCARE = 12;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_HOME_AFFAIRS = 13;
+  ORGANIZATION_NATURE_OF_BUSINESS_ENUM_HOSPITALITY_AND_TOURISM = 14;
+}
+
+enum OrganizationMalaysiaRegionEnum {
+  ORGANIZATION_MALAYSIA_REGION_ENUM_EAST_MALAYSIA = 0;
+  ORGANIZATION_MALAYSIA_REGION_ENUM_WEST_MALAYSIA = 1;
+  ORGANIZATION_MALAYSIA_REGION_ENUM_OTHER = 2;
+}
+
+message OrganizationPerson {
+  uint32 id = 1;
+  optional Organization organization = 2;
+  uint32 organizationId = 3;
+  optional Person person = 4;
+  uint32 personId = 5;
+  optional string designation = 6;
+  optional string sub = 7;
+  repeated OrganizationPersonRole organizationPersonRoles = 8;
+  google.protobuf.Timestamp createdAt = 9;
+  google.protobuf.Timestamp updatedAt = 10;
+}
+
+message UpdatableOrganizationPerson {
+  optional string designation = 1;
+  optional string sub = 2;
+}
+
+message Person {
+  uint32 id = 1;
+  string name = 2;
+  optional string preferredUsername = 3;
+  optional string residentialAddress = 4;
+  optional string identificationNumber = 5;
+  optional string mobileNumber = 6;
+  optional string email = 7;
+  google.protobuf.Timestamp createdAt = 8;
+  google.protobuf.Timestamp updatedAt = 9;
+  repeated OrganizationPerson organizationPersons = 10;
+}
+
+message UpdatablePerson {
+  optional string name = 1;
+  optional string preferredUsername = 2;
+  optional string residentialAddress = 3;
+  optional string identificationNumber = 4;
+  optional string mobileNumber = 5;
+  optional string email = 6;
+}
+
+message OrganizationPersonRole {
+  uint32 id = 1;
+  OrganizationPersonRoleEnum role = 2;
+  google.protobuf.Timestamp createdAt = 3;
+  google.protobuf.Timestamp updatedAt = 4;
+}
+
+enum OrganizationPersonRoleEnum {
+  SUPERUSER = 0;
+  CEO = 1;
+  COO = 2;
+  CLIENT_COVERAGE = 3;
+  CUSTOMER_SUCCESS = 4;
+  CORPORATE_COMMUNICATIONS = 5;
+}
+
+message ClientPersona {
+  uint32 id = 1;
+  optional string clientPersonaId = 2;
+  google.protobuf.Timestamp createdAt = 3;
+  google.protobuf.Timestamp updatedAt = 4;
+  optional Organization organization = 5;
+}
+
+message UpdatableClientPersona { optional string clientPersonaId = 2; }
+
+message ContractAwarderPersona {
+  uint32 id = 1;
+  optional string contractAwarderPersonaId = 2;
+  google.protobuf.Timestamp createdAt = 3;
+  google.protobuf.Timestamp updatedAt = 4;
+  optional Organization organization = 5;
+}
+
+message UpdatableContractAwarderPersona {
+  optional string contractAwarderPersonaId = 1;
+}
+
+message SupplierPersona {
+  uint32 id = 1;
+  optional string supplierPersonaId = 2;
+  google.protobuf.Timestamp createdAt = 3;
+  google.protobuf.Timestamp updatedAt = 4;
+  optional Organization organization = 5;
+}
+
+message UpdatableSupplierPersona { optional string supplierPersonaId = 1; }
+
+message FactorPersona {
+  uint32 id = 1;
+  optional string factorPersonaId = 2;
+  google.protobuf.Timestamp createdAt = 3;
+  google.protobuf.Timestamp updatedAt = 4;
+  optional Organization organization = 5;
+}
+
+message UpdatableFactorPersona { optional string factorPersonaId = 1; }
+
+message BankAccount {
+  uint32 id = 1;
+  BankProviderEnum bankProvider = 2;
+  string accountHolderName = 3;
+  optional string branchName = 4;
+  optional string bankAddress = 5;
+  string bankAccountNumber = 6;
+  optional string swiftCode = 7;
+  optional string branchCode = 8;
+  BankAccountTypeEnum bankAccountType = 9;
+  CurrencyCodeEnum currency = 10;
+  bool onlineBankAvailable = 11;
+  google.protobuf.Timestamp createdAt = 12;
+  google.protobuf.Timestamp updatedAt = 13;
+  optional Organization organization = 14;
+  optional uint32 organizationId = 15;
+  optional Person person = 16;
+  optional uint32 personId = 17;
+}
+
+message UpdatableBankAccount {
+  optional BankProviderEnum bankProvider = 1;
+  optional string accountHolderName = 2;
+  optional string branchName = 3;
+  optional string bankAddress = 4;
+  optional string bankAccountNumber = 5;
+  optional string swiftCode = 6;
+  optional string branchCode = 7;
+  optional BankAccountTypeEnum bankAccountType = 8;
+  optional CurrencyCodeEnum currency = 9;
+  optional bool onlineBankAvailable = 10;
+  optional uint32 organizationId = 11;
+  optional uint32 personId = 12;
+}
+
+enum BankProviderEnum {
+  MAYBANK = 0;
+  CIMB = 1;
+  PUBLIC_BANK = 2;
+  RHB = 3;
+  HONG_LEONG_BANK = 4;
+  AMBANK = 5;
+  UOB = 6;
+  BANK_RAKYAT = 7;
+  OCBC = 8;
+  HSBC = 9;
+  BANK_ISLAM = 10;
+  AFFIN_BANK = 11;
+  ALLIANCE_BANK = 12;
+  STANDARD_CHARTERED = 13;
+  CITIBANK = 14;
+}
+
+enum BankAccountTypeEnum {
+  CURRENT_ACCOUNT = 0;
+  SAVINGS_ACCOUNT = 1;
+  MULTI_CURRENCY_ACCOUNT = 2;
+  FIXED_DEPOSIT_ACCOUNT = 3;
+}
+
+message IncludeClientPersona { bool value = 1; }
+message IncludeContractAwarderPersona { bool value = 1; }
+message IncludeSupplierPersona { bool value = 1; }
+message IncludeFactorPersona { bool value = 1; }
+message IncludeBankAccount { bool value = 1; }
+message IncludePerson { bool value = 1; }
+message IncludeOrganizationPersonRole { bool value = 1; }
+message IncludeOrganizationPerson {
+  bool value = 1;
+  optional IncludeOrganization includeOrganization = 2;
+  optional IncludePerson includePerson = 3;
+  optional IncludeOrganizationPersonRole includeOrganizationPersonRole = 4;
+}
+message IncludeOrganization {
+  bool value = 1;
+  optional IncludeOrganizationPerson includeOrganizationPerson = 2;
+  optional IncludeBankAccount includeBankAccount = 3;
+  optional IncludeClientPersona includeClientPersona = 4;
+  optional IncludeContractAwarderPersona includeContractAwarderPersona = 5;
+  optional IncludeSupplierPersona includeSupplierPersona = 6;
+  optional IncludeFactorPersona includeFactorPersona = 7;
+}

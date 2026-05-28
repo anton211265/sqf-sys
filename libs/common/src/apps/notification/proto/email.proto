@@ -1,0 +1,24 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+package notification;
+
+service EmailGrpcService {
+  rpc SendEmailGrpc(SendEmailDto) returns (google.protobuf.Empty) {}
+}
+
+message SendEmailDto {
+  string emailSender = 1;
+  repeated string emailReceivers = 2;
+  repeated string emailCc = 3;
+  repeated string emailBcc = 4;
+  repeated string emailReplyTo = 5;
+  optional string emailSubject = 6;
+  optional SendEmailTemplateDto emailTemplate = 7;
+  optional string emailBody = 8;
+}
+
+message SendEmailTemplateDto {
+  string templateName = 1;
+  map<string, string> templateVariables = 9;
+}

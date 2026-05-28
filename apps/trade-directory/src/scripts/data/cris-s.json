@@ -1,0 +1,719 @@
+[
+  {
+    "Registration No": "199501028227 (357433 - D)",
+    "Company Name": "OMMER HOLDINGS SDN. BHD.",
+    "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+    "Incorporation Date": "1995-08-30",
+    "Status": "EXISTING",
+    "Business Address": "24 & 24A, JALAN KELULI AK7/AK PUSAT PERNIAGAAN BUKIT RAJA SEKSYEN 7 40000 SHAH ALAM SELANGOR",
+    "Registered Address": "NO. 15B, TINGKAT 2, JALAN TENGKU AMPUAN ZABEDAH F9/F, SEKSYEN 9, 40100 SHAH ALAM SELANGOR",
+    "Business Sector": "SERVICES",
+    "Last Financial Filed": "2021-12-31",
+    "Nature of Business": "1. FACILITIES MANAGEMENT 2. MECHANICAL AND ENGINEERING REPAIRS",
+    "i-SCORE": "681",
+    "Share Capital": {
+      "Total Issued": 1000000.0,
+      "CASH": 250000.0,
+      "OTHERWISE THAN CASH": 750000.0
+    },
+    "Management Details": [
+      {
+        "Name": "AHMAD AZRI BIN ROSLI",
+        "Address": "NO.9,JALAN BADIK 11/4 40100 SHAH ALAM SELANGOR",
+        "IC/PP/Local No": "821006-14-5605",
+        "Designation": "DIRECTOR",
+        "Appointment Date": "2008-03-15"
+      },
+      {
+        "Name": "AHMAD ASYRAF BIN ROSLI",
+        "Address": "NO 9,JALAN BADIK 11/4 40100 SHAH ALAM SELANGOR",
+        "IC/PP/Local No": "850329-10-5221",
+        "Designation": "DIRECTOR",
+        "Appointment Date": "2008-07-18"
+      },
+      {
+        "Name": "ZAINAL ABIDIN BIN PIT",
+        "Address": "10,JALAN PINGGIR 8/1L 40000 SHAH ALAM SELANGOR",
+        "IC/PP/Local No": "591219-04-5877 /5796548",
+        "Designation": "SECRETARY",
+        "Appointment Date": "2018-01-10"
+      },
+      {
+        "Name": "ZAINAB BINTI MOHAMED ESA",
+        "Address": "NO. 58, JALAN WARISAN PERMAI 2/2 KOTA WARISAN MALAYSIA 43900 SEPANG SELANGOR",
+        "IC/PP/Local No": "690327-71-5018 /A1206186",
+        "Designation": "SECRETARY",
+        "Appointment Date": "2018-01-10"
+      }
+    ],
+    "Shareholders": [
+      {
+        "Name": "AHMAD ASYRAF BIN ROSLI",
+        "Address": "NO 9,JALAN BADIK 11/4 40100 SHAH ALAM SELANGOR",
+        "IC/PP/Local No": "850329-10-5221",
+        "Shareholding": 300000.0,
+        "%": 30.0,
+        "As At": ""
+      },
+      {
+        "Name": "AHMAD AZRI BIN ROSLI",
+        "Address": "NO.9,JALAN BADIK 11/4 40100 SHAH ALAM SELANGOR",
+        "IC/PP/Local No": "821006-14-5605",
+        "Shareholding": 520000.0,
+        "%": 52.0,
+        "As At": ""
+      },
+      {
+        "Name": "MORECLASS (M) SDN. BHD.",
+        "Address": "82A-84A, JALAN RUGBI 13/30 40000 SHAH ALAM SELANGOR",
+        "IC/PP/Local No": "199101001365 (211676-V)",
+        "Shareholding": 180000.0,
+        "%": 18.0,
+        "As At": ""
+      }
+    ],
+    "Non Current Assets": 2333400.0,
+    "Current Assets": 1410880.0,
+    "Total Assets": 3744280.0,
+    "Accumulated Profit Carried Forward": -504385.0,
+    "Total Equity": 495615.0,
+    "Non Current Liabilities": 2206001.0,
+    "Current Liabilities": 1042664.0,
+    "Total Liabilities": 3248665.0,
+    "Total Equity & Liabilities": 3744280.0,
+    "Revenue": 4742080.0,
+    "Profit/(Loss) Before": 6906.0,
+    "Profit/(Loss) After": -32295.0,
+    "Current Ratio": 1.35,
+    "Company Charges": [
+      {
+        "Charge Number": "001",
+        "Total of Charge": "60,356.52",
+        "Date of Creation": "2014-11-10",
+        "Name of Chargee": "SMALL MEDIUM ENTERPRISE DEVELOPMENTBANK MALAYSIA",
+        "Charge Status": "FULLYSATISFIED"
+      },
+      {
+        "Charge Number": "2021-001",
+        "Total of Charge": "OPEN CHARGE",
+        "Date of Creation": "2021-11-23",
+        "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+        "Charge Status": "UNSATISFIED"
+      },
+      {
+        "Charge Number": "2021-002",
+        "Total of Charge": "OPEN CHARGE",
+        "Date of Creation": "2021-11-23",
+        "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+        "Charge Status": "UNSATISFIED"
+      },
+      {
+        "Charge Number": "2022-001",
+        "Total of Charge": "OPEN CHARGE",
+        "Date of Creation": "2022-06-21",
+        "Name of Chargee": "MAYBANK ISLAMIC BERHAD",
+        "Charge Status": "UNSATISFIED"
+      }
+    ],
+    "Interest In Other Companies": [],
+    "Summary Credit Information": {
+      "Credit Applications Approved for Last 12 months": "5",
+      "Winding Up Record": "0",
+      "Credit Applications Pending": "1",
+      "Legal Suits": "0",
+      "Special Attention account": "0",
+      "Trade / Credit Reference": "0",
+      "Legal Action taken (from Banking)": "0",
+      "Total Enquiries for Last 12 months": "16",
+      "Existing No. of Facility (from Banking)": "16",
+      "Total Companies/Businesses Interest": "0"
+    },
+    "Detailed Credit Report": [
+      {
+        "Facility": "OHRPCREC",
+        "Total Outstanding Balance (RM)": "94.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "843.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "0",
+            "August": "0",
+            "July": "0",
+            "June": "0",
+            "May": "0",
+            "April": "0",
+            "March": "0",
+            "February": "0",
+            "January": "0"
+          },
+          "2021": {
+            "December": "0",
+            "November": "0"
+          }
+        }
+      },
+      {
+        "Facility": "PCPASCAR",
+        "Total Outstanding Balance (RM)": "90,774.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "1,268.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "1",
+            "August": "1",
+            "July": "0",
+            "June": "0",
+            "May": "0",
+            "April": "0",
+            "March": "0",
+            "February": "0",
+            "January": "0"
+          },
+          "2021": {
+            "December": "0",
+            "November": "0"
+          }
+        }
+      },
+      {
+        "Facility": "OHRPCREC",
+        "Total Outstanding Balance (RM)": "47,511.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "879.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "1",
+            "August": "1",
+            "July": "0",
+            "June": "0",
+            "May": "0",
+            "April": "0",
+            "March": "0",
+            "February": "0",
+            "January": "0"
+          },
+          "2021": {
+            "December": "0",
+            "November": "0"
+          }
+        }
+      },
+      {
+        "Facility": "OTLNFNCE",
+        "Total Outstanding Balance (RM)": "460,824.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "8,484.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "0",
+            "August": "0",
+            "July": "0",
+            "June": "0",
+            "May": "0",
+            "April": "0",
+            "March": "0",
+            "February": "0",
+            "January": "0"
+          },
+          "2021": {
+            "December": "0",
+            "November": "0"
+          }
+        }
+      },
+      {
+        "Facility": "PCPASCAR",
+        "Total Outstanding Balance (RM)": "82,982.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "1,121.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "1",
+            "August": "1",
+            "July": "0",
+            "June": "0",
+            "May": "0",
+            "April": "0",
+            "March": "0",
+            "February": "0",
+            "January": "0"
+          },
+          "2021": {
+            "December": "0",
+            "November": "0"
+          }
+        }
+      },
+      {
+        "Facility": "OHRPCREC",
+        "Total Outstanding Balance (RM)": "34,547.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "688.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "1",
+            "August": "1",
+            "July": "0",
+            "June": "0",
+            "May": "0",
+            "April": "0",
+            "March": "0",
+            "February": "0",
+            "January": "0"
+          },
+          "2021": {
+            "December": "0",
+            "November": "0"
+          }
+        }
+      },
+      {
+        "Facility": "OTLNFNCE",
+        "Total Outstanding Balance (RM)": "666,139.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "3,909.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "0",
+            "August": "0",
+            "July": "0",
+            "June": "0",
+            "May": "0",
+            "April": "0",
+            "March": "0",
+            "February": "0",
+            "January": "0"
+          },
+          "2021": {
+            "December": "0",
+            "November": "0"
+          }
+        }
+      },
+      {
+        "Facility": "OTLNFNCE",
+        "Total Outstanding Balance (RM)": "666,166.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "3,909.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "0",
+            "August": "0",
+            "July": "0",
+            "June": "0",
+            "May": "0",
+            "April": "0",
+            "March": "0",
+            "February": "0",
+            "January": "0"
+          },
+          "2021": {
+            "December": "0",
+            "November": "0"
+          }
+        }
+      },
+      {
+        "Facility": "OTLNFNCE",
+        "Total Outstanding Balance (RM)": "70,590.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "460.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "0",
+            "August": "0",
+            "July": "0",
+            "June": "0",
+            "May": "0",
+            "April": "0",
+            "March": "0",
+            "February": "0",
+            "January": "0"
+          },
+          "2021": {
+            "December": "0",
+            "November": "0"
+          }
+        }
+      },
+      {
+        "Facility": "PCPASCAR",
+        "Total Outstanding Balance (RM)": "115,638.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "1,715.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "1",
+            "August": "1",
+            "July": "0",
+            "June": "0",
+            "May": "0",
+            "April": "0",
+            "March": "0",
+            "February": "0",
+            "January": "0"
+          },
+          "2021": {
+            "December": "0",
+            "November": ""
+          }
+        }
+      },
+      {
+        "Facility": "OHRPCREC",
+        "Total Outstanding Balance (RM)": "70,380.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "1,520.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "1",
+            "August": "1",
+            "July": "0",
+            "June": "0",
+            "May": "0",
+            "April": "0",
+            "March": "",
+            "February": "",
+            "January": ""
+          },
+          "2021": {
+            "December": "",
+            "November": ""
+          }
+        }
+      },
+      {
+        "Facility": "OTLNFNCE",
+        "Total Outstanding Balance (RM)": "983,194.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "11,052.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "0",
+            "August": "0",
+            "July": "0",
+            "June": "0",
+            "May": "",
+            "April": "",
+            "March": "",
+            "February": "",
+            "January": ""
+          },
+          "2021": {
+            "December": "",
+            "November": ""
+          }
+        }
+      },
+      {
+        "Facility": "CRDTCARD",
+        "Total Outstanding Balance (RM)": "46,017.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "0.00",
+        "Prin Repymt Term": "MTH",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "0",
+            "August": "0",
+            "July": "0",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": "",
+            "February": "",
+            "January": ""
+          },
+          "2021": {
+            "December": "",
+            "November": ""
+          }
+        }
+      },
+      {
+        "Facility": "OVRDRAFT",
+        "Total Outstanding Balance (RM)": "144,197.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "0.00",
+        "Prin Repymt Term": "IDF",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "0",
+            "August": "0",
+            "July": "0",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": "",
+            "February": "",
+            "January": ""
+          },
+          "2021": {
+            "December": "",
+            "November": ""
+          }
+        }
+      },
+      {
+        "Facility": "OVRDRAFT",
+        "Total Outstanding Balance (RM)": "200,868.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "0.00",
+        "Prin Repymt Term": "IDF",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "0",
+            "August": "0",
+            "July": "0",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": "",
+            "February": "",
+            "January": ""
+          },
+          "2021": {
+            "December": "",
+            "November": ""
+          }
+        }
+      },
+      {
+        "Facility": "PGRANTEE",
+        "Total Outstanding Balance (RM)": "702,534.00",
+        "Date Balance Updated": "2022-09-30",
+        "Limit /Inst.Amt (RM)": "0.00",
+        "Prin Repymt Term": "REV",
+        "Col Type": "",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "0",
+            "August": "0",
+            "July": "0",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": "",
+            "February": "",
+            "January": ""
+          },
+          "2021": {
+            "December": "",
+            "November": ""
+          }
+        }
+      },
+      {
+        "Facility": "OTLNFNCE",
+        "Total Outstanding Balance (RM)": "0",
+        "Date Balance Updated": "",
+        "Limit /Inst.Amt (RM)": "500,000.00",
+        "Prin Repymt Term": "N/A",
+        "Col Type": "N/A",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "",
+            "August": "",
+            "July": "",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": "",
+            "February": "",
+            "January": ""
+          },
+          "2021": {
+            "December": "",
+            "November": ""
+          }
+        }
+      },
+      {
+        "Facility": "PCPASCAR",
+        "Total Outstanding Balance (RM)": "0",
+        "Date Balance Updated": "",
+        "Limit /Inst.Amt (RM)": "125,000.00",
+        "Prin Repymt Term": "N/A",
+        "Col Type": "N/A",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "",
+            "August": "",
+            "July": "",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": "",
+            "February": "",
+            "January": ""
+          },
+          "2021": {
+            "December": "",
+            "November": ""
+          }
+        }
+      },
+      {
+        "Facility": "OHRPCREC",
+        "Total Outstanding Balance (RM)": "0",
+        "Date Balance Updated": "",
+        "Limit /Inst.Amt (RM)": "73,000.00",
+        "Prin Repymt Term": "N/A",
+        "Col Type": "N/A",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "",
+            "August": "",
+            "July": "",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": "",
+            "February": "",
+            "January": ""
+          },
+          "2021": {
+            "December": "",
+            "November": ""
+          }
+        }
+      },
+      {
+        "Facility": "OTLNFNCE",
+        "Total Outstanding Balance (RM)": "0",
+        "Date Balance Updated": "",
+        "Limit /Inst.Amt (RM)": "1,000,000.00",
+        "Prin Repymt Term": "N/A",
+        "Col Type": "N/A",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "",
+            "August": "",
+            "July": "",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": "",
+            "February": "",
+            "January": ""
+          },
+          "2021": {
+            "December": "",
+            "November": ""
+          }
+        }
+      },
+      {
+        "Facility": "OVRDRAFT",
+        "Total Outstanding Balance (RM)": "0",
+        "Date Balance Updated": "",
+        "Limit /Inst.Amt (RM)": "200,000.00",
+        "Prin Repymt Term": "N/A",
+        "Col Type": "N/A",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "",
+            "August": "",
+            "July": "",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": "",
+            "February": "",
+            "January": ""
+          },
+          "2021": {
+            "December": "",
+            "November": ""
+          }
+        }
+      },
+      {
+        "Facility": "PGRANTEE",
+        "Total Outstanding Balance (RM)": "0",
+        "Date Balance Updated": "",
+        "Limit /Inst.Amt (RM)": "733,255.00",
+        "Prin Repymt Term": "N/A",
+        "Col Type": "N/A",
+        "Conduct of Account for the last 12 months": {
+          "2022": {
+            "October": "",
+            "September": "",
+            "August": "",
+            "July": "",
+            "June": "",
+            "May": "",
+            "April": "",
+            "March": "",
+            "February": "",
+            "January": ""
+          },
+          "2021": {
+            "December": "",
+            "November": ""
+          }
+        }
+      }
+    ],
+    "Secured Facilities": "15",
+    "Unsecured Facilities": "1",
+    "Credit Card": "97.99%",
+    "Other Revolving Credits": "61.50%",
+    "Charge Card": "NIL",
+    "National Higher Educational Financing": "0",
+    "Local Lenders": "16",
+    "Foreign Lenders": "0",
+    "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+    "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+    "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+    "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+    "role": ["Client"]
+  }
+]

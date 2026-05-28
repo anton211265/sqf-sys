@@ -1,0 +1,183 @@
+[
+    {
+        "Registration No": "201201036651 (1021133 - P)",
+        "Company Name": "SAMAWAH ENGINEERING SDN. BHD.",
+        "Type": "LIMITED BY SHARES PRIVATE LIMITED",
+        "Incorporation Date": "2012-10-16",
+        "Status": "EXISTING",
+        "Business Address": "NO 22 JALAN BESI 1/1 KAWASAN PERINDUSTRIAN SUNGAI PURUN 43500 SEMENYIH SELANGOR",
+        "Registered Address": "10-1,JALAN BUDIMAN 24 TAMAN MULIA BANDAR TUN RAZAK 56000 KUALA LUMPUR WILAYAH PERSEKUTUAN",
+        "Business Sector": "CONSTRUCTION",
+        "Last Financial Filed": "2017-12-31",
+        "Nature of Business": "1. SUPPLY OF CONSTRUCTION AND ENGINEERING MACHINERY AND EQUIPMENTS. 2. LAND TRANSPORTATION AND MOVERS. 3. MONITORING AND SURVEILLANCE EQUIPMENTS.",
+        "i-SCORE": "402",
+        "Share Capital": {
+            "Total Issued": 500000.0,
+            "CASH": 500000.0,
+            "OTHERWISE THAN CASH": 0.0
+        },
+        "Management Details": [
+            {
+                "Name": "MOHD ISA BIN ISHAK",
+                "Address": "NO.21, JALAN 4 TAMAN SRI KANTAN 43000 KAJANG SELANGOR",
+                "IC/PP/Local No": "790922-10-5415",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2015-05-23"
+            },
+            {
+                "Name": "MAIZATUL AKMAM BINTI ABDUL MALIK",
+                "Address": "NO.20, JALAN CUEPACS 2 TAMAN KOPERASI CUEPACS BATU 12 JALAN CHERAS 43000 KAJANG SELANGOR",
+                "IC/PP/Local No": "761022-10-5492 /A3375808",
+                "Designation": "DIRECTOR",
+                "Appointment Date": "2015-05-23"
+            },
+            {
+                "Name": "RUSLI BIN IBRAHIM",
+                "Address": "A-4-1 BLOK RAJAWALI JALAN 9/9, SEKSYEN 9 43650 BANDAR BARU BANGI SELANGOR",
+                "IC/PP/Local No": "651112-10-5069 /A0207134",
+                "Designation": "SECRETARY",
+                "Appointment Date": "2014-06-17"
+            }
+        ],
+        "Shareholders": [
+            {
+                "Name": "MOHD ISA BIN ISHAK",
+                "Address": "NO.21, JALAN 4 TAMAN SRI KANTAN 43000 KAJANG SELANGOR",
+                "IC/PP/Local No": "790922-10-5415",
+                "Shareholding": 250000.0,
+                "%": 50.0,
+                "As At": ""
+            },
+            {
+                "Name": "MAIZATUL AKMAM BINTI ABDUL MALIK",
+                "Address": "NO.20, JALAN CUEPACS 2 TAMAN KOPERASI CUEPACS BATU 12 JALAN CHERAS 43000 KAJANG SELANGOR",
+                "IC/PP/Local No": "761022-10-5492 / A3375808",
+                "Shareholding": 250000.0,
+                "%": 50.0,
+                "As At": ""
+            }
+        ],
+        "Non Current Assets": 140534.0,
+        "Current Assets": 1382754.0,
+        "Total Assets": 1523288.0,
+        "Accumulated Profit Carried Forward": -80226.0,
+        "Total Equity": 419774.0,
+        "Non Current Liabilities": 3045.0,
+        "Current Liabilities": 1100469.0,
+        "Total Liabilities": 1103514.0,
+        "Total Equity & Liabilities": 1523288.0,
+        "Revenue": 4861101.0,
+        "Profit/(Loss) Before": 66803.0,
+        "Profit/(Loss) After": 45910.0,
+        "Current Ratio": 1.26,
+        "Company Charges": [
+            {
+                "Charge Number": "001",
+                "Total of Charge": "653,000.00",
+                "Date of Creation": "2017-05-15",
+                "Name of Chargee": "SMALL MEDIUM ENTERPRISE DEVELOPMENTBANK MALAYSIA",
+                "Charge Status": "UNSATISFIED"
+            }
+        ],
+        "Interest In Other Companies": [],
+        "Summary Credit Information": {
+            "Credit Applications Approved for Last 12 months": "0",
+            "Winding Up Record": "0",
+            "Credit Applications Pending": "0",
+            "Legal Suits": "0",
+            "Special Attention account": "0",
+            "Trade / Credit Reference": "0",
+            "Legal Action taken (from Banking)": "0",
+            "Total Enquiries for Last 12 months": "4",
+            "Existing No. of Facility (from Banking)": "3",
+            "Total Companies/Businesses Interest": "0"
+        },
+        "Detailed Credit Report": [
+            {
+                "Facility": "PGRANTEE",
+                "Total Outstanding Balance (RM)": "121,322.00",
+                "Date Balance Updated": "2022-07-31",
+                "Limit /Inst.Amt (RM)": "0.00",
+                "Prin Repymt Term": "REV",
+                "Col Type": "",
+                "Conduct of Account for the last 12 months": {
+                    "2022": {
+                        "August": "",
+                        "July": "0",
+                        "June": "0",
+                        "May": "0",
+                        "April": "0",
+                        "March": "0",
+                        "February": "0",
+                        "January": "0"
+                    },
+                    "2021": {
+                        "December": "0",
+                        "November": "0",
+                        "October": "0",
+                        "September": "0"
+                    }
+                }
+            },
+            {
+                "Facility": "OTLNFNCE",
+                "Total Outstanding Balance (RM)": "505,660.00",
+                "Date Balance Updated": "2022-07-31",
+                "Limit /Inst.Amt (RM)": "9,895.00",
+                "Prin Repymt Term": "MTH",
+                "Col Type": "FIN. GTEE",
+                "Conduct of Account for the last 12 months": {
+                    "2022": {
+                        "August": "",
+                        "July": "2",
+                        "June": "1",
+                        "May": "1",
+                        "April": "0",
+                        "March": "0",
+                        "February": "0",
+                        "January": "0"
+                    },
+                    "2021": {
+                        "December": "0",
+                        "November": "0",
+                        "October": "0",
+                        "September": "0"
+                    }
+                }
+            },
+            {
+                "Facility": "PCPASCAR",
+                "Total Outstanding Balance (RM)": "94,792.00",
+                "Date Balance Updated": "2022-07-31",
+                "Limit /Inst.Amt (RM)": "1,254.00",
+                "Prin Repymt Term": "MTH",
+                "Col Type": "",
+                "Conduct of Account for the last 12 months": {
+                    "2022": {
+                        "August": "",
+                        "July": "1",
+                        "June": "0",
+                        "May": "2",
+                        "April": "1",
+                        "March": "1",
+                        "February": "2",
+                        "January": "1"
+                    },
+                    "2021": {
+                        "December": "1",
+                        "November": "0",
+                        "October": "2",
+                        "September": "1"
+                    }
+                }
+            }
+        ],
+        "LEGAL SUITS - SUBJECT AS DEFENDANT": [],
+        "LEGAL SUITS - SUBJECT AS PLAINTIFF": [],
+        "WINDING-UP ACTION - SUBJECT AS DEFENDANT": [],
+        "WINDING-UP ACTION - SUBJECT AS PETITIONER": [],
+        "role": [
+            "Client"
+        ]
+    }
+]

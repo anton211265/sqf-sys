@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trade-directory-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trade-directory
+  template:
+    metadata:
+      labels:
+        app: trade-directory
+    spec:
+      containers:
+        - image: 270075630987.dkr.ecr.ap-southeast-1.amazonaws.com/trade-directory:latest
+          name: trade-directory
+          ports:
+            - containerPort: 3000
+            - containerPort: 5000
+          env:
+            - name: ROOT_DIR
+              value: '/usr/src/app/trade-directory'
+            - name: PORT
+              value: '3000'
+            - name: POSTGRES_HOST
+              value: 'sqfprod.cluster-cpwyyusiswsi.ap-southeast-1.rds.amazonaws.com'
+            - name: POSTGRES_PORT
+              value: '5432'
+            - name: POSTGRES_DATABASE
+              value: 'trade-directory'
+            - name: POSTGRES_USERNAME
+              value: 'sqfprodadmin'
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-trade-directory
+                  key: password
+            - name: POSTGRES_SYNCHRONIZE
+              value: 'true'
+            - name: KAFKA_BROKER_SSL
+              value: 'false'
+            - name: KAFKA_BROKERS
+              value: 'b-1.synliansqfprodmsk.fauaoq.c4.kafka.ap-southeast-1.amazonaws.com:9092,b-2.synliansqfprodmsk.fauaoq.c4.kafka.ap-southeast-1.amazonaws.com:9092,b-3.synliansqfprodmsk.fauaoq.c4.kafka.ap-southeast-1.amazonaws.com:9092'
+            - name: RISK_OPERATION_URL
+              value: 'risk-operation-cluster-ip-service'
+            - name: FRONTEND_DOMAIN
+              value: 'https://portal.sqf.ai'
+            - name: ENTRA_TENANT_ID
+              value: '2af6d29a-57e0-444b-9ba1-70d1ee6b0ef3'
+            - name: ENTRA_APPLICATION_ID
+              value: '018aa7fe-5788-4a53-9a1d-e05b1df3ec97'
+            - name: EXPERIAN_API_BASE_URL
+              value: 'https://b2buat.experian.com.my'
+            - name: EXPERIAN_API_USERNAME
+              value: 'SAPMUAT1'
+            - name: EXPERIAN_API_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: experian
+                  key: password
+            - name: JWT_EXPIRATION
+              value: '604800'
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: jwt-secret
+            - name: TOKEN_EXPIRATION
+              value: '15778464'

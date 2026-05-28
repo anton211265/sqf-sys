@@ -1,0 +1,103 @@
+services:
+  trade-directory-service:
+    build:
+      context: .
+      dockerfile: ./apps/trade-directory/Dockerfile
+      target: development
+    env_file:
+      - ./apps/trade-directory/.env
+    environment:
+      ROOT_DIR: '/usr/src/app/dist/apps/trade-directory'
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:dev --project=trade-directory
+
+  risk-operation-service:
+    build:
+      context: .
+      dockerfile: ./apps/risk-operation/Dockerfile
+      target: development
+    env_file:
+      - ./apps/risk-operation/.env
+    environment:
+      ROOT_DIR: '/usr/src/app/dist/apps/risk-operation'
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:dev --project=risk-operation
+
+  customer-relationship-management-service:
+    build:
+      context: .
+      dockerfile: ./apps/customer-relationship-management/Dockerfile
+      target: development
+    env_file:
+      - ./apps/customer-relationship-management/.env
+    environment:
+      ROOT_DIR: '/usr/src/app/dist/apps/customer-relationship-management'
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:dev --project=customer-relationship-management
+
+  document-management-service:
+    build:
+      context: .
+      dockerfile: ./apps/document-management/Dockerfile
+      target: development
+    env_file:
+      - ./apps/document-management/.env
+    environment:
+      ROOT_DIR: '/usr/src/app/dist/apps/document-management'
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:dev --project=document-management
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: ./apps/notification/Dockerfile
+      target: development
+    env_file:
+      - ./apps/notification/.env
+    environment:
+      ROOT_DIR: '/usr/src/app/dist/apps/notification'
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:dev --project=notification
+
+  backend-gateway:
+    image: nginx:1.25.3-alpine
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+  postgres:
+    image: postgres:14-alpine
+    env_file:
+      - .env
+    ports:
+      - '5433:5432'
+
+  zookeeper:
+    ports:
+      - '50000:2181'
+    image: zookeeper:3.5.9
+
+  kafka:
+    ports:
+      - '50001:9092'
+      - '50002:9093'
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENERS: 'INTERNAL://:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: '1'
+      KAFKA_CREATE_TOPICS: 'example-topic:1:1'
+      KAFKA_ADVERTISED_HOST_NAME: host.docker.internal # change to 172.17.0.1 if running on Ubuntu
+    image: 'wurstmeister/kafka:2.13-2.8.1'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'

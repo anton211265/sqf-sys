@@ -1,0 +1,5 @@
+export enum RiskFilter1StatusEnum {
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  PENDING_MANUAL_REVIEW = 'PENDING_MANUAL_REVIEW',
+}
