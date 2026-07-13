@@ -2,10 +2,12 @@ import {
   ContractStatusEnum,
   ContractTypeEnum,
   InvoiceStatusEnum,
+  InvoiceTypeCodeEnum,
   LendingProductEnum,
   LendingProductSubscriptionStatusEnum,
   RelationshipStatusEnum,
   RelationshipTypeEnum,
+  TaxCategoryEnum,
 } from 'constants/enum';
 import { apiClient } from 'utils/reactQuery';
 
@@ -64,9 +66,13 @@ export interface IContract {
   updatedAt: string;
 }
 
+// Mirrors the UBL 2.5 Invoice header this table now stores — see
+// SQF ARCHITECTURE/SCEHMA/ubl-invoice-{schema.json,data-dictionary.md} and
+// docs/design/trade-directory-redesign.md.
 export interface IInvoice {
   id: number;
   invoiceNumber: string;
+  invoiceTypeCode: InvoiceTypeCodeEnum;
   issuerOrganizationId: number;
   debtorOrganizationId: number;
   issuerOrganization?: { id: number; organizationName: string };
@@ -74,14 +80,66 @@ export interface IInvoice {
   relationshipId?: number | null;
   contractId?: number | null;
   lendingProduct?: LendingProductEnum | null;
-  amount: number;
-  currency: string;
+  documentCurrencyCode: string;
   issueDate: string;
   dueDate: string;
+  lineExtensionAmount: number;
+  taxExclusiveAmount: number;
+  taxInclusiveAmount: number;
+  payableAmount: number;
   status: InvoiceStatusEnum;
   settledAt?: string | null;
   ownershipTransferredAt?: string | null;
   updatedAt: string;
+  lines?: IInvoiceLine[];
+  taxSubtotals?: IInvoiceTaxSubtotal[];
+  supplierParty?: IParty;
+  customerParty?: IParty;
+}
+
+export interface IInvoiceLine {
+  id?: number;
+  lineNumber?: string;
+  itemName: string;
+  itemDescription?: string;
+  invoicedQuantity: number;
+  invoicedQuantityUnitCode?: string;
+  priceAmount: number;
+  lineExtensionAmount?: number;
+  taxCategoryId?: TaxCategoryEnum;
+  taxPercent?: number;
+  taxSchemeId?: string;
+}
+
+export interface IInvoiceTaxSubtotal {
+  taxableAmount: number;
+  taxAmount: number;
+  taxCategoryId: TaxCategoryEnum;
+  taxPercent?: number | null;
+  taxSchemeId: string;
+}
+
+export interface IParty {
+  id: number;
+  partyName?: string | null;
+  registrationName?: string | null;
+  vatNumber?: string | null;
+  countryCode?: string | null;
+}
+
+export interface ICreateInvoiceBody {
+  invoiceNumber: string;
+  issuerOrganizationId: number;
+  debtorOrganizationId: number;
+  relationshipId?: number;
+  contractId?: number;
+  lendingProduct?: LendingProductEnum;
+  invoiceTypeCode?: InvoiceTypeCodeEnum;
+  documentCurrencyCode: string;
+  issueDate: string;
+  dueDate: string;
+  buyerReference?: string;
+  lines: IInvoiceLine[];
 }
 
 export interface ISubscription {
@@ -148,7 +206,7 @@ export const getInvoices = (filters?: {
     .get<IInvoice[]>(`${TD}/invoices`, { params: filters ?? {} })
     .then((r) => r.data);
 
-export const createInvoice = (body: Partial<IInvoice>) =>
+export const createInvoice = (body: ICreateInvoiceBody) =>
   apiClient.post<IInvoice>(`${TD}/invoices`, body).then((r) => r.data);
 
 export const updateInvoiceStatus = ({

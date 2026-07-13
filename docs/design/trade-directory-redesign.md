@@ -164,7 +164,50 @@ CREATE TABLE contract (
 - `FACILITY_AGREEMENT`: firstParty = Funder org, secondParty = Client org, `lendingProduct` set. This is the TL "Facility Loan Agreement" and the umbrella for AR/SCF/IF facilities.
 - `COMMERCIAL`: org↔org trade contract, optionally linked to its `relationship` row.
 
-### 3.3 `invoice`
+### 3.3 `invoice` (updated 2026-07-13 — aligned to OASIS UBL 2.5)
+
+> The invoice table below was superseded on 2026-07-13 to mirror the OASIS
+> UBL 2.5 Invoice document (source: `SQF ARCHITECTURE/SCEHMA/ubl-invoice-{schema.json,data-dictionary.md}`).
+> See §3.3.1 for the as-built schema; §3.3 (below) is kept for history since
+> the original design predates the UBL alignment request.
+>
+> **What changed:** the flat `amount`/`currency` columns were replaced with
+> the full UBL LegalMonetaryTotal breakdown (lineExtensionAmount,
+> taxExclusiveAmount, taxInclusiveAmount, payableAmount, …), plus header
+> fields (invoiceTypeCode, documentCurrencyCode, buyerReference, …) and eight
+> new child tables: `party`, `invoice_line`, `invoice_line_tax_category`,
+> `invoice_line_additional_item_property`, `invoice_note`,
+> `invoice_additional_document_reference`, `invoice_payment_means`,
+> `invoice_tax_subtotal`, `invoice_allowance_charge`.
+>
+> **Design decisions:**
+> - `party` is a **new, separate table** from `organization` — an immutable
+>   snapshot of a party's name/address/VAT as they appeared on that specific
+>   document (`party.organizationId` optionally links back to the live
+>   Organization). Editing an Organization later must never rewrite an
+>   already-issued invoice.
+> - The SQF lending-workflow fields (funderPersonaId, lendingProduct, the
+>   status machine, ownership/settlement timestamps) **stay merged** onto
+>   the same `invoice` table alongside the UBL header — one row per invoice,
+>   one source of truth. `issuerOrganizationId`/`debtorOrganizationId` (SQF's
+>   own org links, used by the relationship/contract graph) exist alongside
+>   `supplierPartyId`/`customerPartyId` (the UBL document snapshot) — both
+>   point at "the same" party, but serve different purposes and can diverge
+>   over time by design.
+> - `CreateInvoiceDto` accepts **lines only** — the header LegalMonetaryTotal
+>   and per-category tax subtotals are computed server-side
+>   (`InvoiceService.buildLinesAndTotals`) from the submitted lines, so
+>   stored totals can never drift from the lines that back them.
+> - Party snapshots are auto-created from the current Organization record at
+>   invoice-creation time (`InvoiceService.snapshotPartyFromOrganization`);
+>   the API doesn't yet accept an inline/override party payload (e.g. from
+>   document extraction reading a different registered name off the PDF) —
+>   noted as a Phase 2.1 follow-up.
+>
+> DDL: `docs/design/migrations/009-ubl-invoice-schema.sql`. Entities:
+> `apps/trade-directory/src/models/{party,invoice,invoice-line,invoice-line-tax-category,invoice-line-additional-item-property,invoice-note,invoice-additional-document-reference,invoice-payment-means,invoice-tax-subtotal,invoice-allowance-charge}.entity.ts`.
+
+### 3.3 (original, pre-UBL) `invoice`
 
 ```sql
 CREATE TABLE invoice (

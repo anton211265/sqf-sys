@@ -118,8 +118,12 @@ export class GraphSyncService {
       {
         invoiceId: payload.id,
         invoiceNumber: payload.invoiceNumber,
-        amount: payload.amount != null ? Number(payload.amount) : null,
-        currency: payload.currency,
+        // "amount"/"currency" graph properties are kept for the opportunity
+        // Cypher queries; sourced from the UBL payableAmount/documentCurrencyCode
+        // header fields (see docs/design/trade-directory-redesign.md — invoice
+        // now mirrors the OASIS UBL 2.5 Invoice schema).
+        amount: payload.payableAmount != null ? Number(payload.payableAmount) : null,
+        currency: payload.documentCurrencyCode,
         status: payload.status,
         issueDate: payload.issueDate ?? null,
         dueDate: payload.dueDate ?? null,

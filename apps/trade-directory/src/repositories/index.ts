@@ -13,3 +13,4 @@ export * from './relationship.repository';
 export * from './contract.repository';
 export * from './invoice.repository';
 export * from './lending-product-subscription.repository';
+export * from './party.repository';

@@ -1,5 +1,7 @@
 import {
+  ActionIcon,
   Button,
+  Divider,
   Group,
   Menu,
   Modal,
@@ -13,17 +15,21 @@ import {
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { IconChevronDown, IconPlus } from '@tabler/icons-react';
+import { IconChevronDown, IconPlus, IconTrash } from '@tabler/icons-react';
 import MantineTable from 'components/Table/MantineTable';
 import {
   InvoiceStatusEnum,
   InvoiceStatusTransitions,
+  InvoiceTypeCodeEnum,
+  InvoiceTypeCodeLabel,
   LendingProductEnum,
   LendingProductLabel,
+  TaxCategoryEnum,
+  TaxCategoryLabel,
 } from 'constants/enum';
 import { type MRT_ColumnDef } from 'mantine-react-table';
 import React, { useMemo } from 'react';
-import { IInvoice } from 'service/tradeDirectory';
+import { IInvoice, IInvoiceLine } from 'service/tradeDirectory';
 import {
   useCreateInvoice,
   useDirectoryOrganizations,
@@ -31,6 +37,16 @@ import {
   useUpdateInvoiceStatus,
 } from 'hooks/useTradeDirectory';
 import { InvoiceStatusBadge, LendingProductBadge } from './components/Badges';
+
+const emptyLine: IInvoiceLine = {
+  itemName: '',
+  invoicedQuantity: 1,
+  invoicedQuantityUnitCode: 'EA',
+  priceAmount: 0,
+  taxCategoryId: TaxCategoryEnum.STANDARD,
+  taxPercent: 0,
+  taxSchemeId: 'VAT',
+};
 
 const CreateInvoiceModal: React.FC<{ opened: boolean; onClose: () => void }> = ({
   opened,
@@ -44,20 +60,29 @@ const CreateInvoiceModal: React.FC<{ opened: boolean; onClose: () => void }> = (
       invoiceNumber: '',
       issuerOrganizationId: '',
       debtorOrganizationId: '',
+      invoiceTypeCode: InvoiceTypeCodeEnum.COMMERCIAL_INVOICE as string,
       lendingProduct: '',
-      amount: undefined as number | undefined,
-      currency: 'MYR',
+      documentCurrencyCode: 'MYR',
       issueDate: '',
       dueDate: '',
+      lines: [{ ...emptyLine }] as IInvoiceLine[],
     },
     validate: {
       invoiceNumber: (v) => (v ? null : 'Required'),
       issuerOrganizationId: (v) => (v ? null : 'Required'),
       debtorOrganizationId: (v, values) =>
-        !v ? 'Required' : v === values.issuerOrganizationId ? 'Must differ from issuer' : null,
-      amount: (v) => (v && v > 0 ? null : 'Amount required'),
+        !v
+          ? 'Required'
+          : v === values.issuerOrganizationId
+            ? 'Must differ from issuer'
+            : null,
       issueDate: (v) => (v ? null : 'Required'),
       dueDate: (v) => (v ? null : 'Required'),
+      lines: {
+        itemName: (v: string) => (v ? null : 'Required'),
+        invoicedQuantity: (v: number) => (v > 0 ? null : 'Must be > 0'),
+        priceAmount: (v: number) => (v >= 0 ? null : 'Must be >= 0'),
+      },
     },
   });
 
@@ -66,19 +91,31 @@ const CreateInvoiceModal: React.FC<{ opened: boolean; onClose: () => void }> = (
     label: organization.organizationName,
   }));
 
+  const lineTotal = (line: IInvoiceLine) =>
+    (line.invoicedQuantity || 0) * (line.priceAmount || 0);
+  const totalExclTax = form.values.lines.reduce(
+    (sum, line) => sum + lineTotal(line),
+    0,
+  );
+  const totalTax = form.values.lines.reduce(
+    (sum, line) => sum + lineTotal(line) * ((line.taxPercent || 0) / 100),
+    0,
+  );
+
   const handleSubmit = form.onSubmit((values) => {
     createMutation.mutate(
       {
         invoiceNumber: values.invoiceNumber,
         issuerOrganizationId: Number(values.issuerOrganizationId),
         debtorOrganizationId: Number(values.debtorOrganizationId),
+        invoiceTypeCode: values.invoiceTypeCode as InvoiceTypeCodeEnum,
         lendingProduct: (values.lendingProduct || undefined) as
           | LendingProductEnum
           | undefined,
-        amount: values.amount,
-        currency: values.currency,
+        documentCurrencyCode: values.documentCurrencyCode,
         issueDate: values.issueDate,
         dueDate: values.dueDate,
+        lines: values.lines,
       },
       {
         onSuccess: () => {
@@ -98,44 +135,134 @@ const CreateInvoiceModal: React.FC<{ opened: boolean; onClose: () => void }> = (
   });
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Upload invoice">
+    <Modal opened={opened} onClose={onClose} title="Upload invoice" size="lg">
       <form onSubmit={handleSubmit}>
         <Stack gap="sm">
-          <TextInput label="Invoice number" {...form.getInputProps('invoiceNumber')} />
-          <Select
-            label="Issuer (supplier side)"
-            data={organizationOptions}
-            searchable
-            {...form.getInputProps('issuerOrganizationId')}
-          />
-          <Select
-            label="Debtor (buyer side)"
-            data={organizationOptions}
-            searchable
-            {...form.getInputProps('debtorOrganizationId')}
-          />
-          <Select
-            label="Lending product"
-            data={Object.values(LendingProductEnum).map((product) => ({
-              value: product,
-              label: LendingProductLabel[product],
-            }))}
-            clearable
-            {...form.getInputProps('lendingProduct')}
-          />
-          <NumberInput
-            label="Amount"
-            min={0}
-            thousandSeparator=","
-            {...form.getInputProps('amount')}
-          />
-          <TextInput label="Currency" {...form.getInputProps('currency')} />
-          <TextInput
-            label="Issue date"
-            type="date"
-            {...form.getInputProps('issueDate')}
-          />
-          <TextInput label="Due date" type="date" {...form.getInputProps('dueDate')} />
+          <Group grow>
+            <TextInput label="Invoice number" {...form.getInputProps('invoiceNumber')} />
+            <Select
+              label="Invoice type"
+              data={Object.values(InvoiceTypeCodeEnum).map((code) => ({
+                value: code,
+                label: InvoiceTypeCodeLabel[code],
+              }))}
+              {...form.getInputProps('invoiceTypeCode')}
+            />
+          </Group>
+          <Group grow>
+            <Select
+              label="Issuer (supplier side)"
+              data={organizationOptions}
+              searchable
+              {...form.getInputProps('issuerOrganizationId')}
+            />
+            <Select
+              label="Debtor (buyer side)"
+              data={organizationOptions}
+              searchable
+              {...form.getInputProps('debtorOrganizationId')}
+            />
+          </Group>
+          <Group grow>
+            <Select
+              label="Lending product"
+              data={Object.values(LendingProductEnum).map((product) => ({
+                value: product,
+                label: LendingProductLabel[product],
+              }))}
+              clearable
+              {...form.getInputProps('lendingProduct')}
+            />
+            <TextInput
+              label="Currency"
+              {...form.getInputProps('documentCurrencyCode')}
+            />
+          </Group>
+          <Group grow>
+            <TextInput
+              label="Issue date"
+              type="date"
+              {...form.getInputProps('issueDate')}
+            />
+            <TextInput label="Due date" type="date" {...form.getInputProps('dueDate')} />
+          </Group>
+
+          <Divider label="Line items" labelPosition="left" mt="xs" />
+
+          {form.values.lines.map((_, index) => (
+            <Group key={index} align="flex-end" wrap="nowrap">
+              <TextInput
+                label={index === 0 ? 'Item' : undefined}
+                placeholder="Item name"
+                style={{ flex: 2 }}
+                {...form.getInputProps(`lines.${index}.itemName`)}
+              />
+              <NumberInput
+                label={index === 0 ? 'Qty' : undefined}
+                min={0.0001}
+                style={{ flex: 1 }}
+                {...form.getInputProps(`lines.${index}.invoicedQuantity`)}
+              />
+              <TextInput
+                label={index === 0 ? 'Unit' : undefined}
+                style={{ flex: 1 }}
+                {...form.getInputProps(`lines.${index}.invoicedQuantityUnitCode`)}
+              />
+              <NumberInput
+                label={index === 0 ? 'Unit price' : undefined}
+                min={0}
+                style={{ flex: 1 }}
+                {...form.getInputProps(`lines.${index}.priceAmount`)}
+              />
+              <Select
+                label={index === 0 ? 'Tax' : undefined}
+                data={Object.values(TaxCategoryEnum).map((category) => ({
+                  value: category,
+                  label: TaxCategoryLabel[category],
+                }))}
+                style={{ flex: 1 }}
+                {...form.getInputProps(`lines.${index}.taxCategoryId`)}
+              />
+              <NumberInput
+                label={index === 0 ? 'Tax %' : undefined}
+                min={0}
+                max={100}
+                style={{ flex: 1 }}
+                {...form.getInputProps(`lines.${index}.taxPercent`)}
+              />
+              <ActionIcon
+                color="red"
+                variant="subtle"
+                disabled={form.values.lines.length === 1}
+                onClick={() => form.removeListItem('lines', index)}
+              >
+                <IconTrash size="1rem" />
+              </ActionIcon>
+            </Group>
+          ))}
+          <Button
+            variant="subtle"
+            size="compact-sm"
+            leftSection={<IconPlus size="0.9rem" />}
+            onClick={() => form.insertListItem('lines', { ...emptyLine })}
+          >
+            Add line
+          </Button>
+
+          <Divider mt="xs" />
+          <Group justify="flex-end" gap="xl">
+            <Text size="sm" c="dimmed">
+              Excl. tax: {totalExclTax.toFixed(2)} {form.values.documentCurrencyCode}
+            </Text>
+            <Text size="sm" c="dimmed">
+              Tax: {totalTax.toFixed(2)} {form.values.documentCurrencyCode}
+            </Text>
+            <Text size="sm" fw={600}>
+              Payable: {(totalExclTax + totalTax).toFixed(2)}{' '}
+              {form.values.documentCurrencyCode}
+            </Text>
+          </Group>
+
           <Group justify="flex-end" mt="sm">
             <Button variant="default" onClick={onClose}>
               Cancel
@@ -194,9 +321,9 @@ const InvoiceRegister: React.FC = () => {
       },
       {
         id: 'amount',
-        header: 'Amount',
+        header: 'Payable amount',
         accessorFn: (row) =>
-          `${Number(row.amount).toLocaleString()} ${row.currency}`,
+          `${Number(row.payableAmount).toLocaleString()} ${row.documentCurrencyCode}`,
       },
       { accessorKey: 'dueDate', header: 'Due' },
       {
@@ -256,7 +383,8 @@ const InvoiceRegister: React.FC = () => {
         Invoice Register
       </Title>
       <Text c="dimmed" size="sm" mb="md">
-        Invoices across all lending-product flows. Status moves follow the
+        Invoices across all lending-product flows. Header and line items
+        mirror the OASIS UBL 2.5 Invoice schema; status moves follow the
         invoice lifecycle — illegal transitions are rejected by the server.
       </Text>
       <MantineTable

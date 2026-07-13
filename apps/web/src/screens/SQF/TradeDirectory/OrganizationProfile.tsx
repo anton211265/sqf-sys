@@ -274,7 +274,8 @@ const OrganizationProfile: React.FC = () => {
                       invoice.debtorOrganizationId}
                   </Table.Td>
                   <Table.Td>
-                    {Number(invoice.amount).toLocaleString()} {invoice.currency}
+                    {Number(invoice.payableAmount).toLocaleString()}{' '}
+                    {invoice.documentCurrencyCode}
                   </Table.Td>
                   <Table.Td>{invoice.dueDate}</Table.Td>
                   <Table.Td>

@@ -147,3 +147,37 @@ export enum LendingProductSubscriptionStatusEnum {
   SUSPENDED = 'SUSPENDED',
   CLOSED = 'CLOSED',
 }
+
+// UNCL1001 subset (cbc:InvoiceTypeCode) — keep in sync with libs/common invoice-type-code.enum.ts.
+export enum InvoiceTypeCodeEnum {
+  COMMERCIAL_INVOICE = '380',
+  CREDIT_NOTE = '381',
+  CORRECTED_INVOICE = '384',
+  SELF_BILLED_INVOICE = '389',
+  FACTORED_INVOICE = '393',
+  CONSIGNMENT_INVOICE = '395',
+}
+
+export const InvoiceTypeCodeLabel: Record<InvoiceTypeCodeEnum, string> = {
+  [InvoiceTypeCodeEnum.COMMERCIAL_INVOICE]: 'Commercial invoice',
+  [InvoiceTypeCodeEnum.CREDIT_NOTE]: 'Credit note',
+  [InvoiceTypeCodeEnum.CORRECTED_INVOICE]: 'Corrected invoice',
+  [InvoiceTypeCodeEnum.SELF_BILLED_INVOICE]: 'Self-billed invoice',
+  [InvoiceTypeCodeEnum.FACTORED_INVOICE]: 'Factored invoice',
+  [InvoiceTypeCodeEnum.CONSIGNMENT_INVOICE]: 'Consignment invoice',
+};
+
+// UNCL5305 subset (cac:TaxCategory/cbc:ID) — keep in sync with libs/common tax-category.enum.ts.
+export enum TaxCategoryEnum {
+  STANDARD = 'S',
+  ZERO_RATED = 'Z',
+  EXEMPT = 'E',
+  REVERSE_CHARGE = 'AE',
+}
+
+export const TaxCategoryLabel: Record<TaxCategoryEnum, string> = {
+  [TaxCategoryEnum.STANDARD]: 'Standard rate',
+  [TaxCategoryEnum.ZERO_RATED]: 'Zero rated',
+  [TaxCategoryEnum.EXEMPT]: 'Exempt',
+  [TaxCategoryEnum.REVERSE_CHARGE]: 'Reverse charge',
+};

@@ -131,8 +131,10 @@ async function main() {
       {
         id: invoice.id,
         number: invoice.invoiceNumber,
-        amount: invoice.amount != null ? Number(invoice.amount) : null,
-        currency: invoice.currency,
+        // graph property names stay amount/currency; sourced from the UBL
+        // payableAmount/documentCurrencyCode header columns.
+        amount: invoice.payableAmount != null ? Number(invoice.payableAmount) : null,
+        currency: invoice.documentCurrencyCode,
         status: invoice.status,
         issueDate: invoice.issueDate ? String(invoice.issueDate) : null,
         dueDate: invoice.dueDate ? String(invoice.dueDate) : null,
