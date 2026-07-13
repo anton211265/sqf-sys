@@ -28,6 +28,7 @@ import {
   CreateInvoiceLineDto,
   UpdateInvoiceStatusDto,
 } from './dto/create-invoice.dto';
+import { PartyOverrideDto } from './dto/party-override.dto';
 
 // Legal transitions of the invoice lifecycle, superset across the four
 // lending-product flows (see InvoiceStatusEnum). Keep in sync with the enum.
@@ -107,27 +108,45 @@ export class InvoiceService {
     return callerOrganization.funderPersonaId;
   }
 
-  // Immutable snapshot of an Organization's current details, captured onto
-  // the invoice as its supplier/customer party — later edits to Organization
-  // must never rewrite an already-issued document.
-  private async snapshotPartyFromOrganization(
+  // Immutable snapshot of a party's details as they appear on THIS document,
+  // captured onto the invoice as its supplier/customer party — later edits to
+  // Organization must never rewrite an already-issued document.
+  //
+  // Defaults come from the linked Organization's current record; `override`
+  // (primarily from document extraction, which may have read a different
+  // registered name/address/VAT off the source document than what's
+  // currently on file) wins field-by-field wherever it supplies a value.
+  private async buildPartySnapshot(
     manager: EntityManager,
     organization: Organization,
+    override?: PartyOverrideDto,
   ): Promise<Party> {
     const party = new Party({
       organizationId: organization.id,
-      partyName: organization.alias ?? organization.organizationName,
-      registrationName: organization.organizationName,
-      companyId: organization.businessRegistrationNumber,
-      vatNumber: organization.taxIdentificationNumber,
-      countryCode: organization.country,
-      streetName: organization.registeredAddress,
-      postalZone: organization.postcode,
-      countrySubentity: organization.malaysiaRegion
-        ? String(organization.malaysiaRegion)
-        : undefined,
-      contactTelephone: organization.contactNumber,
-      contactEmail: organization.emailAddress,
+      partyName:
+        override?.partyName ?? organization.alias ?? organization.organizationName,
+      registrationName:
+        override?.registrationName ?? organization.organizationName,
+      companyId: override?.companyId ?? organization.businessRegistrationNumber,
+      companyLegalForm: override?.companyLegalForm,
+      vatNumber: override?.vatNumber ?? organization.taxIdentificationNumber,
+      taxSchemeId: override?.taxSchemeId,
+      streetName: override?.streetName ?? organization.registeredAddress,
+      additionalStreetName: override?.additionalStreetName,
+      buildingNumber: override?.buildingNumber,
+      cityName: override?.cityName,
+      postalZone: override?.postalZone ?? organization.postcode,
+      countrySubentity:
+        override?.countrySubentity ??
+        (organization.malaysiaRegion
+          ? String(organization.malaysiaRegion)
+          : undefined),
+      countryCode: override?.countryCode ?? organization.country,
+      contactName: override?.contactName,
+      contactTelephone: override?.contactTelephone ?? organization.contactNumber,
+      contactEmail: override?.contactEmail ?? organization.emailAddress,
+      endpointId: override?.endpointId,
+      endpointSchemeId: override?.endpointSchemeId,
     });
     return manager.save(Party, party);
   }
@@ -258,8 +277,8 @@ export class InvoiceService {
 
     return this.entityManager.transaction(async (manager) => {
       const [supplierParty, customerParty] = await Promise.all([
-        this.snapshotPartyFromOrganization(manager, issuerOrganization),
-        this.snapshotPartyFromOrganization(manager, debtorOrganization),
+        this.buildPartySnapshot(manager, issuerOrganization, dto.supplierParty),
+        this.buildPartySnapshot(manager, debtorOrganization, dto.customerParty),
       ]);
 
       const invoice = new Invoice({

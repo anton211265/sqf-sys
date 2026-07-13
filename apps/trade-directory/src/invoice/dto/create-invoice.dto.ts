@@ -18,6 +18,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { PartyOverrideDto } from './party-override.dto';
 
 // One invoiced line (cac:InvoiceLine core subset). lineExtensionAmount and the
 // header's LegalMonetaryTotal are computed server-side from these — callers
@@ -126,6 +127,23 @@ export class CreateInvoiceDto {
   @IsString()
   @IsOptional()
   sourceDocumentReference?: string;
+
+  // Overrides for the supplier/customer party snapshot — primarily for
+  // document extraction, where the source document may show a different
+  // registered name/address/VAT than the current Organization record.
+  // Anything omitted falls back to the linked Organization (see
+  // InvoiceService.buildPartySnapshot).
+  @ApiProperty({ type: PartyOverrideDto, required: false })
+  @ValidateNested()
+  @Type(() => PartyOverrideDto)
+  @IsOptional()
+  supplierParty?: PartyOverrideDto;
+
+  @ApiProperty({ type: PartyOverrideDto, required: false })
+  @ValidateNested()
+  @Type(() => PartyOverrideDto)
+  @IsOptional()
+  customerParty?: PartyOverrideDto;
 
   @ApiProperty({ type: [CreateInvoiceLineDto] })
   @IsArray()

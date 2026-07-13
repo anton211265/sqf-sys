@@ -198,14 +198,28 @@ CREATE TABLE contract (
 >   and per-category tax subtotals are computed server-side
 >   (`InvoiceService.buildLinesAndTotals`) from the submitted lines, so
 >   stored totals can never drift from the lines that back them.
-> - Party snapshots are auto-created from the current Organization record at
->   invoice-creation time (`InvoiceService.snapshotPartyFromOrganization`);
->   the API doesn't yet accept an inline/override party payload (e.g. from
->   document extraction reading a different registered name off the PDF) —
->   noted as a Phase 2.1 follow-up.
+> - Party snapshots are built by `InvoiceService.buildPartySnapshot`, which
+>   takes the current Organization record as defaults and applies an
+>   **optional per-field override** (`CreateInvoiceDto.supplierParty` /
+>   `.customerParty`, both `PartyOverrideDto`) on top — built 2026-07-13 for
+>   document extraction, where the source document may show a different
+>   registered name/address/VAT than what's on file, or a granular UBL field
+>   (e.g. `cityName`) that Organization has no equivalent for at all.
+>   `organizationId` on the resulting `party` row always still points at the
+>   real Organization regardless of overrides — only the snapshot fields
+>   change. Verified with an override that changed `registrationName`,
+>   `vatNumber`, and `cityName` for the supplier while every other field
+>   correctly fell back to the Organization's own data.
 >
 > DDL: `docs/design/migrations/009-ubl-invoice-schema.sql`. Entities:
 > `apps/trade-directory/src/models/{party,invoice,invoice-line,invoice-line-tax-category,invoice-line-additional-item-property,invoice-note,invoice-additional-document-reference,invoice-payment-means,invoice-tax-subtotal,invoice-allowance-charge}.entity.ts`.
+> DTOs: `apps/trade-directory/src/invoice/dto/{create-invoice,party-override}.dto.ts`.
+>
+> **Not built**: no wiring from document-management's extraction pipeline
+> actually calls this API yet with override data — that integration (mapping
+> extracted OCR/LLM fields to `PartyOverrideDto` and calling `POST
+> /api/invoices`) doesn't exist. This change only makes the invoice API
+> capable of accepting overrides when a caller has them.
 
 ### 3.3 (original, pre-UBL) `invoice`
 
