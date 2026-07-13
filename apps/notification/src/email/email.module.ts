@@ -1,13 +1,17 @@
 import { DependencyInjectionTokenEnum } from '@app/common/constants/dependency-injection-token.enum';
+import { DatabaseModule } from '@app/common/database/database.module';
+import { ProcessedEvent } from '@app/common/database/processed-event.entity';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { z } from 'zod';
 import { EmailController } from './email.controller';
 import { EmailService } from './email.service';
+import { ProcessedEventRepository } from './processed-event.repository';
 
 @Module({
   imports: [
+    DatabaseModule.forFeature([ProcessedEvent]),
     ConfigModule.forRoot({
       isGlobal: true,
       validate(config) {
@@ -25,6 +29,7 @@ import { EmailService } from './email.service';
   controllers: [EmailController],
   providers: [
     EmailService,
+    ProcessedEventRepository,
     {
       provide: DependencyInjectionTokenEnum.EMAIL_TRANSPORTER,
       useFactory: (configService: ConfigService) => {

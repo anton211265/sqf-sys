@@ -1,0 +1,16 @@
+export const documentTypes = [
+  { name: 'Letter of Award', code: 'LETTER_OF_AWARD' },
+  { name: 'Purchase Order', code: 'PURCHASE_ORDER' },
+  { name: 'Contract', code: 'CONTRACT' },
+  { name: 'Missing Pages', code: 'MISSING_PAGES' },
+  { name: 'Cash Flow Appended', code: 'CASH_FLOW_APPENDED' },
+  { name: 'Appendix in Contract', code: 'APPENDIX_IN_CONTRACT' },
+  { name: 'Related Company Notes', code: 'RELATED_COMPANY_NOTES' },
+  { name: 'Bank Statement', code: 'BANK_STATEMENT' },
+  { name: 'Financial Statement', code: 'FINANCIAL_STATEMENT' },
+  { name: 'Company Profile', code: 'COMPANY_PROFILE' },
+  { name: 'Company Group Structure', code: 'COMPANY_GROUP_STRUCTURE' },
+  { name: 'Organization Chart', code: 'ORGANIZATION_CHART' },
+  { name: 'Credit Consent Form', code: 'CREDIT_CONSENT_FORM' },
+  { name: 'Site Visit Report', code: 'SITE_VISIT_REPORT' },
+];

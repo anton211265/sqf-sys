@@ -2,17 +2,21 @@ import { DatabaseModule } from '@app/common/database/database.module';
 import { LoggerModule } from '@app/common/logger/logger.module';
 import { CaslModule } from '@app/common/modules/casl/casl.module';
 import { Module } from '@nestjs/common';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { z } from 'zod';
+import { ProcessedEvent } from '@app/common/database/processed-event.entity';
 import { ClientAssigneeModule } from './client-assignee/client-assignee.module';
 import { ClientAssignee } from './models';
-import { ClientAssigneeRepository } from './repositories';
+import { ClientAssigneeRepository, ProcessedEventRepository } from './repositories';
 
 @Module({
   imports: [
     CaslModule,
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     DatabaseModule,
-    DatabaseModule.forFeature([ClientAssignee]),
+    DatabaseModule.forFeature([ClientAssignee, ProcessedEvent]),
     ConfigModule.forRoot({
       isGlobal: true,
       validate(config) {
@@ -31,6 +35,10 @@ import { ClientAssigneeRepository } from './repositories';
     ClientAssigneeModule,
   ],
   controllers: [],
-  providers: [ClientAssigneeRepository],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    ClientAssigneeRepository,
+    ProcessedEventRepository,
+  ],
 })
 export class CustomerRelationshipManagementModule {}

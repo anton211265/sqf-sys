@@ -14,49 +14,49 @@ export default async (brokers: string[], ssl: boolean): Promise<void> => {
 
   const topicList = [];
 
-  if (!topics.includes(KafkaTopicEnum.REQUEST_EXPERIAN_REPORT)) {
+  if (!topics.includes(KafkaTopicEnum.REQUEST_KYC_REPORT)) {
     topicList.push({
-      topic: KafkaTopicEnum.REQUEST_EXPERIAN_REPORT,
+      topic: KafkaTopicEnum.REQUEST_KYC_REPORT,
       numPartitions: 2,
       replicationFactor: 3,
     });
   }
 
-  if (!topics.includes(KafkaTopicEnum.RECEIVE_EXPERIAN_REPORT)) {
+  if (!topics.includes(KafkaTopicEnum.RECEIVE_KYC_REPORT)) {
     topicList.push({
-      topic: KafkaTopicEnum.RECEIVE_EXPERIAN_REPORT,
+      topic: KafkaTopicEnum.RECEIVE_KYC_REPORT,
       numPartitions: 2,
       replicationFactor: 3,
+    });
+  }
+
+  if (!topics.includes(KafkaTopicEnum.RELATIONSHIP_UPSERTED)) {
+    topicList.push({
+      topic: KafkaTopicEnum.RELATIONSHIP_UPSERTED,
+      numPartitions: 2,
+      replicationFactor: 1,
+    });
+  }
+
+  if (!topics.includes(KafkaTopicEnum.CONTRACT_UPSERTED)) {
+    topicList.push({
+      topic: KafkaTopicEnum.CONTRACT_UPSERTED,
+      numPartitions: 2,
+      replicationFactor: 1,
+    });
+  }
+
+  if (!topics.includes(KafkaTopicEnum.INVOICE_STATUS_CHANGED)) {
+    topicList.push({
+      topic: KafkaTopicEnum.INVOICE_STATUS_CHANGED,
+      numPartitions: 2,
+      replicationFactor: 1,
     });
   }
 
   if (!topics.includes(KafkaTopicEnum.SEND_EMAIL)) {
     topicList.push({
       topic: KafkaTopicEnum.SEND_EMAIL,
-      numPartitions: 2,
-      replicationFactor: 3,
-    });
-  }
-
-  if (!topics.includes(KafkaTopicEnum.CREATE_ORGANIZATION)) {
-    topicList.push({
-      topic: KafkaTopicEnum.CREATE_ORGANIZATION,
-      numPartitions: 2,
-      replicationFactor: 3,
-    });
-  }
-
-  if (!topics.includes(KafkaTopicEnum.CREATE_ORGANIZATION_REPLY)) {
-    topicList.push({
-      topic: KafkaTopicEnum.CREATE_ORGANIZATION_REPLY,
-      numPartitions: 2,
-      replicationFactor: 3,
-    });
-  }
-
-  if (!topics.includes(KafkaTopicEnum.UPDATE_ORGANIZATION_REPLY)) {
-    topicList.push({
-      topic: KafkaTopicEnum.UPDATE_ORGANIZATION_REPLY,
       numPartitions: 2,
       replicationFactor: 3,
     });
@@ -143,8 +143,13 @@ export default async (brokers: string[], ssl: boolean): Promise<void> => {
   }
 
   if (topicList.length) {
-    await admin.createTopics({
-      topics: topicList,
-    });
+    try {
+      await admin.createTopics({
+        topics: topicList,
+      });
+    } catch (e) {
+      console.warn('Kafka topic creation warning (non-fatal):', e.message);
+    }
   }
+  await admin.disconnect();
 };

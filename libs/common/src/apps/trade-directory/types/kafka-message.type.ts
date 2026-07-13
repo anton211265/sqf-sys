@@ -1,6 +1,6 @@
 import { CreatePersonDto } from 'apps/trade-directory/src/sqf/person/dto/create-person.dto';
-import { ExperianReportTypeEnum } from '../enums/experian-report-type.enum';
-import { Experian } from './experian.type';
+import { KycReportTypeEnum } from '../enums/kyc-report-type.enum';
+import { KycAgencyReport } from './kyc-report.type';
 import {
   CreateOrganizationType,
   Organization,
@@ -43,49 +43,15 @@ export type CreateApplicationPersonKafkaMessageType = {
 
 // ----------------------- SQF -----------------------
 
-// ----------------------- LCM -----------------------
-
-export type CreateOrganizationMessage = {
-  data: UpdatableOrganization;
-  persona: {
-    isClient: boolean;
-    isContractAwarder: boolean;
-    isSupplier: boolean;
-    isFactor: boolean;
-  };
-};
-export type CreateOrganizationMessageReply = Organization;
-export type UpdateOrganizationMessage = {
-  id: number;
-  data: UpdatableOrganization;
-};
-export type UpdateOrganizationByClientPersonaIdMessage = {
-  clientPersonaId: number;
-  data: UpdatableOrganization;
-};
-export type UpdateOrganizationByContractAwarderPersonaIdMessage = {
-  contractAwarderPersonaId: number;
-  data: UpdatableOrganization;
-};
-export type UpdateOrganizationBySupplierPersonaIdMessage = {
-  supplierPersonaId: number;
-  data: UpdatableOrganization;
-};
-export type UpdateOrganizationByFactorPersonaIdMessage = {
-  factorPersonaId: number;
-  data: UpdatableOrganization;
-};
-export type UpdateOrganizationMessageReply = Organization;
-
-export type RequestExperianReportMessage = {
+export type RequestKycReportMessage = {
+  eventId: string;
   organizationId: number;
-  experianReportType: ExperianReportTypeEnum;
+  kycReportType: KycReportTypeEnum;
   consent: {
     mobileNumber?: string;
     emailAddress?: string;
     granted: boolean;
   };
 };
-export type ReceiveExperianReportMessage = Experian;
+export type ReceiveKycReportMessage = KycAgencyReport & { eventId: string };
 
-// ----------------------- LCM -----------------------

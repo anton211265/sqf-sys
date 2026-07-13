@@ -1,4 +1,7 @@
 import { DatabaseModule } from '@app/common/database/database.module';
+import { OutboxEvent } from '@app/common/database/outbox-event.entity';
+import { AuthAuditLog } from '../models/auth-audit-log.entity';
+import { AuthAuditLogRepository } from '../repositories/auth-audit-log.repository';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
@@ -14,6 +17,7 @@ import {
   OrganizationRepository,
   PersonRepository,
 } from '../repositories';
+import { OutboxEventRepository } from '../repositories/outbox-event.repository';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { Token } from '../models/token.entity';
@@ -30,6 +34,8 @@ import { ResetPasswordTokenRepository } from '../repositories/reset-password-tok
       Token,
       OrganizationPerson,
       ResetPasswordToken,
+      OutboxEvent,
+      AuthAuditLog,
     ]),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -60,8 +66,10 @@ import { ResetPasswordTokenRepository } from '../repositories/reset-password-tok
     OrganizationPersonRepository,
     TokenRepository,
     ResetPasswordTokenRepository,
+    OutboxEventRepository,
+    AuthAuditLogRepository,
     JwtStrategy,
   ],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

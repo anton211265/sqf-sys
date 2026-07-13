@@ -1,0 +1,27 @@
+.item {
+    margin-top: 10px;
+    border-top: 1px solid var(--item-border-color) !important;
+}
+
+.ellipse {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%; /* Creates an ellipse */
+  }
+
+  .highRisk{
+    background-color: #D1443A;
+  }
+
+  .mediumRisk{
+    background-color: #FFC428;
+  }
+
+  .lowRisk{
+    background-color: #19AB5E;
+  }
+
+label{
+    font-weight: 250 !important;
+    --input-label-size: var(--mantine-font-size-xs);
+}

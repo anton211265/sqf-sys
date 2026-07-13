@@ -69,10 +69,9 @@ export class OrganizationPerson extends AbstractEntity<OrganizationPerson> {
 
   // ------------------------------------- SQF AI -------------------------------------
 
-  // ------------------------------------- LCM -------------------------------------
+  // MSAL-era field: Entra token subject. Still read by the legacy AUTHENTICATE
+  // Kafka verification path in auth.service — remove together with that path.
 
   @Column({ type: 'varchar', nullable: true })
   sub?: string;
-
-  // ------------------------------------- LCM -------------------------------------
 }

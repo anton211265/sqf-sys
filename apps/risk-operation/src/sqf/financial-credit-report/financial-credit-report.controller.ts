@@ -54,7 +54,6 @@ export class FinancialCreditReportController {
 
   @Get('document/:path(*)')
   async getDocument(@Param('path') path: string, @Res() res: Response) {
-    console.log(path);
 
     const fileStream =
       await this.financialCreditReportService.getFileStream(path);

@@ -92,11 +92,6 @@ export class OrganizationPersonService {
             organizationPersonEntity,
           );
 
-        console.log(
-          'Saved organization-person mapping:',
-          savedOrganizationPerson,
-        );
-
         // Add the saved organization-person mapping to the array
         savedOrganizationPersonsArray.push({
           data: {
@@ -129,9 +124,6 @@ export class OrganizationPersonService {
 
       // If organization not found, throw 404 error
       if (!organization) {
-        console.log(
-          `Organization ${organizationId} not found in findOrganizationPersonByOrganizationIdEvent`,
-        );
 
         return [];
       }

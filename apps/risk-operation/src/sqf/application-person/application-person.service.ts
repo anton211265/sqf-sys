@@ -57,8 +57,6 @@ export class ApplicationPersonService {
           );
         }),
       );
-
-      console.log('Saved Application Persons:', savedApplicationPersons);
     } catch (error) {
       // Handle unexpected errors
       console.error('Error fetching organization:', error);
@@ -111,7 +109,7 @@ export class ApplicationPersonService {
   //       }),
   //     );
 
-  //     console.log('Saved Application Persons:', savedApplicationPersons);
+  //
   //   } catch (error) {
   //     console.error(
   //       'Error processing SQF_CREATE_APPLICATION_PERSON Kafka:',

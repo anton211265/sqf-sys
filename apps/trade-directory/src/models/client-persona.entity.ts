@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Organization } from './organization.entity';
-import { Transaction } from './transaction.entity';
 
 @Entity()
 export class ClientPersona extends AbstractEntity<ClientPersona> {
@@ -19,24 +18,6 @@ export class ClientPersona extends AbstractEntity<ClientPersona> {
     cascade: ['insert', 'update'],
   })
   organization?: Organization;
-
-  @OneToMany(
-    () => Transaction,
-    (transaction) => transaction.firstPartyAsClientPersona,
-    {
-      cascade: true,
-    },
-  )
-  transactionsAsFirstParty?: Transaction[];
-
-  @OneToMany(
-    () => Transaction,
-    (transaction) => transaction.secondPartyAsClientPersona,
-    {
-      cascade: true,
-    },
-  )
-  transactionsAsSecondParty?: Transaction[];
 
   @CreateDateColumn({
     type: 'timestamp without time zone',

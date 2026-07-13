@@ -6,10 +6,8 @@ import {
   OneToMany,
   UpdateDateColumn,
 } from 'typeorm';
-import { BankAccount } from './bank-account.entity';
-import { Experian } from './experian.entity';
+import { KycAgencyReport } from './kyc-agency-report.entity';
 import { OrganizationPerson } from './organization-person.entity';
-import { PersonSupportingDocument } from './person-supporting-document.entity';
 import { Token } from './token.entity';
 import { OnBoardProcessEnum } from '@app/common/apps/trade-directory/enums/onboard-process.enum';
 
@@ -62,31 +60,23 @@ export class Person extends AbstractEntity<Person> {
   })
   updatedAt: Date;
 
-  // ------------------------------------- SQF AI -------------------------------------
-
-  // ------------------------------------- LCM -------------------------------------
-
-  @OneToMany(() => BankAccount, (bankAccount) => bankAccount.person, {
+  @OneToMany(() => KycAgencyReport, (kycReport) => kycReport.person, {
     cascade: true,
   })
-  bankAccounts?: BankAccount[];
-
-  @OneToMany(
-    () => PersonSupportingDocument,
-    (personSupportingDocument) => personSupportingDocument.person,
-    {
-      cascade: true,
-    },
-  )
-  personSupportingDocuments?: PersonSupportingDocument[];
-
-  @OneToMany(() => Experian, (experian) => experian.person, {
-    cascade: true,
-  })
-  experianReports?: Experian[];
+  kycAgencyReports?: KycAgencyReport[];
 
   @Column({ type: 'varchar', nullable: true })
   preferredUsername?: string;
 
-  // ------------------------------------- LCM -------------------------------------
+  // systemRole marks platform-level accounts (e.g. SQFSYS) that have no org membership
+  @Column({ name: 'system_role', type: 'varchar', nullable: true })
+  systemRole?: string;
+
+  @Column({ type: 'int', default: 0 })
+  failedLoginAttempts: number;
+
+  @Column({ type: 'timestamp without time zone', nullable: true })
+  lockedUntil: Date | null;
+
+  // ------------------------------------- SQF AI -------------------------------------
 }

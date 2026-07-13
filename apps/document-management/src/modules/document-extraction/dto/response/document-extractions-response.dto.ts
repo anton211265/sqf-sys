@@ -34,6 +34,12 @@ export class DocumentExtractinResponseDto {
   @ApiProperty({ nullable: true })
   pages?: number;
 
+  @ApiProperty({ nullable: true })
+  rawText?: string;
+
+  @ApiProperty({ nullable: true })
+  extractionMethod?: string;
+
   @ApiProperty()
   createdAt: Date;
 }

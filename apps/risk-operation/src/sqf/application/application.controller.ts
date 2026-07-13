@@ -55,29 +55,26 @@ export class ApplicationController {
     return await this.applicationService.getLatestApplication();
   }
 
+  @Get(':id')
+  async getApplicationById(@Param('id') id: number): Promise<Application> {
+    return await this.applicationService.getApplicationById(id);
+  }
+
   // --------------- Get Applications by OrgID with Filtering ---------------
   @MessagePattern(KafkaTopicEnum.SQF_GET_APPLICATIONS_BY_ORG_ID)
   async getApplicationsByOrgIdKafka(organizationId: number) {
-    console.log(
-      `🔹 Received Kafka SQF_GET_APPLICATIONS_BY_ORG_ID message request for organizationId: ${organizationId}`,
-    );
 
     const applications =
       await this.applicationService.getApplicationsbyOrgIdEvent(organizationId);
-
-    console.log('Kafka SQF_GET_APPLICATIONS_BY_ORG_ID response:', applications);
 
     return applications;
   }
 
   @MessagePattern(KafkaTopicEnum.SQF_GET_ALL_APPLICATIONS)
   async getAllApplicationsEvent() {
-    console.log('Triggered Kafka event: SQF_GET_ALL_APPLICATIONS');
 
     const applications =
       await this.applicationService.getAllApplicationsEvent();
-
-    console.log('Kafka SQF_GET_ALL_APPLICATIONS response:', applications);
 
     return applications;
   }

@@ -12,6 +12,7 @@ import {
   PersonGrpcServiceClient,
 } from '@app/common/apps/trade-directory/proto/person';
 import { DependencyInjectionTokenEnum } from '@app/common/constants/dependency-injection-token.enum';
+import { KafkaTopicEnum } from '@app/common/constants/kafka-topic.enum';
 import { AuthResponseDto } from '@app/common/guards/auth/dtos/auth-response.dto';
 import {
   AppActions,
@@ -21,9 +22,9 @@ import { ForbiddenError } from '@casl/ability';
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { ILike } from 'typeorm';
+import { EntityManager, ILike } from 'typeorm';
 import { ClientAssignee } from '../models';
-import { ClientAssigneeRepository } from '../repositories';
+import { ClientAssigneeRepository, ProcessedEventRepository } from '../repositories';
 
 type GetClientAssigneesArgs = {
   clientOrganizationName?: string;
@@ -40,6 +41,8 @@ export class ClientAssigneeService implements OnModuleInit {
   constructor(
     private readonly caslAbilityFactory: CaslAbilityFactory,
     private readonly clientAssigneeRepository: ClientAssigneeRepository,
+    private readonly processedEventRepository: ProcessedEventRepository,
+    private readonly entityManager: EntityManager,
     @Inject(DependencyInjectionTokenEnum.TRADE_DIRECTORY_GRPC_CLIENT)
     private readonly tradeDirectoryGrpcClient: ClientGrpc,
   ) {}
@@ -225,6 +228,13 @@ export class ClientAssigneeService implements OnModuleInit {
   };
 
   createClientAssigneeEvent = async (args: CreateClientAssigneeMessage) => {
+    if (await this.processedEventRepository.exists(args.eventId)) {
+      this.logger.warn(
+        `Skipping already-processed CREATE_CLIENT_ASSIGNEE event: ${args.eventId}`,
+      );
+      return;
+    }
+
     const {
       organizations: [protoClientOrganization],
     } = await firstValueFrom(
@@ -254,6 +264,12 @@ export class ClientAssigneeService implements OnModuleInit {
       updatedAt: undefined,
     };
 
-    await this.clientAssigneeRepository.save(clientAssignee);
+    await this.entityManager.transaction(async (manager) => {
+      await manager.save(ClientAssignee, clientAssignee);
+      await this.processedEventRepository.record(manager, {
+        id: args.eventId,
+        topic: KafkaTopicEnum.CREATE_CLIENT_ASSIGNEE,
+      });
+    });
   };
 }

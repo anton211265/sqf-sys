@@ -46,6 +46,17 @@ export interface IDocumentExtractionService {
   handleInternalExtractionCompletion(data: DocumentExtraction): Promise<void>;
 
   /**
+   * Approve a vision-LLM transcription that's pending human review, advancing it
+   * to LLM field extraction. Throws if the extraction isn't in PENDING_REVIEW.
+   * @param orgId - the organization id
+   * @param requestId - the requestId
+   */
+  approveReviewedExtraction(
+    orgId: string,
+    requestId: string,
+  ): Promise<RequestIdResponseDto>;
+
+  /**
    * Fetch all document extractions
    * @param orgId - The organization id
    * @param status - The status of document extraction

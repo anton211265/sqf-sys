@@ -1,0 +1,17 @@
+export const bankOptions = [
+  { label: 'Maybank', value: 'MAYBANK' },
+  { label: 'CIMB', value: 'CIMB' },
+  { label: 'Public Bank', value: 'PUBLIC_BANK' },
+  { label: 'RHB', value: 'RHB' },
+  { label: 'Hong Leong Bank', value: 'HONG_LEONG_BANK' },
+  { label: 'AmBank', value: 'AMBANK' },
+  { label: 'UOB', value: 'UOB' },
+  { label: 'Bank Rakyat', value: 'BANK_RAKYAT' },
+  { label: 'OCBC', value: 'OCBC' },
+  { label: 'HSBC', value: 'HSBC' },
+  { label: 'Bank Islam', value: 'BANK_ISLAM' },
+  { label: 'Affin Bank', value: 'AFFIN_BANK' },
+  { label: 'Alliance Bank', value: 'ALLIANCE_BANK' },
+  { label: 'Standard Chartered', value: 'STANDARD_CHARTERED' },
+  { label: 'Citibank', value: 'CITIBANK' },
+];

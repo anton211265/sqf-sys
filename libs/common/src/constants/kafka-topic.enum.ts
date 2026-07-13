@@ -8,21 +8,19 @@ export enum KafkaTopicEnum {
   SQF_GET_ORGANIZATION_PERSON_BY_ID = 'sqf_get_organization_person_by_id',
   SQF_GET_APPLICATIONS_BY_ORG_ID = 'sqf_get_applications_by_organization_id',
   SQF_DOCUMENT_EXTRACTION = 'sqf_document_extraction',
+  APPLICATION_SUBMITTED_FOR_REVIEW = 'application_submitted_for_review',
   AUTHENTICATE = 'authenticate',
   AUTHENTICATE_REPLY = 'authenticate.reply',
 
-  // ---------------------- SQF ----------------------
+  // Trade-network events (consumed by the future knowledge-graph service)
+  RELATIONSHIP_UPSERTED = 'relationship_upserted',
+  CONTRACT_UPSERTED = 'contract_upserted',
+  INVOICE_STATUS_CHANGED = 'invoice_status_changed',
 
-  // ---------------------- LCM ----------------------
-
-  REQUEST_EXPERIAN_REPORT = 'request_experian_report',
-  RECEIVE_EXPERIAN_REPORT = 'receive_experian_report',
+  REQUEST_KYC_REPORT = 'request_kyc_report',
+  RECEIVE_KYC_REPORT = 'receive_kyc_report',
   SEND_EMAIL = 'send_email',
-  CREATE_ORGANIZATION = 'create_organization',
-  CREATE_ORGANIZATION_REPLY = 'create_organization.reply',
-  UPDATE_ORGANIZATION = 'update_organization',
-  UPDATE_ORGANIZATION_REPLY = 'update_organization.reply',
   CREATE_CLIENT_ASSIGNEE = 'create_client_assignee',
 
-  // ---------------------- LCM ----------------------
+  // ---------------------- SQF ----------------------
 }

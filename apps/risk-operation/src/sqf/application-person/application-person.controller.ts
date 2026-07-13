@@ -26,10 +26,7 @@ export class ApplicationPersonController {
   // async handleCreateNewApplicationPerson(
   //   message: CreateApplicationPersonKafkaMessageType,
   // ): Promise<void> {
-  //   console.log(
-  //     'Received Kafka message for SQF_CREATE_APPLICATION_PERSON:',
-  //     message,
-  //   );
+  //
 
   //   await this.applicationPersonService.handleCreateNewApplicationPerson({
   //     ...message,

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { DatabaseModule } from '@app/common/database/database.module';
 import { PersonService } from './person.service';
 import { PersonController } from './person.controller';
-import { Person } from '../../models';
+import { Organization, OrganizationPerson, OrganizationPersonRole, Person } from '../../models';
 import { PersonRepository } from '../../repositories';
 import { TRADE_SERVICE } from '@app/common/constants/services';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -11,7 +11,7 @@ import { JwtStrategy } from '../../auth/strategies/jwt.strategy';
 
 @Module({
   imports: [
-    DatabaseModule.forFeature([Person]),
+    DatabaseModule.forFeature([Person, Organization, OrganizationPerson, OrganizationPersonRole]),
     ClientsModule.registerAsync([
       {
         name: TRADE_SERVICE,

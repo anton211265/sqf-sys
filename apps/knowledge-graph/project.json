@@ -1,0 +1,29 @@
+{
+  "name": "knowledge-graph",
+  "sourceRoot": "apps/knowledge-graph/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:backend"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nest build knowledge-graph --webpackPath ./apps/knowledge-graph/webpack.config.js",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "export NODE_ENV=development && nest start --watch knowledge-graph --webpackPath ./apps/knowledge-graph/webpack.config.js",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "jest --testPathPattern=apps/knowledge-graph",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

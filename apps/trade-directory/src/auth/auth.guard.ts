@@ -56,8 +56,8 @@ export class AuthGuard implements CanActivate {
       return false;
     }
 
-    if (!response.factorPersonaId) {
-      this.logger.error('User is not a factor');
+    if (!response.funderPersonaId) {
+      this.logger.error('User is not a funder');
       return false;
     }
 

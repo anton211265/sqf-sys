@@ -424,12 +424,6 @@ export class RiskProfileService {
 
       const parameterId = parameterData.parameterId;
 
-      console.log({
-        profileId: getRiskProfile.id,
-        parameterId,
-        weight,
-      });
-
       // update parent parameter weight
       await this.riskQuantitativeProfileWeightService.update(
         getRiskProfile.id,
@@ -495,8 +489,6 @@ export class RiskProfileService {
               score: 'ASC',
             },
           });
-
-        console.log(updatedThresholdRules);
 
         updatedSubParameters.push({
           subParameterId: subParameterId,

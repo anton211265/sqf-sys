@@ -3,7 +3,7 @@ import { AbstractEntity } from '@app/common/database/abstract.entity';
 import { Column, CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm';
 
 export enum DocumentExtractionStatus {
-  PENDING_OCR = 'pending_ocr',
+  PENDING_REVIEW = 'pending_review',
   PENDING_LLM_EXTRACTION = 'pending_llm_extraction',
   PENDING_WEBHOOK = 'pending_webhook',
   FAILED = 'failed',
@@ -13,6 +13,11 @@ export enum DocumentExtractionStatus {
 
 export enum DocumentExtractionInternalType {
   TEST = 'test',
+}
+
+export enum DocumentExtractionMethod {
+  MARKITDOWN = 'markitdown',
+  VISION_LLM = 'vision_llm',
 }
 
 @Entity()
@@ -52,6 +57,13 @@ export class DocumentExtraction extends AbstractEntity<DocumentExtraction> {
 
   @Column({ type: 'text', nullable: true })
   rawText?: string;
+
+  @Column({
+    type: 'enum',
+    enum: DocumentExtractionMethod,
+    nullable: true,
+  })
+  extractionMethod?: DocumentExtractionMethod;
 
   @Column({ type: 'json', nullable: true })
   extractedData?: any;

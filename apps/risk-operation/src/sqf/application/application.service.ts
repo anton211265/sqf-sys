@@ -42,6 +42,9 @@ import { RiskFilter1StatusEnum } from '@app/common/apps/risk-operation/enums/ris
 import { RiskApplicationAuditLogService } from '../risk-application-audit-log/risk-application-audit-log.service';
 import { RiskApplicationAuditActionEnum } from '@app/common/apps/risk-operation/enums/risk-application-audit-action.enum';
 import { FinancialCreditReportService } from '../financial-credit-report/financial-credit-report.service';
+import { OutboxEventRepository } from '../../repositories/outbox-event.repository';
+import { EntityManager } from 'typeorm';
+
 @Injectable()
 export class ApplicationService {
   private frontEndUrl: string;
@@ -60,6 +63,8 @@ export class ApplicationService {
     private readonly riskApplicationAuditLogService: RiskApplicationAuditLogService,
     private readonly httpService: HttpService, // To fetch applications from another microservice
     private readonly financialCreditReportService: FinancialCreditReportService,
+    private readonly outboxEventRepository: OutboxEventRepository,
+    private readonly entityManager: EntityManager,
   ) {
     this.frontEndUrl = this.configService.get<string>('FRONTEND_DOMAIN');
   }
@@ -220,10 +225,13 @@ export class ApplicationService {
         (pic) => pic.person.name,
       );
 
-      // Send email to PIC for setup new password
-      this.kafkaProducer.emit<void, SendEmailMessage>(
-        KafkaTopicEnum.SEND_EMAIL,
-        {
+      // Send email to PIC for setup new password — via outbox
+      const setPasswordEmailId = uuidv4();
+      await this.outboxEventRepository.record(this.entityManager, {
+        id: setPasswordEmailId,
+        topic: KafkaTopicEnum.SEND_EMAIL,
+        payload: {
+          eventId: setPasswordEmailId,
           emailSender: 'notification@sqf.ai',
           emailReceivers,
           emailCc: [],
@@ -238,7 +246,7 @@ export class ApplicationService {
             },
           },
         },
-      );
+      });
 
       return {
         statusCode: HttpStatus.CREATED,
@@ -284,7 +292,6 @@ export class ApplicationService {
       const hasAuthoriseSignatory = args.directors.some(
         (directorDto) => directorDto.authoriseSignatory === true,
       );
-      console.log(hasAuthoriseSignatory);
 
       if (!hasAuthoriseSignatory) {
         throw new BadRequestException(
@@ -380,7 +387,7 @@ export class ApplicationService {
           organizationId: application.organizationId,
           data: [
             // Map directors
-            ...application.directors.map((director) => ({
+            ...(application.directors ?? []).map((director) => ({
               name: director.person.name,
               preferredUsername: null,
               residentialAddress: director.person.residentialAddress,
@@ -430,7 +437,7 @@ export class ApplicationService {
           organizationId: application.organizationId,
           data: [
             // Map Shareholders
-            ...application.shareholders.map((shareholder) => ({
+            ...(application.shareholders ?? []).map((shareholder) => ({
               name: shareholder.person.name,
               preferredUsername: null,
               residentialAddress: shareholder.person.residentialAddress,
@@ -481,7 +488,7 @@ export class ApplicationService {
           organizationId: application.organizationId,
           data: [
             // Map guarantors
-            ...application.guarantors.map((guarantor) => ({
+            ...(application.guarantors ?? []).map((guarantor) => ({
               name: guarantor.person.name,
               preferredUsername: null,
               residentialAddress: guarantor.person.residentialAddress,
@@ -590,119 +597,38 @@ export class ApplicationService {
     await this.financialCreditReportService.create(application.organizationId);
 
     try {
-      // Change the application status to PENDING_RISK_FILTER_1
+      // Hand off to the Risk Agent: status moves to PENDING_ASSIGNEE_REVIEW
+      // and an empty RiskApplicationScoring row is created with no
+      // riskProfileId. Risk profile selection (previously a deterministic
+      // sector/currency/capital-size match done here) and the resulting
+      // quantitative Filter 1 scoring/alerts are now performed via
+      // change_risk_profile + run_quantitative_scoring, driven by agent
+      // judgment, after this method returns (see
+      // agents/domain/risk-agent/AGENT.md and apps/risk-agent).
       application.applicationStatus =
-        ApplicationStatusEnum.PENDING_RISK_FILTER_1;
+        ApplicationStatusEnum.PENDING_ASSIGNEE_REVIEW;
 
       await this.applicationRepository.save(application);
 
-      // Create row for risk-application-scoring
       const newApplicationScoring = new RiskApplicationScoring({
         applicationId: application.id,
       });
 
-      const savedApplicationScoring =
-        await this.riskApplicationScoringRepository.save(newApplicationScoring);
-
-      const getOrganization = await firstValueFrom(
-        this.kafkaProducer.send(
-          KafkaTopicEnum.SQF_GET_ORGANIZATION_BY_ID, // Kafka topic
-          application.organizationId,
-        ),
-      );
-
-      // Get organization info from Kafka response
-      const businessSector = getOrganization.organizationBusinessSector;
-      const revenueAmount = getOrganization.revenueAmount;
-      const revenueCurrency = getOrganization.revenueCurrency;
-
-      // Get all matching business sector + currency profiles
-      const matchingProfiles = await this.riskProfileRepository.find({
-        where: {
-          businessSector: businessSector,
-          capitalCurrency: revenueCurrency,
-        },
-      });
-
-      // Convert capitalSize from '40K' to 40000 and filter those that can support the revenue amount
-      const filteredProfiles = matchingProfiles
-        .map((profile) => {
-          const size = Number(profile.capitalSize.replace('K', '')) * 1000;
-
-          return { ...profile, capitalSizeNumber: size } as any; //
-        })
-        .filter((profile) => revenueAmount <= profile.capitalSizeNumber)
-        .sort((a, b) => a.capitalSizeNumber - b.capitalSizeNumber);
-
-      // Pick the first match
-      let assignedRiskProfile = filteredProfiles[0];
-
-      // If no match, use default profile
-      if (!assignedRiskProfile) {
-        assignedRiskProfile = await this.riskProfileRepository.findOne({
-          where: { isDefault: 1 },
-        });
-
-        if (!assignedRiskProfile) {
-          throw new NotFoundException(
-            `No risk profile found matching sector '${businessSector}', revenue ≤ ${revenueAmount}, and currency '${revenueCurrency}', and no default profile was set.`,
-          );
-        }
-      }
-
-      savedApplicationScoring.riskProfileId = assignedRiskProfile.id;
-
-      await this.riskApplicationScoringRepository.save(savedApplicationScoring);
-
-      // Increase numberOfActiveProfiles to 1 for assigned risk profile
-      assignedRiskProfile.numberOfActiveProfiles += 1;
-
-      await this.riskProfileRepository.save(assignedRiskProfile);
+      await this.riskApplicationScoringRepository.save(newApplicationScoring);
 
       const applicationNumber = application.applicationNumber;
 
-      // Add in new entry in audit trail
-      await this.riskApplicationAuditLogService.create({
-        applicationNumber,
-        performedBy: 'System',
-        actionType: RiskApplicationAuditActionEnum.PROFILE_ASSIGNED,
-      });
-
-      // Evaluate risk parameters and finalise risk filter 1 score
-      await this.riskQuantitativeProfileScoringService.create(
-        application.applicationNumber,
-      );
-
-      // Generate threshold-based manual review alerts
-      await this.riskManualReviewAlertService.generateThresholdBreachAlerts(
-        application.applicationNumber,
-      );
-
-      // Check if there are any unresolved manual review alerts
-      const unresolvedAlerts = await this.riskManualReviewAlertRepository.find({
-        where: {
-          riskApplicationScoringId: newApplicationScoring.id,
-          isResolved: 0,
+      const queueEventId = uuidv4();
+      await this.outboxEventRepository.record(this.entityManager, {
+        id: queueEventId,
+        topic: KafkaTopicEnum.APPLICATION_SUBMITTED_FOR_REVIEW,
+        payload: {
+          eventId: queueEventId,
+          applicationId: application.id,
+          applicationNumber,
+          clientPersonaId: application.clientPersonaId,
         },
       });
-
-      // If no unresolved alerts, move status to Risk Filter 2
-      // If have unresolved alerts, status stays as PENDING_RISK_FILTER_1 until manual review approved/rejected
-      if (unresolvedAlerts.length === 0) {
-        application.applicationStatus =
-          ApplicationStatusEnum.PENDING_RISK_FILTER_2;
-        await this.applicationRepository.save(application);
-      }
-
-      await this.riskApplicationScoringRepository.update(
-        { id: savedApplicationScoring.id },
-        {
-          riskFilter1Status:
-            unresolvedAlerts.length === 0
-              ? RiskFilter1StatusEnum.APPROVED
-              : RiskFilter1StatusEnum.PENDING_MANUAL_REVIEW,
-        },
-      );
     } catch (error) {
       console.error('Error updating application status:', error.message, error);
 
@@ -726,14 +652,20 @@ export class ApplicationService {
       (director) => director.person.email,
     );
 
-    this.kafkaProducer.emit<void, SendEmailMessage>(KafkaTopicEnum.SEND_EMAIL, {
-      emailSender: 'notification@sqf.ai',
-      emailReceivers,
-      emailCc: [],
-      emailBcc: [],
-      emailReplyTo: [],
-      emailSubject: '',
-      emailBody: 'Please complete your e-resolution signing.',
+    const signingEmailId = uuidv4();
+    await this.outboxEventRepository.record(this.entityManager, {
+      id: signingEmailId,
+      topic: KafkaTopicEnum.SEND_EMAIL,
+      payload: {
+        eventId: signingEmailId,
+        emailSender: 'notification@sqf.ai',
+        emailReceivers,
+        emailCc: [],
+        emailBcc: [],
+        emailReplyTo: [],
+        emailSubject: '',
+        emailBody: 'Please complete your e-resolution signing.',
+      },
     });
 
     return {
@@ -748,6 +680,16 @@ export class ApplicationService {
       .createQueryBuilder('application')
       .orderBy('application.id', 'DESC')
       .getOne();
+  }
+
+  async getApplicationById(id: number): Promise<Application> {
+    const application = await this.applicationRepository.findOne({
+      where: { id },
+    });
+    if (!application) {
+      throw new NotFoundException(`Application with id: ${id} not found`);
+    }
+    return application;
   }
 
   async getAllApplicationsEvent() {

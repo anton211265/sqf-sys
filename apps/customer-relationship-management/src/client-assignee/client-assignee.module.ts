@@ -4,14 +4,15 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import * as path from 'path';
+import { ProcessedEvent } from '@app/common/database/processed-event.entity';
 import { ClientAssignee } from '../models';
-import { ClientAssigneeRepository } from '../repositories';
+import { ClientAssigneeRepository, ProcessedEventRepository } from '../repositories';
 import { ClientAssigneeController } from './client-assignee.controller';
 import { ClientAssigneeService } from './client-assignee.service';
 
 @Module({
   imports: [
-    DatabaseModule.forFeature([ClientAssignee]),
+    DatabaseModule.forFeature([ClientAssignee, ProcessedEvent]),
     ClientsModule.registerAsync([
       {
         name: DependencyInjectionTokenEnum.TRADE_DIRECTORY_GRPC_CLIENT,
@@ -38,6 +39,10 @@ import { ClientAssigneeService } from './client-assignee.service';
     ]),
   ],
   controllers: [ClientAssigneeController],
-  providers: [ClientAssigneeService, ClientAssigneeRepository],
+  providers: [
+    ClientAssigneeService,
+    ClientAssigneeRepository,
+    ProcessedEventRepository,
+  ],
 })
 export class ClientAssigneeModule {}

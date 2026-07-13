@@ -1,0 +1,37 @@
+{
+  "name": "web-e2e",
+  "sourceRoot": "apps/web-e2e/src",
+  "projectType": "application",
+  "tags": ["type:e2e", "scope:frontend"],
+  "implicitDependencies": ["web"],
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "e2e:ui": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --ui",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "e2e:debug": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --debug",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "e2e:headed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --headed",
+        "cwd": "{projectRoot}"
+      }
+    }
+  }
+}

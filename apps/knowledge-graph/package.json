@@ -1,0 +1,13 @@
+{
+  "name": "knowledge-graph",
+  "version": "1.0.0",
+  "description": "Trade-network knowledge graph: Neo4j projection of the trade directory + GraphRAG opportunity mining",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "neo4j-driver": "^5.28.0"
+  }
+}

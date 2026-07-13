@@ -1,0 +1,11 @@
+.wrapper :global(hgroup.main) {
+  margin: 0 0 20px 0;
+}
+
+.wrapper :global(hgroup.main a) {
+  font-size: 12px;
+}
+
+.wrapper :global(hgroup.main span.url) {
+  display: none !important;
+}

@@ -17,13 +17,9 @@ import { FinancialCreditReport } from './financial-credit-report.entity';
 export class ApplicationSupportingDocument extends AbstractEntity<ApplicationSupportingDocument> {
   // ------------------ Relationship ------------------
 
-  @ManyToOne(
-    () => Application,
-    (application) => application.applicationSupportingDocuments,
-    {
-      cascade: ['insert', 'update'],
-    },
-  )
+  @ManyToOne(() => Application, {
+    cascade: ['insert', 'update'],
+  })
   @JoinColumn({ name: 'application_id' }) // 👈 This maps the FK column name
   application: Application;
 

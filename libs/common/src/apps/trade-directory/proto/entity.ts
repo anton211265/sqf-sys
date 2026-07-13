@@ -66,6 +66,12 @@ export enum OrganizationPersonRoleEnum {
   CLIENT_COVERAGE = 'CLIENT_COVERAGE',
   CUSTOMER_SUCCESS = 'CUSTOMER_SUCCESS',
   CORPORATE_COMMUNICATIONS = 'CORPORATE_COMMUNICATIONS',
+  SQFSYS = 'SQFSYS',
+  CRM = 'CRM',
+  RISK_ANALYST = 'RISK_ANALYST',
+  FINANCE = 'FINANCE',
+  SUPERVISOR_APPROVAL = 'SUPERVISOR_APPROVAL',
+  MANAGER_APPROVAL = 'MANAGER_APPROVAL',
   UNRECOGNIZED = 'UNRECOGNIZED',
 }
 
@@ -107,9 +113,9 @@ export interface Organization {
   taxIdentificationNumber?: string | undefined;
   sstRegistrationNumber?: string | undefined;
   businessSector?: OrganizationBusinessSectorEnum | undefined;
-  experianBusinessSector?: string | undefined;
+  kycBusinessSector?: string | undefined;
   natureOfBusiness?: OrganizationNatureOfBusinessEnum | undefined;
-  experianNatureOfBusiness?: string | undefined;
+  kycNatureOfBusiness?: string | undefined;
   coreBusiness?: string | undefined;
   incorporationDate?: Date | undefined;
   operationStartDate?: Date | undefined;
@@ -125,12 +131,12 @@ export interface Organization {
   bankAccounts: BankAccount[];
   clientPersona?: ClientPersona | undefined;
   clientPersonaId?: number | undefined;
-  contractAwarderPersona?: ContractAwarderPersona | undefined;
-  contractAwarderPersonaId?: number | undefined;
+  buyerPersona?: BuyerPersona | undefined;
+  buyerPersonaId?: number | undefined;
   supplierPersona?: SupplierPersona | undefined;
   supplierPersonaId?: number | undefined;
-  factorPersona?: FactorPersona | undefined;
-  factorPersonaId?: number | undefined;
+  funderPersona?: FunderPersona | undefined;
+  funderPersonaId?: number | undefined;
   yearEstablished?: string | undefined;
   revenueCurrency?: CurrencyCodeEnum | undefined;
   revenueAmount?: number | undefined;
@@ -150,9 +156,9 @@ export interface UpdatableOrganization {
   taxIdentificationNumber?: string | undefined;
   sstRegistrationNumber?: string | undefined;
   businessSector?: OrganizationBusinessSectorEnum | undefined;
-  experianBusinessSector?: string | undefined;
+  kycBusinessSector?: string | undefined;
   natureOfBusiness?: OrganizationNatureOfBusinessEnum | undefined;
-  experianNatureOfBusiness?: string | undefined;
+  kycNatureOfBusiness?: string | undefined;
   coreBusiness?: string | undefined;
   incorporationDate?: Date | undefined;
   operationStartDate?: Date | undefined;
@@ -163,9 +169,9 @@ export interface UpdatableOrganization {
   organizationWebsite?: string | undefined;
   organizationLogo?: string | undefined;
   clientPersonaId?: number | undefined;
-  contractAwarderPersonaId?: number | undefined;
+  buyerPersonaId?: number | undefined;
   supplierPersonaId?: number | undefined;
-  factorPersonaId?: number | undefined;
+  funderPersonaId?: number | undefined;
   yearEstablished?: string | undefined;
 }
 
@@ -200,6 +206,7 @@ export interface Person {
   organizationPersons: OrganizationPerson[];
   password?: string | undefined;
   tokens: Token[] | undefined;
+  systemRole?: string | undefined;
 }
 
 export interface UpdatablePerson {
@@ -230,16 +237,16 @@ export interface UpdatableClientPersona {
   clientPersonaId?: string | undefined;
 }
 
-export interface ContractAwarderPersona {
+export interface BuyerPersona {
   id: number;
-  contractAwarderPersonaId?: string | undefined;
+  buyerPersonaId?: string | undefined;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
   organization?: Organization | undefined;
 }
 
-export interface UpdatableContractAwarderPersona {
-  contractAwarderPersonaId?: string | undefined;
+export interface UpdatableBuyerPersona {
+  buyerPersonaId?: string | undefined;
 }
 
 export interface SupplierPersona {
@@ -254,16 +261,16 @@ export interface UpdatableSupplierPersona {
   supplierPersonaId?: string | undefined;
 }
 
-export interface FactorPersona {
+export interface FunderPersona {
   id: number;
-  factorPersonaId?: string | undefined;
+  funderPersonaId?: string | undefined;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
   organization?: Organization | undefined;
 }
 
-export interface UpdatableFactorPersona {
-  factorPersonaId?: string | undefined;
+export interface UpdatableFunderPersona {
+  funderPersonaId?: string | undefined;
 }
 
 export interface BankAccount {
@@ -305,7 +312,7 @@ export interface IncludeClientPersona {
   value: boolean;
 }
 
-export interface IncludeContractAwarderPersona {
+export interface IncludeBuyerPersona {
   value: boolean;
 }
 
@@ -313,7 +320,7 @@ export interface IncludeSupplierPersona {
   value: boolean;
 }
 
-export interface IncludeFactorPersona {
+export interface IncludeFunderPersona {
   value: boolean;
 }
 
@@ -341,9 +348,9 @@ export interface IncludeOrganization {
   includeOrganizationPerson?: IncludeOrganizationPerson | undefined;
   includeBankAccount?: IncludeBankAccount | undefined;
   includeClientPersona?: IncludeClientPersona | undefined;
-  includeContractAwarderPersona?: IncludeContractAwarderPersona | undefined;
+  includeBuyerPersona?: IncludeBuyerPersona | undefined;
   includeSupplierPersona?: IncludeSupplierPersona | undefined;
-  includeFactorPersona?: IncludeFactorPersona | undefined;
+  includeFunderPersona?: IncludeFunderPersona | undefined;
 }
 
 export const TRADE_DIRECTORY_PACKAGE_NAME = 'trade_directory';

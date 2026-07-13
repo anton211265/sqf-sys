@@ -2,6 +2,7 @@ import { CaslForbiddenErrorFilter } from '@app/common/exception-filters/casl-for
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
 import { KafkaOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
@@ -15,6 +16,7 @@ async function bootstrap() {
   const app = await NestFactory.create(DocumentManagementModule);
   app.setGlobalPrefix('document-management');
 
+  app.use(helmet());
   app.useLogger(app.get(Logger));
   app.useGlobalFilters(new CaslForbiddenErrorFilter());
   const configService = app.get(ConfigService);

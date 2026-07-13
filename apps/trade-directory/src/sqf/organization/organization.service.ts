@@ -11,8 +11,8 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { OrganizationRepository } from '../../repositories/organization.repository';
 import {
   ClientPersona,
-  ContractAwarderPersona,
-  FactorPersona,
+  BuyerPersona,
+  FunderPersona,
   Organization,
   SupplierPersona,
 } from '../../models';
@@ -85,7 +85,7 @@ export class OrganizationService {
             person: true,
             organizationPersonRoles: true,
           },
-          experianReports: findOrganizationByIdBodyDto.includeExperianReports
+          kycAgencyReports: findOrganizationByIdBodyDto.includeKycAgencyReports
             ? true
             : false,
         },
@@ -320,7 +320,6 @@ export class OrganizationService {
 
       if (existingOrganization) {
         // If the organization exists, return it
-        console.log('Organization already exists:', existingOrganization);
         return existingOrganization;
       }
 
@@ -330,7 +329,6 @@ export class OrganizationService {
       });
 
       await this.organizationRepository.save(newOrganization);
-      console.log('New organization saved successfully:', newOrganization);
 
       // Return the newly created organization
       return newOrganization;

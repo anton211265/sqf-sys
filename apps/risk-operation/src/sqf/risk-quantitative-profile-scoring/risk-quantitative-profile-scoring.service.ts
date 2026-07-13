@@ -195,12 +195,9 @@ export class RiskQuantitativeProfileScoringService {
         creditReportData,
       );
 
-      console.log(`\n[${parameterName}] Sub-Param: ${sub.subParameterName}`);
-      console.log(`  ↳ Actual value: ${actualData}\n`);
 
       // Skip if data from financial credit report not found
       if (actualData === null || actualData === undefined) {
-        console.log(`      ⚠️ Skipped: No data found in credit report.\n`);
         continue;
       }
 
@@ -211,10 +208,6 @@ export class RiskQuantitativeProfileScoringService {
         // For string-based matching (like LLL, LLP, etc)
         matchedRule = sub.rules.find((rule) => {
           const match = rule.thresholdLabel === actualData;
-
-          console.log(
-            `  🧪 Comparing [score: ${rule.score}]: ${actualData} === ${rule.thresholdLabel} → match = ${match}`,
-          );
 
           return match;
         });
@@ -227,17 +220,12 @@ export class RiskQuantitativeProfileScoringService {
             rule.comparisonOperator,
           );
 
-          console.log(
-            `  🧪 Comparing [score: ${rule.score}]: ${actualData} ${rule.comparisonOperator} ${rule.thresholdValue} → match = ${match}`,
-          );
-
           return match;
         });
       }
 
       // Skip if no rule matched
       if (!matchedRule) {
-        console.log(`      ❌ No rule matched.\n`);
 
         // Insert entry with score 0
         const fallbackSubParameterScoring = new RiskQuantitativeProfileScoring({
@@ -266,10 +254,6 @@ export class RiskQuantitativeProfileScoringService {
 
         continue;
       }
-
-      console.log(
-        `      ✅ Rule matched [score: ${matchedRule.score}] → saving\n`,
-      );
 
       // Cap score to max 10
       // This will take the min between matchedRule.score and 10
@@ -340,9 +324,6 @@ export class RiskQuantitativeProfileScoringService {
     const entry = lookup[subParameterName];
 
     if (!entry) {
-      console.log(
-        `⚠️ Lookup not found for subParameterName: ${subParameterName}`,
-      );
       return null;
     }
 
@@ -353,13 +334,11 @@ export class RiskQuantitativeProfileScoringService {
       const value = creditReport?.[sectionName]?.[0]?.[fieldName];
 
       if (value === undefined || value === null) {
-        console.log(`⚠️ Field '${fieldName}' not found in ${sectionName}`);
         return null;
       }
 
       // If it's Profitability, return it directly as string
       if (subParameterName === 'Profitability') {
-        console.log(`✅ Found string value: ${value} for ${subParameterName}`);
 
         return String(value);
       }
@@ -367,11 +346,8 @@ export class RiskQuantitativeProfileScoringService {
       const numeric = Number(value);
 
       if (isNaN(numeric)) {
-        console.log(`Value for ${fieldName} is not a valid number:`, value);
         return null;
       }
-
-      console.log(`✅ Found value: ${numeric} for ${subParameterName}`);
 
       return numeric;
     }
@@ -380,7 +356,6 @@ export class RiskQuantitativeProfileScoringService {
     const sectionArray = creditReport?.[sectionName];
 
     if (!Array.isArray(sectionArray)) {
-      console.log(`⚠️ Section '${sectionName}' is not a valid array`);
       return null;
     }
 
@@ -389,9 +364,6 @@ export class RiskQuantitativeProfileScoringService {
     );
 
     if (!matchedEntry) {
-      console.log(
-        `Field '${fieldName}' not found in any entry of '${sectionName}'`,
-      );
       return null;
     }
 
@@ -400,16 +372,11 @@ export class RiskQuantitativeProfileScoringService {
     const numeric = Number(rawValue);
 
     if (isNaN(numeric)) {
-      console.log(
-        `❌ Field '${fieldName}' in '${sectionName}' is not a valid number:`,
-        rawValue,
-      );
 
       return null;
     }
 
     // Return the number value
-    console.log(`✅ Found value: ${numeric} for ${subParameterName}`);
 
     return numeric;
   }
@@ -417,7 +384,6 @@ export class RiskQuantitativeProfileScoringService {
   compare(actual: number, expected: number, operator: string): boolean {
     // Check for nulls to prevent runtime errors
     if (expected === null || actual === null) {
-      console.log(`⚠️ Cannot compare — actual or expected is null`);
       return false;
     }
 

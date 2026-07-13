@@ -1,0 +1,36 @@
+{
+  "name": "customer-relationship-management",
+  "sourceRoot": "apps/customer-relationship-management/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:backend"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nest build customer-relationship-management --webpackPath ./apps/customer-relationship-management/webpack.config.js",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "export NODE_ENV=development && nest start --watch customer-relationship-management --webpackPath ./apps/customer-relationship-management/webpack.config.js",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "jest --testPathPattern=apps/customer-relationship-management",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint \"apps/customer-relationship-management/src/**/*.ts\" --fix",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

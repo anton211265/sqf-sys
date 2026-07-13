@@ -45,10 +45,10 @@ export class OrganizationController {
       'Include related applications with application persons in the response.',
   })
   @ApiQuery({
-    name: 'includeExperianReports',
+    name: 'includeKycAgencyReports',
     required: false,
     type: Boolean,
-    description: 'Include Experian reports related to the organization.',
+    description: 'Include KYC agency reports related to the organization.',
   })
   findOrganizationById(
     @Param('id') id: number,
@@ -128,14 +128,12 @@ export class OrganizationController {
     message: CreateOrganizationKafkaMessageType, // The organization data from Kafka Producer
   ): Promise<CreateOrganizationKafkaMessageReplyType> {
     // Log to ensure we receive the message correctly
-    console.log('Received Kafka message for SQF_CREATE_ORGANIZATION:', message);
 
     // Process the message by creating the organization in services and store to database
     const reply =
       await this.organizationService.handleCreateNewOrganization(message);
 
     // Log reply message
-    console.log('Organization creation reply:', reply);
 
     // Send the response back to Kafka
     return reply;
@@ -143,9 +141,6 @@ export class OrganizationController {
 
   @MessagePattern(KafkaTopicEnum.SQF_GET_ORGANIZATION_BY_ID)
   async handleGetOrganizationById(organizationId: number) {
-    console.log(
-      `🔹 Received Kafka SQF_GET_ORGANIZATION_BY_ID message request for organizationId: ${organizationId}`,
-    );
 
     const organization = await this.organizationRepository.findOne({
       where: { id: organizationId },
@@ -156,8 +151,6 @@ export class OrganizationController {
         `Organization with ID ${organizationId} not found`,
       );
     }
-
-    console.log('Kafka SQF_GET_ORGANIZATION_BY_ID response:', organization);
 
     return organization;
   }

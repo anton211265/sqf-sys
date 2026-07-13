@@ -2,6 +2,8 @@ import { CaslForbiddenErrorFilter } from '@app/common/exception-filters/casl-for
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
+import * as cookieParser from 'cookie-parser';
 import { GrpcOptions, KafkaOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
@@ -12,6 +14,8 @@ async function bootstrap() {
   const app = await NestFactory.create(TradeDirectoryModule);
   app.setGlobalPrefix('trade-directory');
 
+  app.use(helmet());
+  app.use(cookieParser());
   app.useLogger(app.get(Logger));
   app.useGlobalFilters(new CaslForbiddenErrorFilter());
   const configService = app.get(ConfigService);

@@ -83,6 +83,15 @@
         ]
       }
     },
+    "knowledge-graph": {
+      "type": "application",
+      "root": "apps/knowledge-graph",
+      "entryFile": "main",
+      "sourceRoot": "apps/knowledge-graph/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/knowledge-graph/tsconfig.app.json"
+      }
+    },
     "notification": {
       "type": "application",
       "root": "apps/notification",
@@ -102,6 +111,15 @@
             "watchAssets": true
           }
         ]
+      }
+    },
+    "risk-agent": {
+      "type": "application",
+      "root": "apps/risk-agent",
+      "entryFile": "main",
+      "sourceRoot": "apps/risk-agent/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/risk-agent/tsconfig.app.json"
       }
     }
   }

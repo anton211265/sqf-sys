@@ -4,12 +4,15 @@ import { DOCUMENT_EXTRACTION_SERVICE } from './document-extraction.interface';
 import { DocumentExtractionService } from './document-extraction.service';
 import { DocumentExtractionRepository } from '../../repositories/document-extraction.repository';
 import { DatabaseModule } from '@app/common/database/database.module';
+import { ProcessedEvent } from '@app/common/database/processed-event.entity';
 import { DocumentExtraction } from '../../models/document-extraction.entity';
 import { PromptTemplate } from '../../models/prompt-template.entity';
+import { ProcessedEventRepository } from '../../repositories/processed-event.repository';
 import { PromptTemplateRepository } from '../../repositories/prompt-template.repository';
 import { ConfigService } from '@nestjs/config';
 import { S3Client } from '@aws-sdk/client-s3';
-import { OCRModule } from '../ocr/ocr.module';
+import { MarkitdownModule } from '../markitdown/markitdown.module';
+import { VisionExtractionModule } from '../vision-extraction/vision-extraction.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TRADE_SERVICE } from '@app/common/constants/services';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -17,9 +20,10 @@ import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
-    OCRModule,
+    MarkitdownModule,
+    VisionExtractionModule,
     DatabaseModule,
-    DatabaseModule.forFeature([DocumentExtraction, PromptTemplate]),
+    DatabaseModule.forFeature([DocumentExtraction, PromptTemplate, ProcessedEvent]),
     ClientsModule.registerAsync([
       {
         name: TRADE_SERVICE,
@@ -73,6 +77,7 @@ import { APP_GUARD } from '@nestjs/core';
     },
     DocumentExtractionRepository,
     PromptTemplateRepository,
+    ProcessedEventRepository,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
   exports: [DOCUMENT_EXTRACTION_SERVICE],

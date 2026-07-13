@@ -21,9 +21,9 @@ export interface AuthenticateResponse {
   organizationPersonRoles: AuthOrganizationPersonRole[];
   organizationId: number;
   clientPersonaId?: number | undefined;
-  contractAwarderPersonaId?: number | undefined;
+  buyerPersonaId?: number | undefined;
   supplierPersonaId?: number | undefined;
-  factorPersonaId?: number | undefined;
+  funderPersonaId?: number | undefined;
 }
 
 export interface AuthOrganizationPersonRole {

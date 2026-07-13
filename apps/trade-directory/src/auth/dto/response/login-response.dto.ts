@@ -7,8 +7,4 @@ export class LoginResponseDto {
   @IsString()
   accessToken: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  refreshToken: string;
 }

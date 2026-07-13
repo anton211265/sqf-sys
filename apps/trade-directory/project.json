@@ -1,0 +1,36 @@
+{
+  "name": "trade-directory",
+  "sourceRoot": "apps/trade-directory/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:backend"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nest build trade-directory --webpackPath ./apps/trade-directory/webpack.config.js",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "export NODE_ENV=development && nest start --watch trade-directory --webpackPath ./apps/trade-directory/webpack.config.js",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "jest --testPathPattern=apps/trade-directory",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint \"apps/trade-directory/src/**/*.ts\" --fix",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

@@ -1,5 +1,5 @@
-import { Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
-import { PersonService } from './person.service';
+import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
+import { PersonService, CreateUserDto } from './person.service';
 import { CurrentUser } from '@app/common/apps/common/decorator/current-user.decorator';
 import { IUserContext } from '@app/common/apps/common/interface/user-context.interface';
 import createTopics from 'libs/common/kafka/createTopics';
@@ -29,5 +29,14 @@ export class PersonController {
   @Get('/me')
   getLogInPerson(@CurrentUser() user: IUserContext) {
     return this.personService.getLogInPersonDetail(user.id, user.orgId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/users')
+  createUser(
+    @CurrentUser() user: IUserContext,
+    @Body() dto: CreateUserDto,
+  ) {
+    return this.personService.createUser(user.id, user.orgId, dto);
   }
 }

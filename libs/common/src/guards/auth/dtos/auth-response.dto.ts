@@ -58,7 +58,7 @@ export class AuthResponseDto {
   @ApiProperty()
   @IsInt()
   @IsOptional()
-  contractAwarderPersonaId?: number;
+  buyerPersonaId?: number;
 
   @ApiProperty()
   @IsInt()
@@ -68,5 +68,5 @@ export class AuthResponseDto {
   @ApiProperty()
   @IsInt()
   @IsOptional()
-  factorPersonaId?: number;
+  funderPersonaId?: number;
 }

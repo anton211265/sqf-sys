@@ -3,6 +3,10 @@
 /dist
 /**/node_modules
 
+# Nx cache
+.nx/cache
+.nx/workspace-data
+
 # Logs
 logs
 *.log
@@ -18,6 +22,11 @@ lerna-debug.log*
 # Tests
 /coverage
 /.nyc_output
+
+# Playwright
+**/test-results
+**/playwright-report
+blob-report
 
 # IDEs and editors
 /.idea
@@ -41,3 +50,4 @@ lerna-debug.log*
 /pgadmin4/data
 /kafka/data
 /sql-scripts
+.venv-markitdown/~$*

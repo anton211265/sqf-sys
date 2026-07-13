@@ -1,8 +1,0 @@
-export enum ClientAwarderContractTypeEnum {
-  SUPPLY = 'SUPPLY',
-  SERVICES = 'SERVICES',
-  SUPPLY_AND_SERVICES = 'SUPPLY_AND_SERVICES',
-  OTHERS = 'OTHERS',
-  // RETAIL = 'RETAIL',
-  // WHOLESALE = 'WHOLESALE',
-}

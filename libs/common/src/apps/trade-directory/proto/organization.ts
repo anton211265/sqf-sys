@@ -4,8 +4,8 @@ import { Observable } from "rxjs";
 import {
   IncludeBankAccount,
   IncludeClientPersona,
-  IncludeContractAwarderPersona,
-  IncludeFactorPersona,
+  IncludeBuyerPersona,
+  IncludeFunderPersona,
   IncludeOrganizationPerson,
   IncludeSupplierPersona,
   Organization,
@@ -18,9 +18,9 @@ export interface GetAllOrganizationDto {
   includeOrganizationPerson?: IncludeOrganizationPerson | undefined;
   includeBankAccount?: IncludeBankAccount | undefined;
   includeClientPersona?: IncludeClientPersona | undefined;
-  includeContractAwarderPersona?: IncludeContractAwarderPersona | undefined;
+  includeBuyerPersona?: IncludeBuyerPersona | undefined;
   includeSupplierPersona?: IncludeSupplierPersona | undefined;
-  includeFactorPersona?: IncludeFactorPersona | undefined;
+  includeFunderPersona?: IncludeFunderPersona | undefined;
 }
 
 export interface OrganizationByIdDto {
@@ -28,27 +28,27 @@ export interface OrganizationByIdDto {
   includeOrganizationPerson?: IncludeOrganizationPerson | undefined;
   includeBankAccount?: IncludeBankAccount | undefined;
   includeClientPersona?: IncludeClientPersona | undefined;
-  includeContractAwarderPersona?: IncludeContractAwarderPersona | undefined;
+  includeBuyerPersona?: IncludeBuyerPersona | undefined;
   includeSupplierPersona?: IncludeSupplierPersona | undefined;
-  includeFactorPersona?: IncludeFactorPersona | undefined;
+  includeFunderPersona?: IncludeFunderPersona | undefined;
 }
 
 export interface OrganizationByClientPersonaIdDto {
   clientPersonaId: number[];
   includeOrganizationPerson?: IncludeOrganizationPerson | undefined;
   includeBankAccount?: IncludeBankAccount | undefined;
-  includeContractAwarderPersona?: IncludeContractAwarderPersona | undefined;
+  includeBuyerPersona?: IncludeBuyerPersona | undefined;
   includeSupplierPersona?: IncludeSupplierPersona | undefined;
-  includeFactorPersona?: IncludeFactorPersona | undefined;
+  includeFunderPersona?: IncludeFunderPersona | undefined;
 }
 
-export interface OrganizationByContractAwarderPersonaIdDto {
-  contractAwarderPersonaId: number[];
+export interface OrganizationByBuyerPersonaIdDto {
+  buyerPersonaId: number[];
   includeOrganizationPerson?: IncludeOrganizationPerson | undefined;
   includeBankAccount?: IncludeBankAccount | undefined;
   includeClientPersona?: IncludeClientPersona | undefined;
   includeSupplierPersona?: IncludeSupplierPersona | undefined;
-  includeFactorPersona?: IncludeFactorPersona | undefined;
+  includeFunderPersona?: IncludeFunderPersona | undefined;
 }
 
 export interface OrganizationBySupplierPersonaIdDto {
@@ -56,17 +56,17 @@ export interface OrganizationBySupplierPersonaIdDto {
   includeOrganizationPerson?: IncludeOrganizationPerson | undefined;
   includeBankAccount?: IncludeBankAccount | undefined;
   includeClientPersona?: IncludeClientPersona | undefined;
-  includeContractAwarderPersona?: IncludeContractAwarderPersona | undefined;
-  includeFactorPersona?: IncludeFactorPersona | undefined;
+  includeBuyerPersona?: IncludeBuyerPersona | undefined;
+  includeFunderPersona?: IncludeFunderPersona | undefined;
 }
 
-export interface OrganizationByFactorPersonaIdDto {
-  factorPersonaId: number[];
+export interface OrganizationByFunderPersonaIdDto {
+  funderPersonaId: number[];
   includeOrganizationPerson?: IncludeOrganizationPerson | undefined;
   includeBankAccount?: IncludeBankAccount | undefined;
   includeClientPersona?: IncludeClientPersona | undefined;
-  includeContractAwarderPersona?: IncludeContractAwarderPersona | undefined;
-  includeSupplierPersona?: IncludeFactorPersona | undefined;
+  includeBuyerPersona?: IncludeBuyerPersona | undefined;
+  includeSupplierPersona?: IncludeFunderPersona | undefined;
 }
 
 export interface OrganizationByNameDto {
@@ -74,7 +74,7 @@ export interface OrganizationByNameDto {
   includeOrganizationPerson?: IncludeOrganizationPerson | undefined;
   includeBankAccount?: IncludeBankAccount | undefined;
   includeClientPersona?: IncludeClientPersona | undefined;
-  includeContractAwarderPersona?: IncludeContractAwarderPersona | undefined;
+  includeBuyerPersona?: IncludeBuyerPersona | undefined;
   includeSupplierPersona?: IncludeSupplierPersona | undefined;
 }
 
@@ -100,11 +100,11 @@ export interface OrganizationGrpcServiceClient {
 
   findByClientPersonaIdGrpc(request: OrganizationByClientPersonaIdDto): Observable<OrganizationList>;
 
-  findByContractAwarderPersonaIdGrpc(request: OrganizationByContractAwarderPersonaIdDto): Observable<OrganizationList>;
+  findByBuyerPersonaIdGrpc(request: OrganizationByBuyerPersonaIdDto): Observable<OrganizationList>;
 
   findBySupplierPersonaIdGrpc(request: OrganizationBySupplierPersonaIdDto): Observable<OrganizationList>;
 
-  findByFactorPersonaIdGrpc(request: OrganizationByFactorPersonaIdDto): Observable<OrganizationList>;
+  findByFunderPersonaIdGrpc(request: OrganizationByFunderPersonaIdDto): Observable<OrganizationList>;
 
   findByNameGrpc(request: OrganizationByNameDto): Observable<OrganizationList>;
 
@@ -126,16 +126,16 @@ export interface OrganizationGrpcServiceController {
     request: OrganizationByClientPersonaIdDto,
   ): Promise<OrganizationList> | Observable<OrganizationList> | OrganizationList;
 
-  findByContractAwarderPersonaIdGrpc(
-    request: OrganizationByContractAwarderPersonaIdDto,
+  findByBuyerPersonaIdGrpc(
+    request: OrganizationByBuyerPersonaIdDto,
   ): Promise<OrganizationList> | Observable<OrganizationList> | OrganizationList;
 
   findBySupplierPersonaIdGrpc(
     request: OrganizationBySupplierPersonaIdDto,
   ): Promise<OrganizationList> | Observable<OrganizationList> | OrganizationList;
 
-  findByFactorPersonaIdGrpc(
-    request: OrganizationByFactorPersonaIdDto,
+  findByFunderPersonaIdGrpc(
+    request: OrganizationByFunderPersonaIdDto,
   ): Promise<OrganizationList> | Observable<OrganizationList> | OrganizationList;
 
   findByNameGrpc(
@@ -153,9 +153,9 @@ export function OrganizationGrpcServiceControllerMethods() {
       "getAllGrpc",
       "findByIdGrpc",
       "findByClientPersonaIdGrpc",
-      "findByContractAwarderPersonaIdGrpc",
+      "findByBuyerPersonaIdGrpc",
       "findBySupplierPersonaIdGrpc",
-      "findByFactorPersonaIdGrpc",
+      "findByFunderPersonaIdGrpc",
       "findByNameGrpc",
       "createGrpc",
       "updateGrpc",

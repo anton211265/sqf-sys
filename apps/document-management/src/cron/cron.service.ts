@@ -5,7 +5,6 @@ import {
   HandlePendingLLMExtractionConfig,
   HandlePendingExtractionWebhookConfig,
   HandlePendingConsensusMessagingWebhookConfig,
-  HandlePendingOCRConfig,
 } from './cron-config';
 import {
   DocumentExtraction,
@@ -30,8 +29,6 @@ import {
 } from '../modules/consensus-messaging/consensus-messaging.interface';
 import { PromptTemplate } from '../models/prompt-template.entity';
 import { LLMServiceFactory } from '../modules/llm/llm.factory';
-import { IOCRService, OCR_SERVICE } from '../modules/ocr/ocr.interface';
-import { JobStatus } from '@aws-sdk/client-textract';
 
 @Injectable()
 export class DocumentManagementCronService
@@ -48,67 +45,9 @@ export class DocumentManagementCronService
     @Inject(CONSENSUS_MESSAGING_SERVICE)
     private readonly consensusMessagingService: IConsensusMessagingService,
     private readonly configService: ConfigService,
-    @Inject(OCR_SERVICE) private readonly ocrService: IOCRService,
   ) {
     this.secretKey = this.configService.getOrThrow(
       'DOCUMENT_MANAGEMENT_SECRET_KEY',
-    );
-  }
-
-  @Cron(HandlePendingOCRConfig.schedule, {
-    disabled: HandlePendingOCRConfig.disabled,
-  })
-  async handlePendingOCRCron(): Promise<void> {
-    return this.entityManager.transaction(
-      async (transactionalEntityManager) => {
-        const pendingOCR = await transactionalEntityManager.find(
-          DocumentExtraction,
-          {
-            where: {
-              status: DocumentExtractionStatus.PENDING_OCR,
-            },
-            lock: { mode: 'pessimistic_write' },
-            order: {
-              createdAt: 'ASC',
-            },
-          },
-        );
-
-        for (const doc of pendingOCR) {
-          try {
-            const { jobId } = doc;
-
-            const { text, error, status, pages } =
-              await this.ocrService.fetchOCR(jobId);
-
-            if (error || status === JobStatus.FAILED) {
-              doc.error = error;
-              doc.status = DocumentExtractionStatus.FAILED;
-
-              continue;
-            }
-
-            if (status === JobStatus.IN_PROGRESS) {
-              continue;
-            }
-
-            doc.rawText = text;
-            doc.pages = pages;
-            doc.status = DocumentExtractionStatus.PENDING_LLM_EXTRACTION;
-
-            await transactionalEntityManager.save(doc);
-          } catch (e) {
-            this.logger.error(
-              `Exception caught in handlePendingOCRCron() for requestId: ${doc?.requestId}. Error: ${e}`,
-            );
-
-            doc.error = e;
-            doc.status = DocumentExtractionStatus.FAILED;
-
-            await transactionalEntityManager.save(doc);
-          }
-        }
-      },
     );
   }
 

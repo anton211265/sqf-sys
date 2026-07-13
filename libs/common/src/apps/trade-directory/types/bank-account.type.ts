@@ -1,7 +1,6 @@
 import { CurrencyCodeEnum } from '@app/common/constants/currencies';
 import { BooleanTransformer } from '@app/common/utils/boolean-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { BankAccount as TradeDirectoryBankAccount } from 'apps/trade-directory/src/models';
 import {
   IsBoolean,
   IsEnum,
@@ -10,6 +9,8 @@ import {
   IsString,
 } from 'class-validator';
 import { BankAccountTypeEnum } from '../enums/bank-account-type.enum';
+import { Organization } from './organization.type';
+import { Person } from './person.type';
 import { BankProviderEnum } from '../enums/bank-provider.enum';
 
 export class UpdatableBankAccount {
@@ -77,4 +78,14 @@ export class UpdatableBankAccount {
   onlineBankAvailable?: boolean;
 }
 
-export type BankAccount = TradeDirectoryBankAccount;
+// Standalone shape (the bank_account entity was removed with the LCM cleanup);
+// kept because the proto layer still exchanges bank-account payloads.
+export type BankAccount = Required<UpdatableBankAccount> & {
+  id: number;
+  organizationId: number;
+  organization?: Organization;
+  personId: number;
+  person?: Person;
+  createdAt: Date;
+  updatedAt: Date;
+};

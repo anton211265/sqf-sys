@@ -257,10 +257,6 @@ export class RiskApplicationScoringService {
       }
 
       // Debugging: Check the final parent scores in logs
-      console.log(
-        'Updated Parent Factor Scores:',
-        Object.fromEntries(parentFactorScores),
-      );
 
       // Example
       // Updated Parent Factor Scores: {

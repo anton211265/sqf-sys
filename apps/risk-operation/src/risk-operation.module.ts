@@ -2,25 +2,19 @@ import { DatabaseModule } from '@app/common/database/database.module';
 import { LoggerModule } from '@app/common/logger/logger.module';
 import { CaslModule } from '@app/common/modules/casl/casl.module';
 import { Module } from '@nestjs/common';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { z } from 'zod';
-import { ApplicationPublicModule } from './application-public/application-public.module';
-import { ApplicationModule } from './application/application.module';
 import {
   Application,
   ApplicationPerson,
-  ApplicationPublic,
   ApplicationSupportingDocument,
-  ClientAwarderContract,
-  Facility,
 } from './models';
-import {
-  ApplicationPublicRepository,
-  ApplicationRepository,
-  ApplicationSupportingDocumentRepository,
-  ClientAwarderContractRepository,
-  FacilityRepository,
-} from './repositories';
+import { ApplicationRepository } from './repositories';
+import { OutboxEvent } from '@app/common/database/outbox-event.entity';
+import { ProcessedEvent } from '@app/common/database/processed-event.entity';
 import { SqfApplicationModule } from './sqf/application/application.module';
 import { ApplicationPersonModule } from './sqf/application-person/application-person.module';
 import { RiskModelModule } from './sqf/risk-model/risk-model.module';
@@ -56,14 +50,12 @@ import { RiskManualReviewAlertModule } from './sqf/risk-manual-review-alert/risk
 @Module({
   imports: [
     CaslModule,
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     DatabaseModule,
     DatabaseModule.forFeature([
-      ClientAwarderContract,
-      ApplicationSupportingDocument,
       Application,
       ApplicationPerson,
-      ApplicationPublic,
-      Facility,
+      ApplicationSupportingDocument,
       RiskModel,
       RiskEvaluationParameter,
       RiskApplicationScoring,
@@ -78,7 +70,10 @@ import { RiskManualReviewAlertModule } from './sqf/risk-manual-review-alert/risk
       RiskQuantitativeProfileScoring,
       RiskApplicationAuditLog,
       RiskManualReviewAlert,
+      OutboxEvent,
+      ProcessedEvent,
     ]),
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       validate(config) {
@@ -95,11 +90,7 @@ import { RiskManualReviewAlertModule } from './sqf/risk-manual-review-alert/risk
       },
     }),
 
-    // ----------------------LCM----------------------
     LoggerModule,
-    ApplicationModule,
-    ApplicationPublicModule,
-    // ----------------------LCM----------------------
 
     // ----------------------SQF----------------------
     SqfApplicationModule,
@@ -123,11 +114,8 @@ import { RiskManualReviewAlertModule } from './sqf/risk-manual-review-alert/risk
   ],
   controllers: [],
   providers: [
-    ClientAwarderContractRepository,
-    ApplicationSupportingDocumentRepository,
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
     ApplicationRepository,
-    ApplicationPublicRepository,
-    FacilityRepository,
     RiskModelRepository,
   ],
 })

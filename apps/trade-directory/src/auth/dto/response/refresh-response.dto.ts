@@ -6,4 +6,5 @@ export class RefreshResponseDto {
   @IsNotEmpty()
   @IsString()
   accessToken: string;
+
 }

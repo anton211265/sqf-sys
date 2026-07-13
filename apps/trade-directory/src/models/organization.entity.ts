@@ -14,11 +14,10 @@ import {
   RelationId,
   UpdateDateColumn,
 } from 'typeorm';
-import { BankAccount } from './bank-account.entity';
 import { ClientPersona } from './client-persona.entity';
-import { ContractAwarderPersona } from './contract-awarder-persona.entity';
-import { Experian } from './experian.entity';
-import { FactorPersona } from './factor-persona.entity';
+import { BuyerPersona } from './buyer-persona.entity';
+import { KycAgencyReport } from './kyc-agency-report.entity';
+import { FunderPersona } from './funder-persona.entity';
 import { OrganizationPerson } from './organization-person.entity';
 import { SupplierPersona } from './supplier-persona.entity';
 import { CurrencyCodeEnum } from '@app/common/constants/currencies';
@@ -31,10 +30,10 @@ export class Organization extends AbstractEntity<Organization> {
 
   // ------------------ Relationship ------------------
 
-  @OneToMany(() => Experian, (experian) => experian.organization, {
+  @OneToMany(() => KycAgencyReport, (kycReport) => kycReport.organization, {
     cascade: true,
   })
-  experianReports?: Experian[];
+  kycAgencyReports?: KycAgencyReport[];
 
   @OneToMany(
     () => OrganizationPerson,
@@ -158,7 +157,7 @@ export class Organization extends AbstractEntity<Organization> {
     type: 'varchar',
     nullable: true,
   })
-  experianBusinessSector?: string;
+  kycBusinessSector?: string;
 
   @Column({
     type: 'enum',
@@ -172,7 +171,7 @@ export class Organization extends AbstractEntity<Organization> {
     type: 'varchar',
     nullable: true,
   })
-  experianNatureOfBusiness?: string;
+  kycNatureOfBusiness?: string;
 
   @Column({ type: 'varchar', nullable: true })
   coreBusiness?: string;
@@ -200,11 +199,6 @@ export class Organization extends AbstractEntity<Organization> {
   @Column({ type: 'varchar', nullable: true })
   organizationLogo?: string;
 
-  @OneToMany(() => BankAccount, (bankAccount) => bankAccount.organization, {
-    cascade: true,
-  })
-  bankAccounts?: BankAccount[];
-
   // One-to-one relationship with ClientPersona. Organization holds the foreign key (clientPersonaId).
   // Cascade allows automatic saving of related ClientPersona.
   @OneToOne(
@@ -227,18 +221,18 @@ export class Organization extends AbstractEntity<Organization> {
   clientPersonaId?: number;
 
   @OneToOne(
-    () => ContractAwarderPersona,
-    (contractAwarderPersona) => contractAwarderPersona.organization,
+    () => BuyerPersona,
+    (buyerPersona) => buyerPersona.organization,
     { cascade: true },
   )
   @JoinColumn()
-  contractAwarderPersona?: ContractAwarderPersona;
+  buyerPersona?: BuyerPersona;
 
   @RelationId(
-    (organization: Organization) => organization.contractAwarderPersona,
+    (organization: Organization) => organization.buyerPersona,
   )
   @Column({ nullable: true })
-  contractAwarderPersonaId?: number;
+  buyerPersonaId?: number;
 
   @OneToOne(
     () => SupplierPersona,
@@ -253,20 +247,19 @@ export class Organization extends AbstractEntity<Organization> {
   supplierPersonaId?: number;
 
   @OneToOne(
-    () => FactorPersona,
-    (factorPersona) => factorPersona.organization,
+    () => FunderPersona,
+    (funderPersona) => funderPersona.organization,
     { cascade: true },
   )
   @JoinColumn()
-  factorPersona?: FactorPersona;
+  funderPersona?: FunderPersona;
 
-  @RelationId((organization: Organization) => organization.factorPersona)
+  @RelationId((organization: Organization) => organization.funderPersona)
   @Column({ nullable: true })
-  factorPersonaId?: number;
+  funderPersonaId?: number;
 
   toString(): string {
     return JSON.stringify(this);
   }
 
-  // ------------------------------------- LCM -------------------------------------
 }

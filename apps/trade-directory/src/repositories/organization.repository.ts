@@ -21,7 +21,7 @@ export class OrganizationRepository extends AbstractRepository<Organization> {
     super(repository, entityManager);
   }
 
-  async findExcludeFactorPersona(
+  async findExcludeFunderPersona(
     options?: FindManyOptions<Organization>,
   ): Promise<Organization[]> {
     return await super.find({
@@ -33,7 +33,7 @@ export class OrganizationRepository extends AbstractRepository<Organization> {
         },
         {
           ...options.where,
-          contractAwarderPersona: Not(IsNull()),
+          buyerPersona: Not(IsNull()),
         },
         {
           ...options.where,
@@ -41,13 +41,13 @@ export class OrganizationRepository extends AbstractRepository<Organization> {
         },
         {
           ...options.where,
-          factorPersona: IsNull(),
+          funderPersona: IsNull(),
         },
       ],
     });
   }
 
-  async findAndCountExcludeFactorPersona(
+  async findAndCountExcludeFunderPersona(
     options?: FindManyOptions<Organization>,
   ): Promise<[Organization[], number]> {
     return await super.findAndCount({
@@ -59,7 +59,7 @@ export class OrganizationRepository extends AbstractRepository<Organization> {
         },
         {
           ...options.where,
-          contractAwarderPersona: Not(IsNull()),
+          buyerPersona: Not(IsNull()),
         },
         {
           ...options.where,
@@ -67,7 +67,7 @@ export class OrganizationRepository extends AbstractRepository<Organization> {
         },
         {
           ...options.where,
-          factorPersona: IsNull(),
+          funderPersona: IsNull(),
         },
       ],
     });

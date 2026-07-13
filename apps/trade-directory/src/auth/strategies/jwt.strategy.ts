@@ -34,7 +34,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     let userContext: IUserContext;
 
     try {
-      userContext = await this.authService.userContext(userId, orgId, token);
+      userContext = await this.authService.userContext(userId, orgId);
     } catch {
       throw new UnauthorizedException('Invalid token');
     }

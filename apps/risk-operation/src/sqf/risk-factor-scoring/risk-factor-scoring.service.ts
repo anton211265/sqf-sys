@@ -87,8 +87,6 @@ export class RiskFactorScoringService {
       assignScoreToRiskFactorScoringDto.riskScoringSurveyData,
     );
 
-    console.log('filteredQuestionFactors: ', filteredQuestionFactors);
-
     if (!filteredQuestionFactors.length) {
       throw new NotFoundException(
         'No valid question factors with scores found.',
@@ -98,14 +96,10 @@ export class RiskFactorScoringService {
     // Fetch matching riskFactorScoring records in a single query
     const riskFactorIds = filteredQuestionFactors.map((q) => q.riskFactorId);
 
-    console.log('riskFactorIds', riskFactorIds);
-
     const riskFactorScoringRecords =
       await this.riskFactorScoringRepository.find({
         where: { riskFactorId: In(riskFactorIds) },
       });
-
-    console.log('riskFactorScoringRecords', riskFactorScoringRecords);
 
     if (!riskFactorScoringRecords.length) {
       throw new NotFoundException(
@@ -230,14 +224,17 @@ export class RiskFactorScoringService {
       throw new NotFoundException('No question factors found.');
     }
 
-    // Get parent factors of the question factors based on parentId
-    const parentFactors = await this.dataSource.query(`
-      SELECT "id", "weight", "riskFactorName", "riskFactorId", "scoreRangeMin" AS "minScore", "scoreRangeMax" AS "maxScore"
-      FROM "risk_factor_scoring"
-      WHERE "id" IN (${questionFactors.map((f) => f.parentId).join(',')})
-    `);
-
-    console.log('parentFactors: ', parentFactors);
+    // Get parent factors of the question factors based on parentId.
+    // Uses parameterised placeholders ($1, $2, ...) to prevent SQL injection.
+    const parentIds = questionFactors.map((f) => f.parentId);
+    const placeholders = parentIds.map((_, i) => `$${i + 1}`).join(',');
+    const parentFactors = await this.dataSource.query(
+      `SELECT "id", "weight", "riskFactorName", "riskFactorId",
+              "scoreRangeMin" AS "minScore", "scoreRangeMax" AS "maxScore"
+       FROM "risk_factor_scoring"
+       WHERE "id" IN (${placeholders})`,
+      parentIds,
+    );
 
     // Update the parent factors
     const updatedParents = questionFactors.map((factor) => {
@@ -274,12 +271,8 @@ export class RiskFactorScoringService {
       };
     });
 
-    console.log('updatedParentsQuestionFactors: ', updatedParents);
-
     // Batch update for parent factors
     await this.riskFactorScoringRepository.save(updatedParents);
-
-    console.log('topLevelFactorId: ', topLevelFactorId);
 
     // Get top-level factor where parentId = null
     const topLevelFactor = await this.dataSource.query(

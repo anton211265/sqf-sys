@@ -10,5 +10,5 @@ export class FindOrganizationByIdDto {
   @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true') 
-  includeExperianReports?: boolean;
+  includeKycAgencyReports?: boolean;
 }

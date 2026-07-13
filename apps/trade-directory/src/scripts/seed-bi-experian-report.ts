@@ -1,13 +1,13 @@
-import { ExperianReportSourceEnum } from '@app/common/apps/trade-directory/enums/experian-report-source.enum';
-import { ExperianReportStatusEnum } from '@app/common/apps/trade-directory/enums/experian-report-status.enum';
-import { ExperianReportTypeEnum } from '@app/common/apps/trade-directory/enums/experian-report-type.enum';
+import { KycReportSourceEnum } from '@app/common/apps/trade-directory/enums/kyc-report-source.enum';
+import { KycReportStatusEnum } from '@app/common/apps/trade-directory/enums/kyc-report-status.enum';
+import { KycReportTypeEnum } from '@app/common/apps/trade-directory/enums/kyc-report-type.enum';
 import { OrganizationTypeEnum } from '@app/common/apps/trade-directory/enums/organization-type.enum';
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
 import {
   ClientPersona,
-  ContractAwarderPersona,
-  Experian,
+  BuyerPersona,
+  KycAgencyReport,
   Organization,
   OrganizationPerson,
   Person,
@@ -15,8 +15,8 @@ import {
 } from '../models';
 import {
   ClientPersonaRepository,
-  ContractAwarderPersonaRepository,
-  ExperianRepository,
+  BuyerPersonaRepository,
+  KycAgencyReportRepository,
   OrganizationPersonRepository,
   OrganizationRepository,
   PersonRepository,
@@ -31,13 +31,13 @@ async function bootstrap() {
   const logger = app.get(Logger);
 
   logger.log(
-    `Seeding Experian ${ExperianReportTypeEnum.BUSINESS_INTELLIGENCE} report...`,
+    `Seeding KycAgencyReport ${KycReportTypeEnum.BUSINESS_INTELLIGENCE} report...`,
   );
-  const experianRepository = app.get(ExperianRepository);
+  const kycAgencyReportRepository = app.get(KycAgencyReportRepository);
   const organizationRepository = app.get(OrganizationRepository);
   const clientPersonaRepository = app.get(ClientPersonaRepository);
-  const contractAwarderPersonaRepository = app.get(
-    ContractAwarderPersonaRepository,
+  const buyerPersonaRepository = app.get(
+    BuyerPersonaRepository,
   );
   const supplierPersonaRepository = app.get(SupplierPersonaRepository);
   const personRepository = app.get(PersonRepository);
@@ -45,12 +45,12 @@ async function bootstrap() {
   const data = json;
   for (const datum of data) {
     logger.log(
-      `Seeding experian data for registration number: ${datum['Registration No']}...`,
+      `Seeding kycReport data for registration number: ${datum['Registration No']}...`,
     );
-    const experianSeed = new Experian({
-      reportType: ExperianReportTypeEnum.BUSINESS_INTELLIGENCE,
-      reportStatus: ExperianReportStatusEnum.SUCCESS,
-      reportSource: ExperianReportSourceEnum.PHYSICAL_COPY,
+    const kycReportSeed = new KycAgencyReport({
+      reportType: KycReportTypeEnum.BUSINESS_INTELLIGENCE,
+      reportStatus: KycReportStatusEnum.SUCCESS,
+      reportSource: KycReportSourceEnum.PHYSICAL_COPY,
       registrationNumber: datum['Registration No'],
       companyName: datum['Company Name'],
       incorporationDate: new Date(datum['Incorporation Date']),
@@ -93,43 +93,43 @@ async function bootstrap() {
         suitRef: l['Suit Ref.'],
       })),
     });
-    const experian = await experianRepository.upsert(
+    const kycReport = await kycAgencyReportRepository.upsert(
       {
-        companyName: experianSeed.companyName,
-        reportType: experianSeed.reportType,
-        reportSource: experianSeed.reportSource,
+        companyName: kycReportSeed.companyName,
+        reportType: kycReportSeed.reportType,
+        reportSource: kycReportSeed.reportSource,
       },
-      experianSeed,
+      kycReportSeed,
     );
 
     const organizationType = organizationTypeConverter(
-      experian.businessConstitution,
+      kycReport.businessConstitution,
     );
     const organizationSeed = new Organization({
-      organizationName: experian.companyName,
+      organizationName: kycReport.companyName,
       organizationType:
         organizationType === null
           ? OrganizationTypeEnum.OTHERS
           : organizationType,
-      organizationTypeOther: organizationType === null ? experian.type : null,
-      businessRegistrationNumber: experian.registrationNumber,
-      experianBusinessSector: experian.businessSector,
-      incorporationDate: experian.incorporationDate,
-      businessAddress: experian.businessAddress,
-      registeredAddress: findMostRecentAddress(experian.registeredAddress)
+      organizationTypeOther: organizationType === null ? kycReport.type : null,
+      businessRegistrationNumber: kycReport.registrationNumber,
+      kycBusinessSector: kycReport.businessSector,
+      incorporationDate: kycReport.incorporationDate,
+      businessAddress: kycReport.businessAddress,
+      registeredAddress: findMostRecentAddress(kycReport.registeredAddress)
         .address,
     });
     const organization = await organizationRepository.upsert(
       {
-        organizationName: experian.companyName,
+        organizationName: kycReport.companyName,
       },
       organizationSeed,
     );
 
-    experian.organization = organization;
-    await experianRepository.save(experian);
+    kycReport.organization = organization;
+    await kycAgencyReportRepository.save(kycReport);
 
-    for (const managementDetail of experian.managementDetails) {
+    for (const managementDetail of kycReport.managementDetails) {
       const personSeed = new Person({
         name: managementDetail.name,
         residentialAddress: managementDetail.address,
@@ -178,16 +178,16 @@ async function bootstrap() {
     }
 
     if (datum.role.includes('Contract Awarder')) {
-      const contractAwarderPersonaSeed = new ContractAwarderPersona({
+      const buyerPersonaSeed = new BuyerPersona({
         organization: organization,
       });
-      await contractAwarderPersonaRepository.upsert(
+      await buyerPersonaRepository.upsert(
         {
           organization: {
             id: organization.id,
           },
         },
-        contractAwarderPersonaSeed,
+        buyerPersonaSeed,
       );
     }
 

@@ -27,7 +27,6 @@ export type CreateOrganizationType = {
 
 // ----------------------- SQF -----------------------
 
-// ----------------------- LCM -----------------------
 export class UpdatableOrganization {
   @ApiProperty()
   @IsString()
@@ -151,4 +150,3 @@ export class UpdatableOrganization {
 
 export type Organization = TradeDirectoryOrganization;
 
-// ----------------------- LCM -----------------------

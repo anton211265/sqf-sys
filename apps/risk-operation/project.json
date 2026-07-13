@@ -1,0 +1,36 @@
+{
+  "name": "risk-operation",
+  "sourceRoot": "apps/risk-operation/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:backend"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nest build risk-operation --webpackPath ./apps/risk-operation/webpack.config.js",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "export NODE_ENV=development && nest start --watch risk-operation --webpackPath ./apps/risk-operation/webpack.config.js",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "jest --testPathPattern=apps/risk-operation",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint \"apps/risk-operation/src/**/*.ts\" --fix",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

@@ -37,10 +37,6 @@ export class OrganizationPersonController {
   async handleCreateNewOrganizationPerson(
     message: CreateOrganizationPersonKafkaMessageType,
   ): Promise<CreateOrganizationPersonKafkaMessageReplyType[]> {
-    console.log(
-      'Received Kafka message for SQF_CREATE_ORGANIZATION_PERSON:',
-      message,
-    );
 
     /**
      * Apply transformations using plainToInstance:
@@ -63,11 +59,6 @@ export class OrganizationPersonController {
         data: transformedData, // Use the transformed data
       });
 
-    console.log(
-      'Received Kafka reply from SQF_CREATE_ORGANIZATION_PERSON:',
-      result,
-    );
-
     // Return the reply as expected
     return result;
   }
@@ -75,15 +66,9 @@ export class OrganizationPersonController {
   // --------------- Get Organization Persons by Organization Id ---------------
   @MessagePattern(KafkaTopicEnum.SQF_GET_ORGANIZATION_PERSON_BY_ID)
   async getOrganizationPersonByOrganizationId(@Payload() organizationId: number) {
-    console.log(`Triggered Kafka SQF_GET_ORGANIZATION_PERSON_BY_ID: Fetching persons for organizationId: ${organizationId}`);
 
     const organizationPersonbyId = await this.organizationPersonService.findOrganizationPersonByOrganizationIdEvent(
       organizationId,
-    );
-
-    console.log(
-      'Kafka SQF_GET_ORGANIZATION_PERSON_BY_ID response:',
-      organizationPersonbyId,
     );
 
     return organizationPersonbyId;

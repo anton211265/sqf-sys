@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   Inject,
+  Logger,
   OnModuleInit,
   Param,
   Post,
@@ -20,6 +21,9 @@ import {
   IDocumentExtractionService,
 } from './document-extraction.interface';
 import { ClientKafka, EventPattern, Payload } from '@nestjs/microservices';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
+import { ProcessedEventRepository } from '../../repositories/processed-event.repository';
 import { KafkaTopicEnum } from '@app/common/constants/kafka-topic.enum';
 import { DocumentExtractionKafkaRequest } from '@app/common/apps/common/interface/document-extraction.interface';
 import { RequestIdResponseDto } from './dto/response/request-id-response.dto';
@@ -56,11 +60,15 @@ import { SkipThrottle, Throttle } from '@nestjs/throttler';
 @ApiTags('Extraction')
 @Controller('extraction')
 export class DocumentExtractionController implements OnModuleInit {
+  private readonly logger = new Logger(DocumentExtractionController.name);
+
   constructor(
     @Inject(DOCUMENT_EXTRACTION_SERVICE)
     private readonly documentExtractionService: IDocumentExtractionService,
     @Inject(TRADE_SERVICE) private readonly authClient: ClientKafka,
     private readonly configService: ConfigService,
+    private readonly processedEventRepository: ProcessedEventRepository,
+    @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
 
   async onModuleInit() {
@@ -281,15 +289,47 @@ export class DocumentExtractionController implements OnModuleInit {
     return this.documentExtractionService.documentExtraction(orgId, requestId);
   }
 
+  @Throttle({
+    default: {
+      ttl: 60000,
+      limit: 100,
+    },
+  })
+  @ApiExcludeEndpoint()
+  @Post(':requestId/approve')
+  @UseGuards(ApiKeyAuthGuard)
+  async approveReviewedExtraction(
+    @Req() req: IContext,
+    @Param('requestId') requestId: string,
+  ): Promise<RequestIdResponseDto> {
+    const orgId = req.user.orgId;
+
+    return this.documentExtractionService.approveReviewedExtraction(
+      orgId,
+      requestId,
+    );
+  }
+
   @EventPattern(KafkaTopicEnum.SQF_DOCUMENT_EXTRACTION)
   async initiateDocumentExtractionKafka(
     @Payload() documentExtractionPayload: DocumentExtractionKafkaRequest,
   ): Promise<RequestIdResponseDto> {
+    if (
+      await this.processedEventRepository.exists(
+        documentExtractionPayload.eventId,
+      )
+    ) {
+      this.logger.warn(
+        `Skipping already-processed SQF_DOCUMENT_EXTRACTION event: ${documentExtractionPayload.eventId}`,
+      );
+      return;
+    }
+
     const { file, fileName, templateId, documentType, refId, orgId, mimetype } =
       documentExtractionPayload;
     const isInternal = true;
 
-    return this.documentExtractionService.initiateDocumentExtraction(
+    const result = await this.documentExtractionService.initiateDocumentExtraction(
       fileName,
       file,
       templateId,
@@ -299,5 +339,14 @@ export class DocumentExtractionController implements OnModuleInit {
       isInternal,
       mimetype,
     );
+
+    await this.entityManager.transaction(async (manager) => {
+      await this.processedEventRepository.record(manager, {
+        id: documentExtractionPayload.eventId,
+        topic: KafkaTopicEnum.SQF_DOCUMENT_EXTRACTION,
+      });
+    });
+
+    return result;
   }
 }

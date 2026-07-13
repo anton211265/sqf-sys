@@ -1,8 +1,7 @@
 import {
-  BankAccount,
   ClientPersona,
-  ContractAwarderPersona,
-  FactorPersona,
+  BuyerPersona,
+  FunderPersona,
   Organization,
   OrganizationPerson,
   OrganizationPersonRole,
@@ -25,8 +24,8 @@ import {
   BankAccountTypeEnum as ProtoBankAccountTypeEnum,
   BankProviderEnum as ProtoBankProviderEnum,
   ClientPersona as ProtoClientPersona,
-  ContractAwarderPersona as ProtoContractAwarderPersona,
-  FactorPersona as ProtoFactorPersona,
+  BuyerPersona as ProtoBuyerPersona,
+  FunderPersona as ProtoFunderPersona,
   Organization as ProtoOrganization,
   OrganizationBusinessSectorEnum as ProtoOrganizationBusinessSectorEnum,
   OrganizationMalaysiaRegionEnum as ProtoOrganizationMalaysiaRegionEnum,
@@ -39,17 +38,17 @@ import {
   SupplierPersona as ProtoSupplierPersona,
   UpdatableBankAccount as ProtoUpdatableBankAccount,
   UpdatableClientPersona as ProtoUpdatableClientPersona,
-  UpdatableContractAwarderPersona as ProtoUpdatableContractAwarderPersona,
-  UpdatableFactorPersona as ProtoUpdatableFactorPersona,
+  UpdatableBuyerPersona as ProtoUpdatableBuyerPersona,
+  UpdatableFunderPersona as ProtoUpdatableFunderPersona,
   UpdatableOrganization as ProtoUpdatableOrganization,
   UpdatableOrganizationPerson as ProtoUpdatableOrganizationPerson,
   UpdatablePerson as ProtoUpdatablePerson,
   UpdatableSupplierPersona as ProtoUpdatableSupplierPersona,
 } from './proto/entity';
-import { UpdatableBankAccount } from './types/bank-account.type';
+import { BankAccount, UpdatableBankAccount } from './types/bank-account.type';
 import { UpdatableClientPersona } from './types/client-persona.type';
-import { UpdatableContractAwarderPersona } from './types/contract-awarder-persona.type';
-import { UpdatableFactorPersona } from './types/factor-persona.type';
+import { UpdatableBuyerPersona } from './types/buyer-persona.type';
+import { UpdatableFunderPersona } from './types/funder-persona.type';
 import { UpdatableOrganizationPerson } from './types/organization-person.type';
 import { UpdatableOrganization } from './types/organization.type';
 import { UpdatablePerson } from './types/person.type';
@@ -319,12 +318,12 @@ class OrganizationProtoConverter {
       businessSector: OrganizationBusinessSectorEnumProtoConverter.convertToApp(
         value.businessSector,
       ),
-      experianBusinessSector: value.experianBusinessSector,
+      kycBusinessSector: value.kycBusinessSector,
       natureOfBusiness:
         OrganizationNatureOfBusinessEnumProtoConverter.convertToApp(
           value.natureOfBusiness,
         ),
-      experianNatureOfBusiness: value.experianNatureOfBusiness,
+      kycNatureOfBusiness: value.kycNatureOfBusiness,
       coreBusiness: value.coreBusiness,
       incorporationDate: value.incorporationDate,
       operationStartDate: value.operationStartDate,
@@ -341,28 +340,25 @@ class OrganizationProtoConverter {
       organizationPersons: value.organizationPersons.map(
         OrganizationPersonProtoConverter.convertToApp,
       ),
-      bankAccounts: value.bankAccounts.map(
-        BankAccountProtoConverter.convertToApp,
-      ),
       clientPersona: value.clientPersona
         ? ClientPersonaProtoConverter.convertToApp(value.clientPersona)
         : undefined,
       clientPersonaId: value.clientPersonaId,
-      contractAwarderPersona: value.contractAwarderPersona
-        ? ContractAwarderPersonaProtoConverter.convertToApp(
-            value.contractAwarderPersona,
+      buyerPersona: value.buyerPersona
+        ? BuyerPersonaProtoConverter.convertToApp(
+            value.buyerPersona,
           )
         : undefined,
-      contractAwarderPersonaId: value.contractAwarderPersonaId,
+      buyerPersonaId: value.buyerPersonaId,
       supplierPersona: value.supplierPersona
         ? SupplierPersonaProtoConverter.convertToApp(value.supplierPersona)
         : undefined,
       supplierPersonaId: value.supplierPersonaId,
-      factorPersona: value.factorPersona
-        ? FactorPersonaProtoConverter.convertToApp(value.factorPersona)
+      funderPersona: value.funderPersona
+        ? FunderPersonaProtoConverter.convertToApp(value.funderPersona)
         : undefined,
-      factorPersonaId: value.factorPersonaId,
-      experianReports: undefined,
+      funderPersonaId: value.funderPersonaId,
+      kycAgencyReports: undefined,
       yearEstablished: undefined,
       revenueCurrency: CurrencyCodeEnumProtoConverter.convertToApp(
         value.revenueCurrency,
@@ -397,12 +393,12 @@ class OrganizationProtoConverter {
         OrganizationBusinessSectorEnumProtoConverter.convertToProto(
           value.businessSector,
         ),
-      experianBusinessSector: value.experianBusinessSector,
+      kycBusinessSector: value.kycBusinessSector,
       natureOfBusiness:
         OrganizationNatureOfBusinessEnumProtoConverter.convertToProto(
           value.natureOfBusiness,
         ),
-      experianNatureOfBusiness: value.experianNatureOfBusiness,
+      kycNatureOfBusiness: value.kycNatureOfBusiness,
       coreBusiness: value.coreBusiness,
       incorporationDate: value.incorporationDate,
       operationStartDate: value.operationStartDate,
@@ -422,27 +418,25 @@ class OrganizationProtoConverter {
             OrganizationPersonProtoConverter.convertToProto,
           )
         : [],
-      bankAccounts: value.bankAccounts
-        ? value.bankAccounts.map(BankAccountProtoConverter.convertToProto)
-        : [],
+      bankAccounts: [],
       clientPersona: value.clientPersona
         ? ClientPersonaProtoConverter.convertToProto(value.clientPersona)
         : undefined,
       clientPersonaId: value.clientPersonaId,
-      contractAwarderPersona: value.contractAwarderPersona
-        ? ContractAwarderPersonaProtoConverter.convertToProto(
-            value.contractAwarderPersona,
+      buyerPersona: value.buyerPersona
+        ? BuyerPersonaProtoConverter.convertToProto(
+            value.buyerPersona,
           )
         : undefined,
-      contractAwarderPersonaId: value.contractAwarderPersonaId,
+      buyerPersonaId: value.buyerPersonaId,
       supplierPersona: value.supplierPersona
         ? SupplierPersonaProtoConverter.convertToProto(value.supplierPersona)
         : undefined,
       supplierPersonaId: value.supplierPersonaId,
-      factorPersona: value.factorPersona
-        ? FactorPersonaProtoConverter.convertToProto(value.factorPersona)
+      funderPersona: value.funderPersona
+        ? FunderPersonaProtoConverter.convertToProto(value.funderPersona)
         : undefined,
-      factorPersonaId: value.factorPersonaId,
+      funderPersonaId: value.funderPersonaId,
       yearEstablished: null,
       revenueCurrency: CurrencyCodeEnumProtoConverter.convertToApp(
         value.revenueCurrency,
@@ -614,6 +608,17 @@ class OrganizationPersonRoleEnumProtoConverter {
         OrganizationPersonRoleEnum.CUSTOMER_SUCCESS,
       [ProtoOrganizationPersonRoleEnum.CORPORATE_COMMUNICATIONS]:
         OrganizationPersonRoleEnum.CORPORATE_COMMUNICATIONS,
+      [ProtoOrganizationPersonRoleEnum.SQFSYS]:
+        OrganizationPersonRoleEnum.SQFSYS,
+      [ProtoOrganizationPersonRoleEnum.CRM]: OrganizationPersonRoleEnum.CRM,
+      [ProtoOrganizationPersonRoleEnum.RISK_ANALYST]:
+        OrganizationPersonRoleEnum.RISK_ANALYST,
+      [ProtoOrganizationPersonRoleEnum.FINANCE]:
+        OrganizationPersonRoleEnum.FINANCE,
+      [ProtoOrganizationPersonRoleEnum.SUPERVISOR_APPROVAL]:
+        OrganizationPersonRoleEnum.SUPERVISOR_APPROVAL,
+      [ProtoOrganizationPersonRoleEnum.MANAGER_APPROVAL]:
+        OrganizationPersonRoleEnum.MANAGER_APPROVAL,
       [ProtoOrganizationPersonRoleEnum.UNRECOGNIZED]: undefined,
     };
 
@@ -637,6 +642,17 @@ class OrganizationPersonRoleEnumProtoConverter {
         ProtoOrganizationPersonRoleEnum.CUSTOMER_SUCCESS,
       [OrganizationPersonRoleEnum.CORPORATE_COMMUNICATIONS]:
         ProtoOrganizationPersonRoleEnum.CORPORATE_COMMUNICATIONS,
+      [OrganizationPersonRoleEnum.SQFSYS]:
+        ProtoOrganizationPersonRoleEnum.SQFSYS,
+      [OrganizationPersonRoleEnum.CRM]: ProtoOrganizationPersonRoleEnum.CRM,
+      [OrganizationPersonRoleEnum.RISK_ANALYST]:
+        ProtoOrganizationPersonRoleEnum.RISK_ANALYST,
+      [OrganizationPersonRoleEnum.FINANCE]:
+        ProtoOrganizationPersonRoleEnum.FINANCE,
+      [OrganizationPersonRoleEnum.SUPERVISOR_APPROVAL]:
+        ProtoOrganizationPersonRoleEnum.SUPERVISOR_APPROVAL,
+      [OrganizationPersonRoleEnum.MANAGER_APPROVAL]:
+        ProtoOrganizationPersonRoleEnum.MANAGER_APPROVAL,
     };
 
     return map[value];
@@ -684,13 +700,14 @@ class PersonProtoConverter {
       identificationNumber: value.identificationNumber,
       mobileNumber: value.mobileNumber,
       email: value.email,
-      bankAccounts: undefined,
-      personSupportingDocuments: undefined,
-      experianReports: undefined,
+      kycAgencyReports: undefined,
       createdAt: value.createdAt,
       updatedAt: value.updatedAt,
       password: undefined,
       tokens: undefined,
+      systemRole: undefined,
+      failedLoginAttempts: 0,
+      lockedUntil: null,
     };
   };
 
@@ -712,6 +729,7 @@ class PersonProtoConverter {
       updatedAt: value.updatedAt,
       password: undefined,
       tokens: undefined,
+      systemRole: undefined,
     };
   };
 
@@ -752,8 +770,6 @@ class ClientPersonaProtoConverter {
       organization: value.organization
         ? OrganizationProtoConverter.convertToApp(value.organization)
         : undefined,
-      transactionsAsFirstParty: undefined,
-      transactionsAsSecondParty: undefined,
       createdAt: value.createdAt,
       updatedAt: value.updatedAt,
     };
@@ -790,29 +806,27 @@ class ClientPersonaProtoConverter {
   };
 }
 
-class ContractAwarderPersonaProtoConverter {
+class BuyerPersonaProtoConverter {
   static convertToApp = (
-    value: ProtoContractAwarderPersona,
-  ): Required<ContractAwarderPersona> => {
+    value: ProtoBuyerPersona,
+  ): Required<BuyerPersona> => {
     return {
       id: value.id,
-      contractAwarderPersonaId: value.contractAwarderPersonaId,
+      buyerPersonaId: value.buyerPersonaId,
       organization: value.organization
         ? OrganizationProtoConverter.convertToApp(value.organization)
         : undefined,
-      transactionsAsFirstParty: undefined,
-      transactionsAsSecondParty: undefined,
       createdAt: value.createdAt,
       updatedAt: value.updatedAt,
     };
   };
 
   static convertToProto = (
-    value: ContractAwarderPersona,
-  ): Required<ProtoContractAwarderPersona> => {
+    value: BuyerPersona,
+  ): Required<ProtoBuyerPersona> => {
     return {
       id: value.id,
-      contractAwarderPersonaId: value.contractAwarderPersonaId,
+      buyerPersonaId: value.buyerPersonaId,
       organization: value.organization
         ? OrganizationProtoConverter.convertToProto(value.organization)
         : undefined,
@@ -822,18 +836,18 @@ class ContractAwarderPersonaProtoConverter {
   };
 
   static convertToUpdatableApp = (
-    value: ProtoUpdatableContractAwarderPersona,
-  ): UpdatableContractAwarderPersona => {
+    value: ProtoUpdatableBuyerPersona,
+  ): UpdatableBuyerPersona => {
     return {
-      contractAwarderPersonaId: value.contractAwarderPersonaId,
+      buyerPersonaId: value.buyerPersonaId,
     };
   };
 
   static convertToUpdatableProto = (
-    value: UpdatableContractAwarderPersona,
-  ): ProtoUpdatableContractAwarderPersona => {
+    value: UpdatableBuyerPersona,
+  ): ProtoUpdatableBuyerPersona => {
     return {
-      contractAwarderPersonaId: value.contractAwarderPersonaId,
+      buyerPersonaId: value.buyerPersonaId,
     };
   };
 }
@@ -848,8 +862,6 @@ class SupplierPersonaProtoConverter {
       organization: value.organization
         ? OrganizationProtoConverter.convertToApp(value.organization)
         : undefined,
-      transactionsAsFirstParty: undefined,
-      transactionsAsSecondParty: undefined,
       createdAt: value.createdAt,
       updatedAt: value.updatedAt,
     };
@@ -886,13 +898,13 @@ class SupplierPersonaProtoConverter {
   };
 }
 
-class FactorPersonaProtoConverter {
+class FunderPersonaProtoConverter {
   static convertToApp = (
-    value: ProtoFactorPersona,
-  ): Required<FactorPersona> => {
+    value: ProtoFunderPersona,
+  ): Required<FunderPersona> => {
     return {
       id: value.id,
-      factorPersonaId: value.factorPersonaId,
+      funderPersonaId: value.funderPersonaId,
       organization: value.organization
         ? OrganizationProtoConverter.convertToApp(value.organization)
         : undefined,
@@ -902,11 +914,11 @@ class FactorPersonaProtoConverter {
   };
 
   static convertToProto = (
-    value: FactorPersona,
-  ): Required<ProtoFactorPersona> => {
+    value: FunderPersona,
+  ): Required<ProtoFunderPersona> => {
     return {
       id: value.id,
-      factorPersonaId: value.factorPersonaId,
+      funderPersonaId: value.funderPersonaId,
       organization: value.organization
         ? OrganizationProtoConverter.convertToProto(value.organization)
         : undefined,
@@ -916,18 +928,18 @@ class FactorPersonaProtoConverter {
   };
 
   static convertToUpdatableApp = (
-    value: ProtoUpdatableFactorPersona,
-  ): UpdatableFactorPersona => {
+    value: ProtoUpdatableFunderPersona,
+  ): UpdatableFunderPersona => {
     return {
-      factorPersonaId: value.factorPersonaId,
+      funderPersonaId: value.funderPersonaId,
     };
   };
 
   static convertToUpdatableProto = (
-    value: UpdatableFactorPersona,
-  ): ProtoUpdatableFactorPersona => {
+    value: UpdatableFunderPersona,
+  ): ProtoUpdatableFunderPersona => {
     return {
-      factorPersonaId: value.factorPersonaId,
+      funderPersonaId: value.funderPersonaId,
     };
   };
 }
@@ -1128,8 +1140,8 @@ class BankAccountProtoConverter {
 export {
   BankAccountProtoConverter,
   ClientPersonaProtoConverter,
-  ContractAwarderPersonaProtoConverter,
-  FactorPersonaProtoConverter,
+  BuyerPersonaProtoConverter,
+  FunderPersonaProtoConverter,
   OrganizationBusinessSectorEnumProtoConverter,
   OrganizationMalaysiaRegionEnumProtoConverter,
   OrganizationNatureOfBusinessEnumProtoConverter,

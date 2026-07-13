@@ -9,6 +9,7 @@ import { DocumentExtractionRepository } from '../../repositories/document-extrac
 import {
   DocumentExtraction,
   DocumentExtractionInternalType,
+  DocumentExtractionMethod,
   DocumentExtractionStatus,
 } from '../../models/document-extraction.entity';
 import { PromptTemplateRepository } from '../../repositories/prompt-template.repository';
@@ -23,7 +24,14 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
-import { IOCRService, OCR_SERVICE } from '../ocr/ocr.interface';
+import {
+  IMarkitdownService,
+  MARKITDOWN_SERVICE,
+} from '../markitdown/markitdown.interface';
+import {
+  IVisionExtractionService,
+  VISION_EXTRACTION_SERVICE,
+} from '../vision-extraction/vision-extraction.interface';
 import { GetTemplatesResponseDto } from './dto/response/get-templates-response.dto';
 import { GetTemplateResponseDto } from './dto/response/get-template-response.dto';
 import { CreateTemplateDto } from './dto/request/create-template.dto';
@@ -34,6 +42,23 @@ import { DeleteTemplateResponseDto } from './dto/response/delete-template-respon
 import { Readable } from 'stream';
 import { ErrorMessage } from '@app/common/apps/common/enum/error-messages.enum';
 
+const MARKITDOWN_SUPPORTED_MIME_TYPES = [
+  'application/pdf',
+  'image/png',
+  'image/jpeg',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+];
+
+// Mime types Markitdown can't OCR (no text layer to extract from) — these are
+// the ones eligible for the vision-LLM fallback when Markitdown comes back empty.
+const VISION_FALLBACK_MIME_TYPES = ['application/pdf', 'image/png', 'image/jpeg'];
+
+// Below this many non-whitespace characters, treat Markitdown's output as a
+// failed extraction (no text layer) rather than a genuinely short document.
+const MIN_VIABLE_TEXT_LENGTH = 20;
+
 @Injectable()
 export class DocumentExtractionService implements IDocumentExtractionService {
   private documentExtractionBucket: string;
@@ -43,7 +68,10 @@ export class DocumentExtractionService implements IDocumentExtractionService {
     private readonly promptTemplateRepository: PromptTemplateRepository,
     @Inject('S3Client') private s3Client: S3Client,
     private readonly configService: ConfigService,
-    @Inject(OCR_SERVICE) private readonly ocrService: IOCRService,
+    @Inject(MARKITDOWN_SERVICE)
+    private readonly markitdownService: IMarkitdownService,
+    @Inject(VISION_EXTRACTION_SERVICE)
+    private readonly visionExtractionService: IVisionExtractionService,
   ) {
     this.documentExtractionBucket = this.configService.getOrThrow(
       'DOCUMENT_EXTRACTION_BUCKET_NAME',
@@ -60,13 +88,7 @@ export class DocumentExtractionService implements IDocumentExtractionService {
     isInternal: boolean,
     mime: string,
   ): Promise<RequestIdResponseDto> {
-    const supportedDocExtractionType: string[] = [
-      'application/pdf',
-      'image/png',
-      'image/jpeg',
-    ];
-
-    if (!supportedDocExtractionType.includes(mime)) {
+    if (!MARKITDOWN_SUPPORTED_MIME_TYPES.includes(mime)) {
       throw new BadRequestException(
         `Unsupported file type: ${mime ?? 'unknown'}`,
       );
@@ -86,22 +108,75 @@ export class DocumentExtractionService implements IDocumentExtractionService {
       }),
     );
 
-    const jobId = await this.ocrService.initiateOCR(filePath);
+    const markitdownText = await this.markitdownService.convertToMarkdown(
+      file,
+      fileName,
+    );
+
+    const hasViableText =
+      markitdownText.trim().length >= MIN_VIABLE_TEXT_LENGTH;
+
+    let rawText = markitdownText;
+    let extractionMethod = DocumentExtractionMethod.MARKITDOWN;
+    let status = DocumentExtractionStatus.PENDING_LLM_EXTRACTION;
+
+    if (!hasViableText && VISION_FALLBACK_MIME_TYPES.includes(mime)) {
+      // Markitdown found no text layer to extract (likely a scanned/photographed
+      // document). Fall back to a vision-LLM transcription, but this is a
+      // generative read, not deterministic OCR — it carries no confidence score
+      // and can misread numeric fields. Gate it behind PENDING_REVIEW so a human
+      // approves the transcription before it feeds the LLM field-extraction step.
+      rawText = await this.visionExtractionService.transcribeToMarkdown(
+        file,
+        mime,
+      );
+      extractionMethod = DocumentExtractionMethod.VISION_LLM;
+      status = DocumentExtractionStatus.PENDING_REVIEW;
+    }
 
     const newDocumentExtraction = new DocumentExtraction({
       requestId,
       fileName,
       templateId,
-      status: DocumentExtractionStatus.PENDING_OCR,
+      status,
       documentType,
       refId,
       orgId,
       isInternal,
       filePath,
-      jobId,
+      jobId: 'markitdown',
+      rawText,
+      extractionMethod,
     });
 
     await this.documentExtractionRepository.save(newDocumentExtraction);
+
+    return { requestId };
+  }
+
+  async approveReviewedExtraction(
+    orgId: string,
+    requestId: string,
+  ): Promise<RequestIdResponseDto> {
+    const documentExtraction = await this.documentExtractionRepository.findOne(
+      { where: { requestId, orgId } },
+    );
+
+    if (!documentExtraction) {
+      throw new BadRequestException(
+        `No document extraction found with requestId: ${requestId}`,
+      );
+    }
+
+    if (documentExtraction.status !== DocumentExtractionStatus.PENDING_REVIEW) {
+      throw new BadRequestException(
+        `Document extraction ${requestId} is not pending review (current status: ${documentExtraction.status})`,
+      );
+    }
+
+    documentExtraction.status = DocumentExtractionStatus.PENDING_LLM_EXTRACTION;
+
+    await this.documentExtractionRepository.save(documentExtraction);
 
     return { requestId };
   }
@@ -148,6 +223,7 @@ export class DocumentExtractionService implements IDocumentExtractionService {
         'pages',
         'tokens',
         'llmProvider',
+        'extractionMethod',
       ],
       order: {
         createdAt: 'DESC',
@@ -168,6 +244,7 @@ export class DocumentExtractionService implements IDocumentExtractionService {
         llmProvider: r.llmProvider ?? null,
         tokens: r.tokens ?? null,
         pages: r.pages ?? null,
+        extractionMethod: r.extractionMethod ?? null,
       }),
     );
 
@@ -193,6 +270,8 @@ export class DocumentExtractionService implements IDocumentExtractionService {
         'pages',
         'tokens',
         'llmProvider',
+        'rawText',
+        'extractionMethod',
       ],
     });
 
@@ -214,6 +293,8 @@ export class DocumentExtractionService implements IDocumentExtractionService {
       createdAt: documentExtraction.createdAt,
       llmProvider: documentExtraction.llmProvider ?? null,
       tokens: documentExtraction.tokens ?? null,
+      rawText: documentExtraction.rawText ?? null,
+      extractionMethod: documentExtraction.extractionMethod ?? null,
       pages: documentExtraction.pages ?? null,
     };
 

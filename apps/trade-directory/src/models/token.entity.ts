@@ -10,17 +10,35 @@ import { Person } from './person.entity';
 
 @Entity()
 export class Token extends AbstractEntity<Token> {
-  // ------------------ Relationship ------------------
-
   @ManyToOne(() => Person, (person) => person.tokens, { onDelete: 'CASCADE' })
   person: Person;
 
-  // ------------------ Relationship ------------------
   @Column()
-  accessToken: string;
+  refreshTokenHash: string;
 
-  @Column()
-  refreshToken: string;
+  @Column({ type: 'timestamp without time zone' })
+  issuedAt: Date;
+
+  @Column({ type: 'timestamp without time zone' })
+  lastUsedAt: Date;
+
+  @Column({ type: 'timestamp without time zone' })
+  expiresAt: Date;
+
+  @Column({ type: 'timestamp without time zone', nullable: true })
+  revokedAt: Date | null;
+
+  @Column({ nullable: true })
+  revokedReason: string | null;
+
+  @Column({ nullable: true })
+  userAgent: string | null;
+
+  @Column({ nullable: true })
+  ipAddress: string | null;
+
+  @Column({ type: 'uuid' })
+  tokenFamilyId: string;
 
   @CreateDateColumn({
     type: 'timestamp without time zone',

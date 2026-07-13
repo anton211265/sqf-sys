@@ -39,6 +39,9 @@ import { RiskQuantitativeParameter } from '../../models/risk-quantitative-parame
 import { RiskApplicationAuditLog } from '../../models/risk-application-audit-log.entity';
 import { RiskApplicationAuditLogService } from '../risk-application-audit-log/risk-application-audit-log.service';
 import { RiskApplicationAuditLogRepository } from '../../repositories/risk-application-audit-log.repository';
+import { OutboxEvent } from '@app/common/database/outbox-event.entity';
+import { OutboxEventRepository } from '../../repositories/outbox-event.repository';
+import { OutboxRelayService } from '../../outbox/outbox-relay.service';
 
 @Module({
   imports: [
@@ -54,6 +57,7 @@ import { RiskApplicationAuditLogRepository } from '../../repositories/risk-appli
       RiskQuantitativeThresholdRule,
       RiskQuantitativeParameter,
       RiskApplicationAuditLog,
+      OutboxEvent,
     ]),
     HttpModule, // Import HttpModule for HttpService
     ClientsModule.registerAsync([
@@ -97,6 +101,8 @@ import { RiskApplicationAuditLogRepository } from '../../repositories/risk-appli
     RiskQuantitativeParameterRepository,
     RiskApplicationAuditLogService,
     RiskApplicationAuditLogRepository,
+    OutboxEventRepository,
+    OutboxRelayService,
     {
       provide: 'S3Client',
       useFactory: (configService: ConfigService) => {

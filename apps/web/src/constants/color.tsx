@@ -1,0 +1,13 @@
+export const color = {
+  WHITE: '#FFFFFF',
+  FHGREEN: '#338F86',
+  TEXTGREY: '#4F566B',
+  FHADMIN: '#3786D6',
+  ADMINHEADING: '#595959',
+  DISABLED: '#D9DCE1',
+  GOLD: '#B0A275',
+  DARKBLUE: '#04174B',
+  ZINC: 'rgb(228 228 231)',
+  GRAPE: '#862E9C',
+  DARKGREY: '#52525B',
+};

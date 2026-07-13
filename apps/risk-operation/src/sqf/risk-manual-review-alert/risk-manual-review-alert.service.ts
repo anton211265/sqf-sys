@@ -199,16 +199,12 @@ export class RiskManualReviewAlertService {
         creditReportData,
       );
 
-      console.log(`[${parameterName}] Sub-Param: ${sub.subParameterName}`);
-      console.log(`  ↳ Actual value: ${actualData}\n`);
 
       if (actualData === null || actualData === undefined) {
-        console.log(`  ⚠️ Skipped: No data found in credit report.\n`);
         continue;
       }
 
       if (!sub.rules?.length) {
-        console.log(`  ⚠️ No rules found. Skipping.\n`);
         continue;
       }
 
@@ -220,19 +216,12 @@ export class RiskManualReviewAlertService {
           if (!rule.thresholdLabel) continue;
 
           const matched = String(actualData) === rule.thresholdLabel;
-          console.log(
-            `  🧪 Comparing [score: ${rule.score}]: ${actualData} = ${rule.thresholdLabel} → match = ${matched}`,
-          );
 
           if (!rule.isManualTriggerAllowed) {
-            console.log(
-              `      ⛔ Rule skipped [score: ${rule.score}]: manual trigger not allowed\n`,
-            );
             continue;
           }
 
           if (matched) {
-            console.log(`      ✅ Match found → saving alert to DB\n`);
 
             const newManualReviewAlerts = new RiskManualReviewAlert({
               riskApplicationScoringId,
@@ -262,17 +251,11 @@ export class RiskManualReviewAlertService {
           rule.comparisonOperator,
         );
 
-        console.log(
-          `  🧪 Comparing [score: ${rule.score}]: ${actualData} ${rule.comparisonOperator} ${rule.thresholdValue} → match = ${matched}`,
-        );
-
         if (!rule.isManualTriggerAllowed) {
-          console.log(`      ⛔ Rule skipped : manual trigger not allowed\n`);
           continue;
         }
 
         if (matched) {
-          console.log(`      ✅ Match found → saving alert to DB\n`);
 
           const newManualReviewAlerts = new RiskManualReviewAlert({
             riskApplicationScoringId,
@@ -321,7 +304,6 @@ export class RiskManualReviewAlertService {
     const entry = lookup[subParameterName];
 
     if (!entry) {
-      console.log(`Lookup not found for subParameterName: ${subParameterName}`);
       return null;
     }
 
@@ -332,13 +314,11 @@ export class RiskManualReviewAlertService {
       const value = creditReport?.[sectionName]?.[0]?.[fieldName];
 
       if (value === undefined || value === null) {
-        console.log(`Field '${fieldName}' not found in ${sectionName}`);
         return null;
       }
 
       // If it's Profitability, return it directly as string
       if (subParameterName === 'Profitability') {
-        console.log(`✅ Found string value: ${value} for ${subParameterName}`);
 
         return String(value);
       }
@@ -346,11 +326,8 @@ export class RiskManualReviewAlertService {
       const numeric = Number(value);
 
       if (isNaN(numeric)) {
-        console.log(`Value for ${fieldName} is not a valid number:`, value);
         return null;
       }
-
-      console.log(`✅ Found value: ${numeric} for ${subParameterName}`);
 
       return numeric;
     }
@@ -359,7 +336,6 @@ export class RiskManualReviewAlertService {
     const sectionArray = creditReport?.[sectionName];
 
     if (!Array.isArray(sectionArray)) {
-      console.log(`Section '${sectionName}' is not a valid array`);
       return null;
     }
 
@@ -368,9 +344,6 @@ export class RiskManualReviewAlertService {
     );
 
     if (!matchedEntry) {
-      console.log(
-        `Field '${fieldName}' not found in any entry of '${sectionName}'`,
-      );
       return null;
     }
 
@@ -379,16 +352,11 @@ export class RiskManualReviewAlertService {
     const numeric = Number(rawValue);
 
     if (isNaN(numeric)) {
-      console.log(
-        `Field '${fieldName}' in '${sectionName}' is not a valid number:`,
-        rawValue,
-      );
 
       return null;
     }
 
     // Return the number value
-    console.log(`✅ Found value: ${numeric} for ${subParameterName}`);
 
     return numeric;
   }

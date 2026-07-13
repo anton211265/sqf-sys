@@ -2,62 +2,52 @@ import { DatabaseModule } from '@app/common/database/database.module';
 import { LoggerModule } from '@app/common/logger/logger.module';
 import { CaslModule } from '@app/common/modules/casl/casl.module';
 import { Module } from '@nestjs/common';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { z } from 'zod';
-import { ApplicationPublicModule } from './application-public/application-public.module';
 import { AuthModule } from './auth/auth.module';
-import { BankAccountModule } from './bank-account/bank-account.module';
-import { ClientPersonaModule } from './client-persona/client-persona.module';
-import { ContractAwarderPersonaModule } from './contract-awarder-persona/contract-awarder-persona.module';
-import { ExperianModule } from './experian/experian.module';
-import { FactorPersonaModule } from './factor-persona/factor-persona.module';
+import { KycAgencyModule } from './kyc-agency/kyc-agency.module';
 import {
-  BankAccount,
   ClientPersona,
-  ContractAwarderPersona,
-  Experian,
+  BuyerPersona,
+  KycAgencyReport,
   Organization,
   OrganizationPerson,
   OrganizationPersonRole,
   OrganizationRole,
   Person,
-  PersonSupportingDocument,
   SupplierPersona,
-  Transaction,
 } from './models';
-import { OrganizationPersonModule } from './organization-person/organization-person.module';
-import { OrganizationModule } from './organization/organization.module';
-import { PersonSupportingDocumentModule } from './person-supporting-document/person-supporting-document.module';
-import { PersonModule } from './person/person.module';
 import {
-  BankAccountRepository,
   ClientPersonaRepository,
-  ContractAwarderPersonaRepository,
-  ExperianRepository,
+  BuyerPersonaRepository,
+  KycAgencyReportRepository,
   OrganizationPersonRepository,
   OrganizationPersonRoleRepository,
   OrganizationRepository,
   PersonRepository,
-  PersonSupportingDocumentRepository,
   SupplierPersonaRepository,
-  TransactionRepository,
 } from './repositories';
-import { SupplierPersonaModule } from './supplier-persona/supplier-persona.module';
+import { RelationshipModule } from './relationship/relationship.module';
+import { ContractModule } from './contract/contract.module';
+import { InvoiceModule } from './invoice/invoice.module';
+import { LendingProductSubscriptionModule } from './lending-product-subscription/lending-product-subscription.module';
 import { SqfOrganizationModule } from './sqf/organization/organization.module';
-import { SqfExperianModule } from './sqf/experian/experian.module';
+import { SqfKycAgencyModule } from './sqf/kyc-agency/kyc-agency.module';
 import { SqfPersonModule } from './sqf/person/person.module';
 import { SqfOrganizationPersonModule } from './sqf/organization-person/organization-person.module';
+import { SystemSetupModule } from './system-setup/system-setup.module';
 import { Token } from './models/token.entity';
 
 @Module({
   imports: [
     CaslModule,
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     AuthModule,
     DatabaseModule,
     DatabaseModule.forFeature([
-      BankAccount,
-      PersonSupportingDocument,
       Person,
       Token,
       OrganizationRole,
@@ -65,10 +55,9 @@ import { Token } from './models/token.entity';
       OrganizationPerson,
       Organization,
       ClientPersona,
-      ContractAwarderPersona,
+      BuyerPersona,
       SupplierPersona,
-      Experian,
-      Transaction,
+      KycAgencyReport,
     ]),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -85,41 +74,38 @@ import { Token } from './models/token.entity';
       },
     }),
 
-    // ----------------------LCM----------------------
     ScheduleModule.forRoot(),
     LoggerModule,
-    BankAccountModule,
-    PersonSupportingDocumentModule,
-    OrganizationPersonModule,
-    OrganizationModule,
-    ClientPersonaModule,
-    ContractAwarderPersonaModule,
-    SupplierPersonaModule,
-    FactorPersonaModule,
-    PersonModule,
-    ApplicationPublicModule,
-    ExperianModule,
-    // ----------------------LCM----------------------
+    KycAgencyModule,
+
+    // ----------------------TRADE NETWORK----------------------
+    RelationshipModule,
+    ContractModule,
+    InvoiceModule,
+    LendingProductSubscriptionModule,
+    // ----------------------TRADE NETWORK----------------------
 
     // ----------------------SQF----------------------
     SqfOrganizationModule,
-    SqfExperianModule,
+    SqfKycAgencyModule,
     SqfPersonModule,
     SqfOrganizationPersonModule,
     // ----------------------SQF----------------------
+
+    // ----------------------SYSTEM SETUP----------------------
+    SystemSetupModule,
+    // ----------------------SYSTEM SETUP----------------------
   ],
   providers: [
-    BankAccountRepository,
-    PersonSupportingDocumentRepository,
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
     PersonRepository,
     OrganizationPersonRoleRepository,
     OrganizationPersonRepository,
     OrganizationRepository,
     ClientPersonaRepository,
-    ContractAwarderPersonaRepository,
+    BuyerPersonaRepository,
     SupplierPersonaRepository,
-    ExperianRepository,
-    TransactionRepository,
+    KycAgencyReportRepository,
   ],
 })
 export class TradeDirectoryModule {}

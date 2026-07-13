@@ -15,7 +15,6 @@ import { OnchainRepository } from '../repositories/onchain.repository';
 import { ConsensusMessagingModule } from '../modules/consensus-messaging/consensus-messaging.module';
 import { PromptTemplate } from '../models/prompt-template.entity';
 import { PromptTemplateRepository } from '../repositories/prompt-template.repository';
-import { OCRModule } from '../modules/ocr/ocr.module';
 
 @Module({
   imports: [
@@ -28,7 +27,6 @@ import { OCRModule } from '../modules/ocr/ocr.module';
       PromptTemplate,
     ]),
     LLMModule,
-    OCRModule,
     DocumentExtractionModule,
     ConsensusMessagingModule,
   ],
