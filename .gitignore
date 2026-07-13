@@ -50,4 +50,5 @@ blob-report
 /pgadmin4/data
 /kafka/data
 /sql-scripts
-.venv-markitdown/~$*
+.venv-markitdown/
+~$*
