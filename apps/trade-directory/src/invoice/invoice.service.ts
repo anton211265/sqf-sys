@@ -28,6 +28,7 @@ import {
   CreateInvoiceLineDto,
   UpdateInvoiceStatusDto,
 } from './dto/create-invoice.dto';
+import { InvoiceTradeNetworkService } from './invoice-trade-network.service';
 import { PartyOverrideDto } from './dto/party-override.dto';
 
 // Legal transitions of the invoice lifecycle, superset across the four
@@ -93,6 +94,7 @@ export class InvoiceService {
     private readonly organizationRepository: OrganizationRepository,
     private readonly partyRepository: PartyRepository,
     private readonly outboxEventRepository: OutboxEventRepository,
+    private readonly invoiceTradeNetworkService: InvoiceTradeNetworkService,
     private readonly entityManager: EntityManager,
   ) {}
 
@@ -238,33 +240,34 @@ export class InvoiceService {
   async create(user: IUserContext, dto: CreateInvoiceDto) {
     const funderPersonaId = await this.resolveFunderPersonaId(user);
 
-    if (dto.issuerOrganizationId === dto.debtorOrganizationId) {
+    // Exactly one of {id, inline-new-org} per side. No existing cross-field
+    // validator pattern in this codebase (checked) — matching the plain
+    // if-check style already used elsewhere in this method.
+    if (!dto.issuerOrganizationId === !dto.newIssuerOrganization) {
       throw new BadRequestException(
-        'issuerOrganizationId and debtorOrganizationId must differ',
+        'Exactly one of issuerOrganizationId or newIssuerOrganization must be supplied',
+      );
+    }
+    if (!dto.debtorOrganizationId === !dto.newDebtorOrganization) {
+      throw new BadRequestException(
+        'Exactly one of debtorOrganizationId or newDebtorOrganization must be supplied',
       );
     }
 
-    const duplicate = await this.invoiceRepository.findOne({
-      where: {
-        funderPersonaId,
-        issuerOrganizationId: dto.issuerOrganizationId,
-        invoiceNumber: dto.invoiceNumber,
-      },
-    });
+    const duplicate = dto.issuerOrganizationId
+      ? await this.invoiceRepository.findOne({
+          where: {
+            funderPersonaId,
+            issuerOrganizationId: dto.issuerOrganizationId,
+            invoiceNumber: dto.invoiceNumber,
+          },
+        })
+      : null;
     if (duplicate) {
       throw new ConflictException(
         `Invoice ${dto.invoiceNumber} already exists for this issuer`,
       );
     }
-
-    const [issuerOrganization, debtorOrganization] = await Promise.all([
-      this.organizationRepository.findOneOrThrowException({
-        where: { id: dto.issuerOrganizationId },
-      }),
-      this.organizationRepository.findOneOrThrowException({
-        where: { id: dto.debtorOrganizationId },
-      }),
-    ]);
 
     const {
       lines,
@@ -276,6 +279,56 @@ export class InvoiceService {
     } = this.buildLinesAndTotals(dto.lines, dto.documentCurrencyCode);
 
     return this.entityManager.transaction(async (manager) => {
+      // Resolves issuer/debtor to existing orgs, or auto-creates a bare one
+      // for whichever side supplied newIssuerOrganization/newDebtorOrganization
+      // instead of an id — see InvoiceTradeNetworkService.resolveOrganizations.
+      const { issuerOrganization, debtorOrganization } =
+        await this.invoiceTradeNetworkService.resolveOrganizations(manager, {
+          issuerOrganizationId: dto.issuerOrganizationId,
+          newIssuerOrganization: dto.newIssuerOrganization,
+          debtorOrganizationId: dto.debtorOrganizationId,
+          newDebtorOrganization: dto.newDebtorOrganization,
+          funderPersonaId,
+        });
+
+      if (issuerOrganization.id === debtorOrganization.id) {
+        throw new BadRequestException(
+          'issuerOrganizationId and debtorOrganizationId must differ',
+        );
+      }
+
+      // A duplicate-invoice-number check for an auto-created issuer would
+      // always be a no-op (a brand new org can't already have an invoice on
+      // file), so it only runs above when an existing issuerOrganizationId
+      // was supplied. Re-check here now that the issuer is fully resolved,
+      // covering the newIssuerOrganization-dedup-matched-an-existing-org case.
+      if (!dto.issuerOrganizationId) {
+        const duplicateAfterResolve = await manager.findOne(Invoice, {
+          where: {
+            funderPersonaId,
+            issuerOrganizationId: issuerOrganization.id,
+            invoiceNumber: dto.invoiceNumber,
+          },
+        });
+        if (duplicateAfterResolve) {
+          throw new ConflictException(
+            `Invoice ${dto.invoiceNumber} already exists for this issuer`,
+          );
+        }
+      }
+
+      // Builds the trade network as invoices flow through it: attaches
+      // SupplierPersona/BuyerPersona to the issuer/debtor if they don't
+      // already hold them, and finds-or-creates the SUPPLIES_TO relationship
+      // between them unless the caller already named one explicitly.
+      const { relationshipId } =
+        await this.invoiceTradeNetworkService.ensureTradeNetwork(manager, {
+          funderPersonaId,
+          issuerOrganizationId: issuerOrganization.id,
+          debtorOrganizationId: debtorOrganization.id,
+          callerSuppliedRelationshipId: dto.relationshipId,
+        });
+
       const [supplierParty, customerParty] = await Promise.all([
         this.buildPartySnapshot(manager, issuerOrganization, dto.supplierParty),
         this.buildPartySnapshot(manager, debtorOrganization, dto.customerParty),
@@ -284,9 +337,9 @@ export class InvoiceService {
       const invoice = new Invoice({
         funderPersonaId,
         invoiceNumber: dto.invoiceNumber,
-        issuerOrganizationId: dto.issuerOrganizationId,
-        debtorOrganizationId: dto.debtorOrganizationId,
-        relationshipId: dto.relationshipId,
+        issuerOrganizationId: issuerOrganization.id,
+        debtorOrganizationId: debtorOrganization.id,
+        relationshipId,
         contractId: dto.contractId,
         lendingProduct: dto.lendingProduct,
         invoiceTypeCode: dto.invoiceTypeCode,

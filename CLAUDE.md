@@ -163,11 +163,12 @@ Before processing any Kafka message, check `processedEventRepository.exists(even
 | Service | Publishes | Consumes |
 |---|---|---|
 | risk-operation | SEND_EMAIL | — |
-| trade-directory | RECEIVE_KYC_REPORT, SEND_EMAIL | REQUEST_KYC_REPORT |
+| trade-directory | RECEIVE_KYC_REPORT, SEND_EMAIL, ORGANIZATION_CREATED | REQUEST_KYC_REPORT |
 | customer-relationship-management | — | CREATE_CLIENT_ASSIGNEE |
 | notification | — | SEND_EMAIL |
 | document-management | — | SQF_DOCUMENT_EXTRACTION |
 | knowledge-graph | — | RELATIONSHIP_UPSERTED, CONTRACT_UPSERTED, INVOICE_STATUS_CHANGED |
+| risk-agent | — | APPLICATION_SUBMITTED_FOR_REVIEW; **planned, not built**: ORGANIZATION_CREATED |
 
 Dormant since the LCM removal (2026-07-12): nothing currently publishes REQUEST_KYC_REPORT or CREATE_CLIENT_ASSIGNEE, and nothing consumes RECEIVE_KYC_REPORT — the old producers/consumers lived in the deleted LCM modules. The trade-directory redesign (docs/design/trade-directory-redesign.md) re-introduces the triggers; the topics and trade-directory's KYC consumer are kept.
 
@@ -182,6 +183,38 @@ The trade-directory redesign (docs/design/trade-directory-redesign.md) is implem
 - **Frontend**: `apps/web/src/screens/SQF/TradeDirectory/` under `/directory/*` routes (NOT `/trade-directory/*` — that prefix belongs to the Vite dev proxy). Nav group "Trade Directory" in AdminLayout.
 - **knowledge-graph service**: consumes the three trade-network topics, projects them into Neo4j (`neo4j:5` in compose, browser at http://localhost:7474, bolt 7687, auth neo4j/sqfgraph). Graph is a projection — rebuild any time with `docker compose exec knowledge-graph-service npx ts-node -r tsconfig-paths/register apps/knowledge-graph/src/scripts/rebuild-graph.ts`. Idempotency via ProcessedEvent nodes (graph-side equivalent of processed_event). Opportunities API `/knowledge-graph/api/opportunities` (3 saved GraphRAG queries; `POST .../query` NL→Cypher needs ANTHROPIC_API_KEY in apps/knowledge-graph/.env, off by default).
 - Dev test user for the funder-scoped APIs/screens: `admin@sqf.local` / `Test@1234`, orgId 2.
+
+### Document tables (built 2026-07-14)
+
+Two S3-backed document tables live in trade-directory, both entities in `apps/trade-directory/src/models/`:
+- **`person_supporting_document`** — reintroduced (existed in the original 2024 schema — NRIC scan → S3 `bucketKey` — dropped during the 2026-07-13 redesign, brought back verbatim). `personId` FK → `person`, `supportingDocumentType` enum (`PersonSupportingDocumentTypeEnum`, currently just `NRIC`).
+- **`organization_document`** — new. Org-level artefacts (`OrganizationDocumentTypeEnum`: business registration cert, tax registration cert, audited financials, bank statement, company profile, other), `organizationId` FK → `organization`, S3 pointer (`bucketName`/`objectKey`/`fileName`/`mimeType`/`fileSizeBytes`), optional `uploadedByPersonId` FK → `person`.
+
+Both are registered in `trade-directory.module.ts`'s `DatabaseModule.forFeature` + `providers` (repository only, following the `KycAgencyReportRepository` pattern — **no service/controller/API yet**, so there's no upload endpoint or actual S3 client wiring. Build that as its own task when the document-upload UI is scoped, reusing the S3 patterns.
+
+### Auto-created organizations + Risk Agent KYC pickup (built 2026-07-14)
+
+`POST /trade-directory/api/invoices` can now auto-create a bare `Organization` for an issuer/debtor that doesn't exist yet: `issuerOrganizationId`/`debtorOrganizationId` are optional, and an inline `newIssuerOrganization`/`newDebtorOrganization` (`NewOrganizationDto` — only `organizationName` required) can be supplied instead. Exactly one of {id, inline-new-org} is required per side. Before creating, it dedups by `businessRegistrationNumber` when given, else falls back to exact `organizationName` match (same weaker check the dormant `SQF_CREATE_ORGANIZATION` Kafka handler already uses) — there is **no DB unique constraint backing this**, so it's correct for the realistic sequential case but not a concurrency guarantee (see `InvoiceTradeNetworkService.resolveOrCreateOrganization`). A newly-created org emits `ORGANIZATION_CREATED` (payload: `organizationId`, `organizationName`, `businessRegistrationNumber`, `country`, `source: 'invoice_issuer' | 'invoice_debtor'`, `funderPersonaId`) — only on genuine insert, never on a dedup-matched reuse. `fullyOnboardedAt` stays null, same as every org today.
+
+**The Risk Agent is expected to consume `ORGANIZATION_CREATED` and run KYC + risk analysis on every newly added organization — this consumer does not exist yet.** Checked `apps/risk-agent/src`: it currently only consumes `APPLICATION_SUBMITTED_FOR_REVIEW`, tied to risk-operation's `Application` entity via `applicationId` — zero existing hook for a trade-directory `Organization` event. `check_compliance` and `get_financial_credit_report` (`apps/risk-agent/src/tools/`) already exist as agent tools keyed on an `organizationId`, so wiring the consumer is plausibly "add an `@EventPattern(KafkaTopicEnum.ORGANIZATION_CREATED)` handler that calls those same tools for the new org" — not scoped or built.
+
+**Why:** an invoice naming an unknown counterparty (a client's supplier, or Companies D/E/F/G under an SCF facility) shouldn't be blocked just because that org has no directory record yet — but a bare, auto-created record has had zero KYC, so it needs a real trigger to get vetted rather than silently sitting unreviewed.
+**How to apply:** when building the risk-agent side, treat `ORGANIZATION_CREATED` the same way `APPLICATION_SUBMITTED_FOR_REVIEW` is treated today (`apps/risk-agent/src/queue/queue.controller.ts` → `QueueService`) — a new `@EventPattern` handler, idempotent via `ProcessedEventRepository`, that kicks off compliance/credit checks for the named `organizationId`.
+
+### Bank account data belongs to the Payment service, not trade-directory (decided 2026-07-14)
+
+A `bank_account` table existed in trade-directory's original 2024 migration but was dropped during the 2026-07-13 redesign and never carried forward — this was correct and should stay that way. When the Payment microservice (see "Domain structure" → Finance below, and `agents/` product-agent docs) gets designed and built, bank account details (account holder, bank, account number, SWIFT/branch codes, verification status) belong there, not in trade-directory.
+
+**Why:** bank accounts are disbursement/settlement targets with their own verification lifecycle (e.g. penny-drop checks) — that's Payment's job, not trade-directory's (identity, KYC, and the trade graph). Putting it here would couple an identity service to payment-specific compliance logic it shouldn't own.
+**How to apply:** Payment references organizations/persons by bare `organizationId`/`personId` int, same pattern already used by risk-operation and customer-relationship-management — no cross-DB FK. If the directory UI needs to show bank-verification status alongside org profile data, use a Kafka event (e.g. a future `BANK_ACCOUNT_VERIFIED`) rather than a shared table or synchronous cross-service read on every page load.
+
+### Related-party attributes (director, shareholder, product, ...) are a graph-computed pattern, not a `relationship` row (decided 2026-07-14)
+
+Shared director, shared shareholder, same lending product, and other common-attribute links between two organizations are **not** modeled as rows in the Postgres `relationship` table. `RelationshipTypeEnum` stays limited to the directional trade type it already has (`SUPPLIES_TO`); its own code comment already anticipated this — `SUBSIDIARY_OF`/`SHARES_DIRECTOR_WITH` are marked "reserved for later (knowledge-graph driven)". This decision confirms and generalizes that: any "these two orgs are connected because they share X" fact is a **computed graph pattern in knowledge-graph (Neo4j)**, discovered by querying the projected data, not an explicit row anyone inserts.
+
+**Why:** `relationship.fromOrganizationId`/`toOrganizationId` model a directional trade flow (supplier→buyer) — a shared director or shareholder is symmetric, so it doesn't fit that shape without either faking a direction or double-storing the pair. There's also no reliable trigger moment for it the way invoice creation states issuer/debtor directly: a shared director is *derived* by joining `OrganizationPerson` rows across two `organizationId`s, and `OrganizationPerson.designation` is free text today (`"Director"`, `"Managing Director"`, ...), not a structured field — no create()-time hook to hang this on. And it's a related-party/conflict-of-interest signal (Bank Negara relevance), not a trade fact, so it shouldn't silently look like one in the trade graph.
+
+**How to apply:** when this gets built, it means (1) projecting `Person` nodes and `Person -[:MEMBER_OF {designation}]-> Company` edges into Neo4j (trade-directory doesn't currently emit any event when `OrganizationPerson` rows change — a new topic/consumer would be needed, mirroring the existing `RELATIONSHIP_UPSERTED`/`CONTRACT_UPSERTED`/`INVOICE_STATUS_CHANGED` pattern), (2) structuring shareholder data as real entities/edges rather than the free-text/jsonb blob currently buried in `KycAgencyReport.shareholders`, and (3) projecting `LendingProductSubscription` so "same product" is a graph pattern too. The actual "shared director" fact is then a Cypher query (e.g. two `Company` nodes reachable from the same `Person` node via `MEMBER_OF`), exposed through the existing GraphRAG opportunities API pattern (`apps/knowledge-graph/src/opportunities/`) — not a new Postgres migration. Not built yet; this is a design decision only.
 
 ---
 

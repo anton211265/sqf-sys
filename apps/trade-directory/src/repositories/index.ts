@@ -1,5 +1,7 @@
 export * from './client-persona.repository';
 export * from './buyer-persona.repository';
+export * from './person-supporting-document.repository';
+export * from './organization-document.repository';
 export * from './kyc-agency-report.repository';
 export * from './funder-persona.repository';
 export * from './organization-person-role.repository';

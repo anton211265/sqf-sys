@@ -15,9 +15,12 @@ export class ClientPersonaSubscriber
   }
 
   async afterInsert(event: InsertEvent<ClientPersona>) {
-    const repo = event.manager.connection.getRepository(ClientPersona);
+    // Use event.manager directly (not event.manager.connection.getRepository,
+    // which runs on a separate, non-transactional connection and can't see
+    // this row if the insert happened inside an open transaction).
     const clientPersonaId = `CL${String(event.entity.id).padStart(6, '0')}`;
-    await repo.update(
+    await event.manager.update(
+      ClientPersona,
       { id: event.entity.id },
       { clientPersonaId: clientPersonaId },
     );

@@ -15,12 +15,12 @@ export class BuyerPersonaSubscriber
   }
 
   async afterInsert(event: InsertEvent<BuyerPersona>) {
-    const repo = event.manager.connection.getRepository(BuyerPersona);
-    const buyerPersonaId = `BY${String(event.entity.id).padStart(
-      6,
-      '0',
-    )}`;
-    await repo.update(
+    // Use event.manager directly (not event.manager.connection.getRepository,
+    // which runs on a separate, non-transactional connection and can't see
+    // this row if the insert happened inside an open transaction).
+    const buyerPersonaId = `BY${String(event.entity.id).padStart(6, '0')}`;
+    await event.manager.update(
+      BuyerPersona,
       { id: event.entity.id },
       { buyerPersonaId: buyerPersonaId },
     );

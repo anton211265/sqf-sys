@@ -1,5 +1,7 @@
 export * from './client-persona.entity';
 export * from './buyer-persona.entity';
+export * from './person-supporting-document.entity';
+export * from './organization-document.entity';
 export * from './kyc-agency-report.entity';
 export * from './funder-persona.entity';
 export * from './organization-person-role.entity';

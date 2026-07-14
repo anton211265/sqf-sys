@@ -18,6 +18,7 @@ import { ClientPersona } from './client-persona.entity';
 import { BuyerPersona } from './buyer-persona.entity';
 import { KycAgencyReport } from './kyc-agency-report.entity';
 import { FunderPersona } from './funder-persona.entity';
+import { OrganizationDocument } from './organization-document.entity';
 import { OrganizationPerson } from './organization-person.entity';
 import { SupplierPersona } from './supplier-persona.entity';
 import { CurrencyCodeEnum } from '@app/common/constants/currencies';
@@ -43,6 +44,13 @@ export class Organization extends AbstractEntity<Organization> {
     },
   )
   organizationPersons?: OrganizationPerson[];
+
+  @OneToMany(
+    () => OrganizationDocument,
+    (document) => document.organization,
+    { cascade: true },
+  )
+  organizationDocuments?: OrganizationDocument[];
 
   // ------------------ Relationship ------------------
 

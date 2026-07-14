@@ -14,20 +14,24 @@ import {
   BuyerPersona,
   KycAgencyReport,
   Organization,
+  OrganizationDocument,
   OrganizationPerson,
   OrganizationPersonRole,
   OrganizationRole,
   Person,
+  PersonSupportingDocument,
   SupplierPersona,
 } from './models';
 import {
   ClientPersonaRepository,
   BuyerPersonaRepository,
   KycAgencyReportRepository,
+  OrganizationDocumentRepository,
   OrganizationPersonRepository,
   OrganizationPersonRoleRepository,
   OrganizationRepository,
   PersonRepository,
+  PersonSupportingDocumentRepository,
   SupplierPersonaRepository,
 } from './repositories';
 import { RelationshipModule } from './relationship/relationship.module';
@@ -40,6 +44,7 @@ import { SqfPersonModule } from './sqf/person/person.module';
 import { SqfOrganizationPersonModule } from './sqf/organization-person/organization-person.module';
 import { SystemSetupModule } from './system-setup/system-setup.module';
 import { Token } from './models/token.entity';
+import { PersonaSubscribersModule } from './models/subscribers/persona-subscribers.module';
 
 @Module({
   imports: [
@@ -58,7 +63,10 @@ import { Token } from './models/token.entity';
       BuyerPersona,
       SupplierPersona,
       KycAgencyReport,
+      PersonSupportingDocument,
+      OrganizationDocument,
     ]),
+    PersonaSubscribersModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validate(config) {
@@ -106,6 +114,8 @@ import { Token } from './models/token.entity';
     BuyerPersonaRepository,
     SupplierPersonaRepository,
     KycAgencyReportRepository,
+    PersonSupportingDocumentRepository,
+    OrganizationDocumentRepository,
   ],
 })
 export class TradeDirectoryModule {}

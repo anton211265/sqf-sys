@@ -18,6 +18,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { NewOrganizationDto } from './new-organization.dto';
 import { PartyOverrideDto } from './party-override.dto';
 
 // One invoiced line (cac:InvoiceLine core subset). lineExtensionAmount and the
@@ -73,15 +74,31 @@ export class CreateInvoiceDto {
   @IsNotEmpty()
   invoiceNumber: string;
 
-  @ApiProperty()
+  // Exactly one of issuerOrganizationId / newIssuerOrganization must be
+  // supplied (enforced in InvoiceService.create(), not here — this codebase
+  // has no existing cross-field validator pattern to match). Same for the
+  // debtor pair below.
+  @ApiProperty({ required: false })
   @IsInt()
-  @IsNotEmpty()
-  issuerOrganizationId: number;
+  @IsOptional()
+  issuerOrganizationId?: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: NewOrganizationDto, required: false })
+  @ValidateNested()
+  @Type(() => NewOrganizationDto)
+  @IsOptional()
+  newIssuerOrganization?: NewOrganizationDto;
+
+  @ApiProperty({ required: false })
   @IsInt()
-  @IsNotEmpty()
-  debtorOrganizationId: number;
+  @IsOptional()
+  debtorOrganizationId?: number;
+
+  @ApiProperty({ type: NewOrganizationDto, required: false })
+  @ValidateNested()
+  @Type(() => NewOrganizationDto)
+  @IsOptional()
+  newDebtorOrganization?: NewOrganizationDto;
 
   @ApiProperty({ required: false })
   @IsInt()

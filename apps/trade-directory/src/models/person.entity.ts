@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { KycAgencyReport } from './kyc-agency-report.entity';
 import { OrganizationPerson } from './organization-person.entity';
+import { PersonSupportingDocument } from './person-supporting-document.entity';
 import { Token } from './token.entity';
 import { OnBoardProcessEnum } from '@app/common/apps/trade-directory/enums/onboard-process.enum';
 
@@ -64,6 +65,13 @@ export class Person extends AbstractEntity<Person> {
     cascade: true,
   })
   kycAgencyReports?: KycAgencyReport[];
+
+  @OneToMany(
+    () => PersonSupportingDocument,
+    (document) => document.person,
+    { cascade: true },
+  )
+  supportingDocuments?: PersonSupportingDocument[];
 
   @Column({ type: 'varchar', nullable: true })
   preferredUsername?: string;
