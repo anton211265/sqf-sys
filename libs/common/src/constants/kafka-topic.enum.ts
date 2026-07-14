@@ -17,9 +17,10 @@ export enum KafkaTopicEnum {
   CONTRACT_UPSERTED = 'contract_upserted',
   INVOICE_STATUS_CHANGED = 'invoice_status_changed',
   // Emitted when invoice creation auto-creates a bare Organization for an
-  // issuer/debtor that didn't exist yet. No consumer exists today — the
-  // intended future hook for risk-agent's KYC/risk-analysis pipeline (see
-  // CLAUDE.md). Wiring that consumer is a separate, not-yet-started task.
+  // issuer/debtor that didn't exist yet. Consumed by risk-agent's
+  // organization-kyc module, which runs an LLM KYC-intake task and proposes
+  // a CLEAR/FLAGGED outcome for a Human Risk Analyst to confirm (see
+  // apps/risk-agent/src/organization-kyc, CLAUDE.md).
   ORGANIZATION_CREATED = 'organization_created',
 
   REQUEST_KYC_REPORT = 'request_kyc_report',

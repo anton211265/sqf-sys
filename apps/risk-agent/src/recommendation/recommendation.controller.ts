@@ -1,10 +1,24 @@
 import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 import { RecommendationService } from './recommendation.service';
 import { RiskAgentHumanOutcomeEnum } from '../models/risk-agent-recommendation.entity';
 
+// Decorators are required, not decorative: main.ts registers a global
+// ValidationPipe({ whitelist: true }), which strips every property with no
+// validation decorator — an undecorated DTO here silently resolves to `{}`
+// and the resolve write becomes a no-op for humanOutcome/humanActorId/
+// humanNote (confirmed live on the sibling organization-kyc endpoint, which
+// had this exact bug before being fixed — only resolvedAt would change,
+// since it's set unconditionally in the service, not read off the DTO).
 class ResolveRecommendationDto {
+  @IsEnum(RiskAgentHumanOutcomeEnum)
   outcome: RiskAgentHumanOutcomeEnum;
+
+  @IsInt()
   humanActorId: number;
+
+  @IsString()
+  @IsOptional()
   humanNote?: string;
 }
 

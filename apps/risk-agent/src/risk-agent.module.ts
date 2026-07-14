@@ -11,7 +11,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ScheduleModule } from '@nestjs/schedule';
 import { z } from 'zod';
-import { RiskAgentQueueItem, RiskAgentRecommendation, DocumentRequest } from './models';
+import {
+  RiskAgentQueueItem,
+  RiskAgentRecommendation,
+  DocumentRequest,
+  OrganizationKycRecommendation,
+} from './models';
 import { OutboxEventRepository, ProcessedEventRepository } from './repositories';
 import { OutboxRelayService } from './outbox/outbox-relay.service';
 import { RiskOperationClientService } from './tools/risk-operation-client.service';
@@ -22,6 +27,10 @@ import { QueueService } from './queue/queue.service';
 import { DocumentRequestService } from './document-request/document-request.service';
 import { RecommendationController } from './recommendation/recommendation.controller';
 import { RecommendationService } from './recommendation/recommendation.service';
+import { OrganizationKycController } from './organization-kyc/organization-kyc.controller';
+import { OrganizationKycService } from './organization-kyc/organization-kyc.service';
+import { OrganizationKycRecommendationController } from './organization-kyc/organization-kyc-recommendation.controller';
+import { OrganizationKycRecommendationService } from './organization-kyc/organization-kyc-recommendation.service';
 
 @Module({
   imports: [
@@ -32,6 +41,7 @@ import { RecommendationService } from './recommendation/recommendation.service';
       RiskAgentQueueItem,
       RiskAgentRecommendation,
       DocumentRequest,
+      OrganizationKycRecommendation,
     ]),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -84,7 +94,12 @@ import { RecommendationService } from './recommendation/recommendation.service';
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
   ],
-  controllers: [QueueController, RecommendationController],
+  controllers: [
+    QueueController,
+    RecommendationController,
+    OrganizationKycController,
+    OrganizationKycRecommendationController,
+  ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     OutboxEventRepository,
@@ -96,6 +111,8 @@ import { RecommendationService } from './recommendation/recommendation.service';
     QueueService,
     DocumentRequestService,
     RecommendationService,
+    OrganizationKycService,
+    OrganizationKycRecommendationService,
   ],
 })
 export class RiskAgentModule {}

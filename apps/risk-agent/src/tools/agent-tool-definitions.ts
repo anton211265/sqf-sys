@@ -8,6 +8,59 @@ import Anthropic from '@anthropic-ai/sdk';
  * proposeRecommendation is the only "write" tool, and it writes to the
  * Risk Agent's own DB, never to risk-operation.
  */
+export const GET_FINANCIAL_CREDIT_REPORT_TOOL: Anthropic.Tool = {
+  name: 'get_financial_credit_report',
+  description:
+    "Fetch the client organization's extracted financial metrics (debt/equity, liquidity, EBITDA, etc.) used for Filter 2 quantitative scoring.",
+  input_schema: {
+    type: 'object',
+    properties: { organizationId: { type: 'number' } },
+    required: ['organizationId'],
+  },
+};
+
+export const CHECK_COMPLIANCE_TOOL: Anthropic.Tool = {
+  name: 'check_compliance',
+  description:
+    "Run sanctions/adverse-media/social-media checks on a named person or organization (director, shareholder, the client org itself). Currently backed by a stubbed provider for the local prototype — real OFAC/media integrations are a later phase.",
+  input_schema: {
+    type: 'object',
+    properties: {
+      subjectName: { type: 'string' },
+      checks: {
+        type: 'array',
+        items: { type: 'string', enum: ['OFAC_SANCTIONS', 'ADVERSE_MEDIA', 'SOCIAL_MEDIA'] },
+      },
+    },
+    required: ['subjectName', 'checks'],
+  },
+};
+
+export const PROPOSE_ORGANIZATION_KYC_OUTCOME_TOOL: Anthropic.Tool = {
+  name: 'propose_organization_kyc_outcome',
+  description:
+    "Record the agent's KYC-intake recommendation for a newly auto-created, not-yet-vetted Organization. This does NOT change any verification status on the organization itself — it writes to the Risk Agent's own KYC recommendation log for a Human Risk Analyst to confirm or override. Call this exactly once to conclude your review.",
+  input_schema: {
+    type: 'object',
+    properties: {
+      outcome: { type: 'string', enum: ['CLEAR', 'FLAGGED'] },
+      confidence: { type: 'number', minimum: 0, maximum: 1 },
+      reasoning: { type: 'array', items: { type: 'string' } },
+      escalate: { type: 'boolean' },
+    },
+    required: ['outcome', 'confidence', 'reasoning', 'escalate'],
+  },
+};
+
+// Curated subset for an organization KYC-intake task — deliberately excludes
+// every application-scoring tool below, which would be meaningless (and
+// confusing to the model) outside an application-review context.
+export const ORGANIZATION_KYC_TOOLS: Anthropic.Tool[] = [
+  CHECK_COMPLIANCE_TOOL,
+  GET_FINANCIAL_CREDIT_REPORT_TOOL,
+  PROPOSE_ORGANIZATION_KYC_OUTCOME_TOOL,
+];
+
 export const RISK_AGENT_TOOLS: Anthropic.Tool[] = [
   {
     name: 'get_application',
@@ -97,32 +150,8 @@ export const RISK_AGENT_TOOLS: Anthropic.Tool[] = [
       required: ['applicationNumber'],
     },
   },
-  {
-    name: 'get_financial_credit_report',
-    description:
-      "Fetch the client organization's extracted financial metrics (debt/equity, liquidity, EBITDA, etc.) used for Filter 2 quantitative scoring.",
-    input_schema: {
-      type: 'object',
-      properties: { organizationId: { type: 'number' } },
-      required: ['organizationId'],
-    },
-  },
-  {
-    name: 'check_compliance',
-    description:
-      "Run sanctions/adverse-media/social-media checks on a named person or organization (director, shareholder, the client org itself). Currently backed by a stubbed provider for the local prototype — real OFAC/media integrations are a later phase.",
-    input_schema: {
-      type: 'object',
-      properties: {
-        subjectName: { type: 'string' },
-        checks: {
-          type: 'array',
-          items: { type: 'string', enum: ['OFAC_SANCTIONS', 'ADVERSE_MEDIA', 'SOCIAL_MEDIA'] },
-        },
-      },
-      required: ['subjectName', 'checks'],
-    },
-  },
+  GET_FINANCIAL_CREDIT_REPORT_TOOL,
+  CHECK_COMPLIANCE_TOOL,
   {
     name: 'propose_recommendation',
     description:

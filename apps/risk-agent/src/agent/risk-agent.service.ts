@@ -8,13 +8,31 @@ import {
   RiskAgentDecisionEnum,
   RiskAgentFilterStageEnum,
 } from '../models/risk-agent-recommendation.entity';
+import {
+  OrganizationKycRecommendation,
+  OrganizationKycOutcomeEnum,
+  OrganizationKycSourceEnum,
+} from '../models/organization-kyc-recommendation.entity';
 import { RiskOperationClientService } from '../tools/risk-operation-client.service';
 import { ComplianceStubService } from '../tools/compliance-stub.service';
-import { RISK_AGENT_TOOLS } from '../tools/agent-tool-definitions';
-import { RISK_AGENT_SYSTEM_PROMPT } from './risk-agent.system-prompt';
+import {
+  RISK_AGENT_TOOLS,
+  ORGANIZATION_KYC_TOOLS,
+} from '../tools/agent-tool-definitions';
+import {
+  RISK_AGENT_SYSTEM_PROMPT,
+  RISK_AGENT_ORG_KYC_SYSTEM_PROMPT,
+} from './risk-agent.system-prompt';
 
 export interface RecommendationOutcome {
   decision: RiskAgentDecisionEnum;
+  confidence: number;
+  reasoning: string[];
+  escalate: boolean;
+}
+
+export interface OrganizationKycOutcome {
+  outcome: OrganizationKycOutcomeEnum;
   confidence: number;
   reasoning: string[];
   escalate: boolean;
@@ -32,6 +50,8 @@ export class RiskAgentService {
     private readonly complianceStub: ComplianceStubService,
     @InjectRepository(RiskAgentRecommendation)
     private readonly recommendationRepository: Repository<RiskAgentRecommendation>,
+    @InjectRepository(OrganizationKycRecommendation)
+    private readonly organizationKycRecommendationRepository: Repository<OrganizationKycRecommendation>,
   ) {
     this.anthropic = new Anthropic({
       apiKey: this.configService.getOrThrow('ANTHROPIC_API_KEY'),
@@ -138,6 +158,118 @@ export class RiskAgentService {
     if (!outcome && params.expectRecommendation) {
       this.logger.error(
         `Risk Agent did not conclude with propose_recommendation for application ${params.applicationNumber} — escalate to HRA manually.`,
+      );
+    }
+
+    return outcome;
+  }
+
+  /**
+   * KYC-intake task for a bare, auto-created Organization (see
+   * organization-kyc/organization-kyc.service.ts). Deliberately a separate
+   * method from runTask rather than a generalized/parameterized version of
+   * it — duplicates the turn-loop shape, but carries zero risk of regressing
+   * the working, tested application-review pipeline. Uses its own curated
+   * tool list (ORGANIZATION_KYC_TOOLS) and system prompt
+   * (RISK_AGENT_ORG_KYC_SYSTEM_PROMPT); falls through to the same
+   * executeTool for check_compliance/get_financial_credit_report, which are
+   * already organization-scoped and need no changes.
+   */
+  async runOrganizationKycTask(params: {
+    organizationId: number;
+    organizationName: string;
+    businessRegistrationNumber: string | null;
+    country: string;
+    source: OrganizationKycSourceEnum;
+    funderPersonaId: number;
+    userMessage: string;
+  }): Promise<OrganizationKycOutcome | null> {
+    const messages: Anthropic.MessageParam[] = [
+      { role: 'user', content: params.userMessage },
+    ];
+
+    let outcome: OrganizationKycOutcome | null = null;
+
+    for (let turn = 0; turn < 8 && !outcome; turn++) {
+      const response = await this.anthropic.messages.create({
+        model: this.model,
+        max_tokens: 2048,
+        system: RISK_AGENT_ORG_KYC_SYSTEM_PROMPT,
+        tools: ORGANIZATION_KYC_TOOLS,
+        messages,
+      });
+
+      messages.push({ role: 'assistant', content: response.content });
+
+      if (response.stop_reason !== 'tool_use') {
+        break;
+      }
+
+      const toolResults: Anthropic.ToolResultBlockParam[] = [];
+      for (const block of response.content) {
+        if (block.type !== 'tool_use') continue;
+
+        if (block.name === 'propose_organization_kyc_outcome') {
+          const input = block.input as {
+            outcome: OrganizationKycOutcomeEnum;
+            confidence: number;
+            reasoning: string[];
+            escalate: boolean;
+          };
+          await this.organizationKycRecommendationRepository.save(
+            new OrganizationKycRecommendation({
+              organizationId: params.organizationId,
+              organizationName: params.organizationName,
+              businessRegistrationNumber: params.businessRegistrationNumber,
+              country: params.country,
+              source: params.source,
+              funderPersonaId: params.funderPersonaId,
+              outcome: input.outcome,
+              confidence: input.confidence,
+              reasoning: input.reasoning,
+              escalate: input.escalate,
+            }),
+          );
+          outcome = {
+            outcome: input.outcome,
+            confidence: input.confidence,
+            reasoning: input.reasoning,
+            escalate: input.escalate,
+          };
+          toolResults.push({
+            type: 'tool_result',
+            tool_use_id: block.id,
+            content: 'KYC recommendation recorded for HRA review.',
+          });
+          continue;
+        }
+
+        try {
+          const result = await this.executeTool(block.name, block.input);
+          toolResults.push({
+            type: 'tool_result',
+            tool_use_id: block.id,
+            content: JSON.stringify(result),
+          });
+        } catch (error) {
+          this.logger.warn(`Tool ${block.name} failed: ${error}`);
+          toolResults.push({
+            type: 'tool_result',
+            tool_use_id: block.id,
+            content: JSON.stringify({ error: String(error) }),
+            is_error: true,
+          });
+        }
+      }
+
+      if (toolResults.length > 0) {
+        messages.push({ role: 'user', content: toolResults });
+      }
+    }
+
+    if (!outcome) {
+      this.logger.error(
+        `Risk Agent did not conclude with propose_organization_kyc_outcome for organizationId=${params.organizationId} — escalate to HRA manually.`,
       );
     }
 
