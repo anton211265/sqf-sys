@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "serve:web"],
       "port": 3001
+    },
+    {
+      "name": "web-next",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "serve:web-next"],
+      "port": 3002
     }
   ]
 }

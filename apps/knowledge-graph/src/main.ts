@@ -15,7 +15,13 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
   const configService = app.get(ConfigService);
   app.enableCors({
-    origin: [configService.getOrThrow<string>('FRONTEND_DOMAIN')],
+    // Comma-separated so both the legacy apps/web (3001) and the in-progress
+    // apps/web-next rebuild (3002) can call the backend during the parallel
+    // build — see CLAUDE.md "Planned: Frontend Rebuild". No wildcards.
+    origin: configService
+      .getOrThrow<string>('FRONTEND_DOMAIN')
+      .split(',')
+      .map((o) => o.trim()),
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization, Accept',

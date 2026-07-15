@@ -85,6 +85,8 @@ All should return 404 (no route at `/` is correct — means the service is up).
 ### Known boot issue
 On a fresh Kafka boot, a service may crash with `KafkaJSProtocolError: UNKNOWN_TOPIC_OR_PARTITION`. Fix: `docker compose restart <service-name>` once — topics auto-create on retry.
 
+**Different from the above:** if *every* service is crash-looping with `KafkaJSConnectionError: getaddrinfo ENOTFOUND kafka`, the `kafka` container itself has likely exited (check `docker compose ps kafka`) — `docker compose up -d kafka` first, then restart the dependent services. See "Backend changes required to support a second frontend origin" under "Planned: Frontend Rebuild" for the full container-ops notes (this + the `.env`-doesn't-reload-on-`restart` and nginx-IP-caching gotchas) surfaced while standing up `apps/web-next`.
+
 ---
 
 ## Key Commands
@@ -407,10 +409,32 @@ Query for server state + ad-hoc local component state, no unified
 state-machine library) is also in scope for reconsideration as part of
 this rebuild, but not yet decided.
 
-**Status: not started.** Tony is providing the storyboard, navigation,
-and business logic as the design input before any build work begins —
-this note records the decided strategy, not a green light to start
-building without that spec in hand.
+**Status: chassis scaffolded (2026-07-15), screens not started.** Tony
+is providing the storyboard, navigation, and business logic as the
+design input before real screens get built — the chassis below is
+infrastructure only (auth, routing skeleton, base components), not a
+green light to build domain screens without that spec in hand.
+
+### `apps/web-next` chassis (built 2026-07-15)
+
+A working, empty-of-domain-content app proving the stack end-to-end:
+- **Stack**: Vite + React + TS on port 3002 (`apps/web-next/`, `project.json` mirrors `apps/web`'s `nx:run-commands` pattern). `npm run serve:web-next`, or `.claude/launch.json`'s `"web-next"` config.
+- **UI layer**: Tailwind + shadcn/ui, `components.json` present so `npx shadcn@latest add <component>` works normally. Base components so far: `Button`, `Input`, `Label`, `Card` (`src/components/ui/`). Design tokens are placeholder neutral/slate HSL values in `src/index.css` — **not** the real visual identity, which lands via `ui-ux-pro-max` token generation separately.
+- **Data layer unchanged, per the earlier decision**: `axiosClient.ts` (in-memory access token + refresh-cookie rotation), Redux (`redux-persist`, `user` slice), and `@tanstack/react-query` v5 are ported/reused as-is from `apps/web` — same backend, same auth model. One deliberate simplification: `apps/web`'s split between `axiosClient` and a separate `apiClient`/`publicClient` (`utils/reactQuery.ts`) is *not* carried over — `web-next` uses a single `axiosClient` everywhere, since that split was scar tissue from an incremental migration that doesn't apply to a from-scratch rebuild.
+- **Auth flow proven live**: `screens/Auth/Login.tsx` (2-step email → password+org, same as `apps/web`) and a protected `screens/Home/Home.tsx` behind `PrivateRoute`, verified end-to-end against the real trade-directory service (login → `/api/person/me` → protected route), side by side with `apps/web` still working unmodified on 3001.
+- **Routes are deliberately minimal** (`constants/routes.ts` — just `AUTH.LOGIN` and `HOME`). Real routes get added as the storyboard defines each screen — don't pre-build a route map speculatively.
+
+### Backend changes required to support a second frontend origin (2026-07-15)
+
+Standing up `web-next` on a different port than `apps/web` exposed that CORS was hardcoded to a single origin in **two places**, not one:
+1. Each service's `main.ts` (`app.enableCors({ origin: [configService.getOrThrow('FRONTEND_DOMAIN')] })`) — now parses `FRONTEND_DOMAIN` as a comma-separated list (`.split(',').map(o => o.trim())`) instead of wrapping the raw string in an array. Applied identically across all 7 services (trade-directory, risk-operation, customer-relationship-management, document-management, notification, knowledge-graph, risk-agent). Each `apps/*/.env` (gitignored, local-only) is now `FRONTEND_DOMAIN=http://localhost:3001,http://localhost:3002`.
+2. **The nginx gateway (`nginx/default.conf`) was the actual enforcing layer**, not the NestJS-level config above — it hardcoded `set $cors_origin "http://localhost:3001"` and used `proxy_hide_header` to strip whatever CORS headers each backend service set, replacing them with its own static ones. Fixed with an nginx `map $http_origin $cors_origin { default ""; "~^http://localhost:(3001|3002)$" $http_origin; }` — reflects the request Origin only if it's an allowed local dev frontend, empty (blocked) otherwise. No wildcard, per the existing CORS security requirement. **If a third frontend origin is ever needed, update the regex in this map, not just the `.env` files** — the `.env` change alone silently does nothing while this nginx config is in front of it.
+
+Container-ops notes surfaced while fixing this (useful beyond this specific change):
+- **`docker compose restart <service>` does not re-read `.env`/`env_file` changes** — only `docker compose up -d` (or `--force-recreate`) does, since `restart` reuses the existing container's already-resolved environment. If a service isn't picking up an `.env` edit, recreate it, don't just restart it.
+- **nginx caches upstream container IPs at its own startup** and does not re-resolve on a backend container's IP change (e.g. after that backend was recreated) — if a service is healthy but the gateway still 502s it with "connect() failed... while connecting to upstream," restart `backend-gateway` too.
+- **The `kafka` container can silently exit (OOM or otherwise) independently of the app services** — every dependent service will crash-loop with `KafkaJSConnectionError: getaddrinfo ENOTFOUND kafka`, which looks identical to the already-documented "fresh boot" flake below but has a different fix: `docker compose ps kafka` to check it's actually `Up`, `docker compose up -d kafka` if not, *then* restart the dependent services — restarting them alone won't help if kafka itself is down.
+- Fixed a genuine pre-existing bug found via this process: `libs/common/src/apps/trade-directory/proto-converter.ts`'s `OrganizationProtoConverter`/`PersonProtoConverter.convertToApp` were missing the `organizationDocuments`/`supportingDocuments` fields added to the `Organization`/`Person` entities during the 2026-07-14 document-tables work, which broke `customer-relationship-management-service`'s webpack build (`TS2741`) the moment it was rebuilt fresh. Both now explicitly set to `undefined`, matching the existing pattern for other app-only, non-proto-carried relations (e.g. `kycAgencyReports`).
 
 **Build strategy: parallel app, not in-place.** The new frontend is
 built in a new app directory (working name `apps/web-next`) alongside

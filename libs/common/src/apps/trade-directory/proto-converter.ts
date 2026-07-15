@@ -371,6 +371,7 @@ class OrganizationProtoConverter {
       organizationBusinessSector: undefined,
       businessSectorOther: undefined,
       fullyOnboardedAt: undefined,
+      organizationDocuments: undefined,
     };
   };
 
@@ -708,6 +709,7 @@ class PersonProtoConverter {
       systemRole: undefined,
       failedLoginAttempts: 0,
       lockedUntil: null,
+      supportingDocuments: undefined,
     };
   };
 

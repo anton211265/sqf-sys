@@ -1,0 +1,48 @@
+{
+  "name": "web-next",
+  "sourceRoot": "apps/web-next/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:frontend"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite build apps/web-next",
+        "cwd": "{workspaceRoot}"
+      },
+      "configurations": {
+        "production": {
+          "command": "vite build apps/web-next --mode production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite apps/web-next",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "preview": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite preview apps/web-next",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint \"apps/web-next/src/**/*.{ts,tsx}\" --fix",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p apps/web-next/tsconfig.json",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}
