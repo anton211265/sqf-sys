@@ -1,5 +1,4 @@
 import { Button, LoadingOverlay } from '@mantine/core';
-import { color } from 'constants/color';
 import React, { ReactNode } from 'react';
 
 interface ActionCardProps {
@@ -54,12 +53,8 @@ const ActionCard: React.FC<ActionCardProps> = ({
             {secondaryButtonLabel && (
               <Button
                 variant="outline"
+                color="primary"
                 className="w-auto md:w-auto"
-                style={{
-                  backgroundColor: 'transparent',
-                  color: color.GOLD,
-                  borderColor: color.GOLD,
-                }}
                 fullWidth
                 onClick={onClickSecondaryButtonAction}
                 loading={loading}
@@ -69,12 +64,8 @@ const ActionCard: React.FC<ActionCardProps> = ({
             )}
             {primaryButtonLabel && (
               <Button
-                variant="primary"
+                color="primary"
                 className="w-full md:w-auto"
-                style={{
-                  color: '#ffffff',
-                  backgroundColor: color.GOLD,
-                }}
                 fullWidth
                 onClick={onClickPrimaryButtonAction}
                 loading={loading}
@@ -87,12 +78,8 @@ const ActionCard: React.FC<ActionCardProps> = ({
           // 1 button layout
           <div className="mt-7 w-full">
             <Button
-              variant="primary"
+              color="primary"
               className="w-full md:w-auto"
-              style={{
-                color: '#ffffff',
-                backgroundColor: color.GOLD,
-              }}
               loading={loading}
               fullWidth
               onClick={onClickPrimaryButtonAction}

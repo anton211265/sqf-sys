@@ -1,5 +1,6 @@
 import { IconMeteor } from '@tabler/icons-react';
 import ActionCard from 'components/SQF/BaseComponents/ActionCard';
+import LoginHero from 'components/SQF/BaseComponents/LoginHero';
 import React, { FC, useEffect, useState } from 'react';
 import TextInput from 'components/TextBox/TextBox';
 import {
@@ -10,7 +11,6 @@ import {
   Select,
   Stepper,
 } from '@mantine/core';
-import { color } from 'constants/color';
 import { useNavigate } from 'react-router-dom';
 import { ADMIN, CLIENT_DASHBOARD, CLIENTONBOARDING, SUPER_ADMIN, SYSTEM } from 'constants/routes';
 import { OrganizationPersonRoleEnum } from 'constants/enum';
@@ -214,7 +214,9 @@ const Login: FC = () => {
 
   return (
     <>
-      <div className="flex items-center justify-center flex-col min-h-screen bg-zinc-100">
+      <div className="flex min-h-screen bg-zinc-100">
+        <LoginHero />
+        <div className="flex-1 flex items-center justify-center flex-col px-6 py-12">
         <ActionCard
           title={'Welcome back ! 🎉'}
           description={'Enter your details to sign in to your account'}
@@ -277,16 +279,14 @@ const Login: FC = () => {
         </ActionCard>
         <div className="mt-7 flex gap-5">
           <Button
-            variant="primary"
+            variant="outline"
+            color="primary"
             className="w-full md:w-auto"
-            style={{
-              color: '#ffffff',
-              backgroundColor: color.GOLD,
-            }}
             onClick={onClickRedirectCreateNewApplication}
           >
             Sign Up New Application
           </Button>
+        </div>
         </div>
       </div>
     </>

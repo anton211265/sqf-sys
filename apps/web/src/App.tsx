@@ -147,7 +147,15 @@ const App = (): JSX.Element => {
       navy,
     },
     fontFamily: 'Inter, sans-serif',
-    headings: { fontFamily: 'Calistoga, serif' },
+    // Diverges from design-system/sqf-sys/MASTER.md's Calistoga heading
+    // font by explicit request (2026-07-15) — Arial, regular weight, dark
+    // blue instead of the display serif + near-black default.
+    headings: { fontFamily: 'Arial, Helvetica, sans-serif', fontWeight: '400' },
+    components: {
+      Title: {
+        defaultProps: { c: 'primary.8' },
+      },
+    },
     defaultRadius: 'md',
   });
 
