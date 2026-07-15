@@ -394,6 +394,36 @@ Requires `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` env vars (same convention as 
 2. `proto-converter.ts` — both `convertToApp` and `convertToProto` maps
 3. `apps/web/src/constants/enum.ts` — frontend enum
 
+## Planned: Frontend State Machine Rebuild (flagged 2026-07-15)
+
+Tony has flagged that the React/frontend state machine for the entire
+`apps/web` application needs to be rebuilt. Not scoped or started —
+no design doc, no target architecture, no timeline yet. Treat this as
+a signal that the current state-management approach (Redux for
+persisted identity + React Query for server state + local component
+state, no unified state-machine library) is expected to change
+significantly, not as a green light to start refactoring speculatively.
+
+**How to apply:** don't invest in deepening the current ad-hoc pattern
+(e.g. don't add new Redux slices or new bespoke state wiring for new
+screens) if a lighter-weight or more local alternative works just as
+well for the immediate task — but don't block on this either; keep
+shipping screens with the existing pattern until Tony scopes the
+rebuild explicitly.
+
+**Scoping must also settle where the `ui-ux-pro-max` plugin fits**
+(Tony has it installed locally). Established split so far, to revisit
+as part of this scoping rather than deciding it standalone: use it for
+design-system tokens (colors, type scale, spacing — the level that
+already produced `apps/web/design-system/sqf-sys/MASTER.md`), not for
+auto-generating page/screen structure — its per-page overrides were
+tried and discarded on 2026-07-07 (see "No per-domain design-system
+page overrides" below) because they resolved to generic e-commerce/
+marketing templates unrelated to sqf-sys's internal, domain-specific
+screens. The state-machine rebuild is a natural point to confirm
+whether that split still holds once the underlying architecture
+changes, rather than deciding the plugin's role in isolation now.
+
 ## Planned: Dynamic RBAC, Multi-Tenancy and Role-Based Dashboard
 
 ### Current state — permissions
