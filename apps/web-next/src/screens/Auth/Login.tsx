@@ -20,12 +20,15 @@ import { getAccessToken } from 'api/axiosClient';
 import { setData } from 'redux/user';
 import { HOME } from 'constants/routes';
 import { IGetOrgsByEmailResponse } from 'service/getOrgsByEmail';
+import LoginHero from 'components/LoginHero';
 
 /**
- * Proof-of-life auth screen for the web-next chassis — same 2-step
- * email -> password+org flow as apps/web, rebuilt on shadcn/ui + Tailwind
- * instead of Mantine. This is not the final design; the real login screen
- * (visual identity, storyboard) lands once those are designed.
+ * Auth screen for the web-next chassis — same 2-step email -> password+org
+ * flow as apps/web, rebuilt on shadcn/ui + Tailwind instead of Mantine.
+ * Hero artwork is the real Synlian brand asset Tony supplied; form
+ * layout/copy is still provisional pending the real storyboard. No SSO
+ * option — Microsoft SSO/MSAL was fully removed from this platform (see
+ * CLAUDE.md "Auth Flow"), email/password JWT is the only auth flow.
  */
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -77,7 +80,9 @@ const Login: React.FC = () => {
   const isSentinel = orgs.length === 1 && orgs[0].id === 0;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 p-6">
+    <div className="flex min-h-screen bg-muted/40">
+      <LoginHero />
+      <div className="flex-1 flex items-center justify-center p-6">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Welcome back</CardTitle>
@@ -148,6 +153,7 @@ const Login: React.FC = () => {
           </Button>
         </CardFooter>
       </Card>
+      </div>
     </div>
   );
 };
