@@ -16,22 +16,21 @@ import { HOME } from 'constants/routes';
 import { IGetOrgsByEmailResponse } from 'service/getOrgsByEmail';
 import LoginHero from 'components/LoginHero';
 
-// Heading/button colors sampled directly from the source artwork
-// (apps/web-next/public/synlian-hero.png) so the real card matches its
-// mockup card's styling, not just its position/size.
+// Heading/button colors sampled from an earlier version of the hero artwork
+// that had a baked-in mockup card (since replaced by
+// apps/web-next/public/image.png, which has no mockup card to match) —
+// kept because they still look right against the current background.
 const HEADING_NAVY = '#0B2D82';
 const BUTTON_GRADIENT = 'linear-gradient(to right, #1F72CE, #0F4CAF)';
 
 /**
  * Auth screen for the web-next chassis — same 2-step email -> password+org
  * flow as apps/web, rebuilt on shadcn/ui + Tailwind instead of Mantine.
- * Copy and styling (heading, icon-prefixed fields, gradient button, footer
- * line) match the source artwork's own mockup card as closely as possible
- * while keeping the real auth flow. Deliberately does NOT include the
- * mockup's "or continue with / SSO Login" section — Microsoft SSO/MSAL was
- * fully removed from this platform (see CLAUDE.md "Auth Flow"),
- * email/password JWT is the only auth flow, so a decorative SSO button
- * would misrepresent what the platform actually supports.
+ * Card floats in the open space of the hero artwork (LoginHero), styled
+ * with navy heading/gradient button/icon-prefixed fields to fit that
+ * artwork's palette. No SSO option — Microsoft SSO/MSAL was fully removed
+ * from this platform (see CLAUDE.md "Auth Flow"), email/password JWT is
+ * the only auth flow.
  */
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -85,8 +84,8 @@ const Login: React.FC = () => {
 
   return (
     <LoginHero>
-      <Card className="w-full max-w-sm border-0 shadow-none bg-transparent lg:max-w-none">
-        <CardContent className="space-y-5 p-0">
+      <Card className="w-full max-w-sm lg:shadow-2xl">
+        <CardContent className="space-y-5 p-6">
           <div>
             <h1
               className="text-xl font-bold leading-snug"
@@ -185,7 +184,7 @@ const Login: React.FC = () => {
             </Button>
           </div>
         </CardContent>
-        <CardFooter className="p-0 mt-6 justify-center">
+        <CardFooter className="pt-0 justify-center">
           <p
             className="text-center text-xs leading-snug"
             style={{ color: HEADING_NAVY, opacity: 0.75, fontFamily: 'Arial, Helvetica, sans-serif' }}
