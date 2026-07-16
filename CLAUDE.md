@@ -102,6 +102,14 @@ docker compose exec trade-directory-service \
   apps/trade-directory/src/scripts/seed-funder.ts
 ```
 
+### Backfill missing relationship personas (one-off, idempotent)
+```bash
+docker compose exec trade-directory-service \
+  npx ts-node -r tsconfig-paths/register \
+  apps/trade-directory/src/scripts/backfill-relationship-personas.ts
+```
+Fixes existing `SUPPLIES_TO` relationships created before the 2026-07-16 `RelationshipService` persona-assignment fix (see Working Agreement above). Safe to re-run — no-ops on organizations that already have the persona.
+
 ### Manual DB migration (POSTGRES_SYNCHRONIZE=false for all services)
 ```bash
 docker compose exec postgres psql -U postgres -d "trade-directory" \
