@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, Lock, User } from 'lucide-react';
 
 import { Button } from 'components/ui/button';
 import { Input } from 'components/ui/input';
 import { Label } from 'components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from 'components/ui/card';
+import { Card, CardContent, CardFooter } from 'components/ui/card';
 import useGetOrgsByEmail from 'hooks/useGetOrgsByEmail';
 import useLogin from 'hooks/useLogin';
 import useGetLogInPersonDetail from 'hooks/useGetLogInPersonDetail';
@@ -22,13 +16,22 @@ import { HOME } from 'constants/routes';
 import { IGetOrgsByEmailResponse } from 'service/getOrgsByEmail';
 import LoginHero from 'components/LoginHero';
 
+// Heading/button colors sampled directly from the source artwork
+// (apps/web-next/public/synlian-hero.png) so the real card matches its
+// mockup card's styling, not just its position/size.
+const HEADING_NAVY = '#0B2D82';
+const BUTTON_GRADIENT = 'linear-gradient(to right, #1F72CE, #0F4CAF)';
+
 /**
  * Auth screen for the web-next chassis — same 2-step email -> password+org
  * flow as apps/web, rebuilt on shadcn/ui + Tailwind instead of Mantine.
- * Hero artwork is the real Synlian brand asset Tony supplied; form
- * layout/copy is still provisional pending the real storyboard. No SSO
- * option — Microsoft SSO/MSAL was fully removed from this platform (see
- * CLAUDE.md "Auth Flow"), email/password JWT is the only auth flow.
+ * Copy and styling (heading, icon-prefixed fields, gradient button, footer
+ * line) match the source artwork's own mockup card as closely as possible
+ * while keeping the real auth flow. Deliberately does NOT include the
+ * mockup's "or continue with / SSO Login" section — Microsoft SSO/MSAL was
+ * fully removed from this platform (see CLAUDE.md "Auth Flow"),
+ * email/password JWT is the only auth flow, so a decorative SSO button
+ * would misrepresent what the platform actually supports.
  */
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -39,6 +42,7 @@ const Login: React.FC = () => {
   const [orgId, setOrgId] = useState('');
   const [orgs, setOrgs] = useState<IGetOrgsByEmailResponse[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const orgsMutation = useGetOrgsByEmail();
   const loginMutation = useLogin();
@@ -81,36 +85,65 @@ const Login: React.FC = () => {
 
   return (
     <LoginHero>
-      <Card className="w-full max-w-sm lg:border-0 lg:shadow-none lg:bg-transparent">
-        <CardHeader>
-          <CardTitle>Welcome back</CardTitle>
-          <CardDescription>Enter your details to sign in to your account</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <Card className="w-full max-w-sm border-0 shadow-none bg-transparent lg:max-w-none">
+        <CardContent className="space-y-5 p-0">
+          <div>
+            <h1
+              className="text-xl font-bold leading-snug"
+              style={{ color: HEADING_NAVY, fontFamily: 'Arial, Helvetica, sans-serif' }}
+            >
+              Financial Services.
+              <br />
+              Intelligent. Autonomous. Trusted.
+            </h1>
+            <p
+              className="mt-3 text-sm leading-snug"
+              style={{ color: HEADING_NAVY, opacity: 0.8, fontFamily: 'Arial, Helvetica, sans-serif' }}
+            >
+              Agentic AI powering the future of financial services.
+            </p>
+          </div>
+
           {error && <p className="text-sm text-destructive">{error}</p>}
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              placeholder="Email"
-              value={email}
-              disabled={step === 'credentials'}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="email"
+                placeholder="Email"
+                className="pl-9"
+                value={email}
+                disabled={step === 'credentials'}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
           </div>
 
           {step === 'credentials' && (
             <>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Password"
+                    className="pl-9 pr-9"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    onClick={() => setShowPassword((v) => !v)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
 
               {!isSentinel && (
@@ -135,20 +168,32 @@ const Login: React.FC = () => {
               )}
             </>
           )}
-        </CardContent>
-        <CardFooter className="flex gap-2">
-          {step === 'credentials' && (
-            <Button variant="outline" onClick={() => setStep('email')}>
-              Back
+
+          <div className="flex gap-2">
+            {step === 'credentials' && (
+              <Button variant="outline" onClick={() => setStep('email')}>
+                Back
+              </Button>
+            )}
+            <Button
+              className="flex-1 text-white border-0"
+              style={{ background: BUTTON_GRADIENT }}
+              disabled={orgsMutation.isPending || loginMutation.isPending}
+              onClick={step === 'email' ? handleGetOrgs : handleLogin}
+            >
+              {step === 'email' ? 'Continue' : 'Login'}
             </Button>
-          )}
-          <Button
-            className="flex-1"
-            disabled={orgsMutation.isPending || loginMutation.isPending}
-            onClick={step === 'email' ? handleGetOrgs : handleLogin}
+          </div>
+        </CardContent>
+        <CardFooter className="p-0 mt-6 justify-center">
+          <p
+            className="text-center text-xs leading-snug"
+            style={{ color: HEADING_NAVY, opacity: 0.75, fontFamily: 'Arial, Helvetica, sans-serif' }}
           >
-            {step === 'email' ? 'Continue' : 'Login'}
-          </Button>
+            Secure. Compliant. Intelligent.
+            <br />
+            Built for the future of finance.
+          </p>
         </CardFooter>
       </Card>
     </LoginHero>
