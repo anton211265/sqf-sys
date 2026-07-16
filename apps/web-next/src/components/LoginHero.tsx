@@ -1,43 +1,44 @@
 import React from 'react';
 
 /**
- * Split-screen login hero using the real Synlian brand artwork Tony
- * supplied (apps/web-next/public/synlian-hero.png, cropped to just the
- * graphic panel — the source image's baked-in mockup form/wordmark were
- * cropped out since this app has its own live wordmark text below and a
- * real functional form, not static pixels).
+ * Full-bleed login background using the real Synlian brand artwork Tony
+ * supplied (apps/web-next/public/synlian-hero.png), with the real login
+ * form layered directly on top of the source artwork's own card region —
+ * per Tony's direction, using the full image as-is rather than a cropped
+ * panel.
  *
- * Colors here are sampled directly from the artwork as a stopgap — this
- * is NOT the real design-token pass (still pending, see CLAUDE.md
- * "Planned: Frontend Rebuild"). Swap for real tokens once that lands.
+ * The overlay box's position/size (left 61.2%, top 30.6%, width 30.5%,
+ * height 62.0%) is measured directly from the source PNG's own mockup
+ * card so our real card fully masks it regardless of which auth step is
+ * showing — content is vertically centered inside a fixed-size, opaque
+ * box rather than sized to content, since the email-only step is much
+ * shorter than the password+org step and both must fully cover the
+ * baked-in mockup text underneath.
+ *
+ * `children` renders once; positioning switches between a plain centered
+ * mobile layout and the image-overlay desktop layout via CSS breakpoints
+ * only (no duplicate mount of the form). Desktop treatment needs real
+ * width (lg: 1024px+) — narrower "desktop" widths pushed the box off the
+ * image's right edge.
  */
-const LoginHero: React.FC = () => {
+const LoginHero: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="hidden md:flex md:w-[42%] lg:w-[40%] relative overflow-hidden flex-col bg-[#0a1a3f]">
+    <div className="relative min-h-screen w-full bg-[#05102a] overflow-hidden">
       <img
-        src="/synlian-hero-graphic.png"
-        alt="AI-connected trade finance, supply chain finance and cross-border payments over a city skyline"
-        className="absolute inset-0 w-full h-full object-cover object-left"
+        src="/synlian-hero.png"
+        alt="AI-connected trade finance, supply chain finance and cross-border payments over a city skyline, with a Synlian sign-in panel"
+        className="hidden lg:block absolute inset-0 w-full h-full object-cover"
       />
-      <div className="relative z-10 mt-auto p-10 pb-14 bg-gradient-to-t from-[#05102a]/90 via-[#05102a]/40 to-transparent">
-        <p
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif', fontWeight: 400 }}
-          className="text-3xl text-white mb-1"
-        >
-          synlian
-        </p>
-        <p
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif', fontWeight: 400 }}
-          className="text-sm text-sky-200/80 mb-6"
-        >
-          Quantum age applications for digital age supply chains
-        </p>
-        <p
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif', fontWeight: 400 }}
-          className="text-lg text-white leading-snug"
-        >
-          Financial services. Intelligent. Autonomous. Trusted.
-        </p>
+      <div
+        className="
+          flex min-h-screen items-center justify-center p-6
+          lg:absolute lg:min-h-0 lg:p-0
+          lg:left-[61.2%] lg:top-[30.6%] lg:w-[30.5%] lg:h-[62%]
+          lg:bg-[#F2F4F9] lg:rounded-3xl lg:shadow-xl
+          lg:flex lg:items-center lg:justify-center lg:p-8
+        "
+      >
+        {children}
       </div>
     </div>
   );

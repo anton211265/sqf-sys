@@ -80,10 +80,8 @@ const Login: React.FC = () => {
   const isSentinel = orgs.length === 1 && orgs[0].id === 0;
 
   return (
-    <div className="flex min-h-screen bg-muted/40">
-      <LoginHero />
-      <div className="flex-1 flex items-center justify-center p-6">
-      <Card className="w-full max-w-sm">
+    <LoginHero>
+      <Card className="w-full max-w-sm lg:border-0 lg:shadow-none lg:bg-transparent">
         <CardHeader>
           <CardTitle>Welcome back</CardTitle>
           <CardDescription>Enter your details to sign in to your account</CardDescription>
@@ -153,8 +151,7 @@ const Login: React.FC = () => {
           </Button>
         </CardFooter>
       </Card>
-      </div>
-    </div>
+    </LoginHero>
   );
 };
 
