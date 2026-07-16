@@ -10,6 +10,7 @@ import {
 import { EntityManager } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { Relationship } from '../models/relationship.entity';
+import { PersonaAssignmentService } from '../persona/persona-assignment.service';
 import {
   OrganizationRepository,
   OutboxEventRepository,
@@ -26,6 +27,7 @@ export class RelationshipService {
     private readonly relationshipRepository: RelationshipRepository,
     private readonly organizationRepository: OrganizationRepository,
     private readonly outboxEventRepository: OutboxEventRepository,
+    private readonly personaAssignmentService: PersonaAssignmentService,
     private readonly entityManager: EntityManager,
   ) {}
 
@@ -62,13 +64,33 @@ export class RelationshipService {
       }
     }
 
+    const relationshipType =
+      dto.relationshipType ?? RelationshipTypeEnum.SUPPLIES_TO;
     const relationship = new Relationship({
       ...dto,
-      relationshipType: dto.relationshipType ?? RelationshipTypeEnum.SUPPLIES_TO,
+      relationshipType,
       funderPersonaId,
     });
 
     return this.entityManager.transaction(async (manager) => {
+      // Same guarantee invoice creation gives for free — a SUPPLIES_TO
+      // relationship always means fromOrganization is the Supplier and
+      // toOrganization is the Buyer. Previously this manual-creation path
+      // (the "+ New relationship" UI) saved the relationship row without
+      // ever assigning personas, unlike InvoiceTradeNetworkService — a real
+      // bug, not a documentation error; see CLAUDE.md "Manual relationship
+      // creation didn't assign personas."
+      if (relationshipType === RelationshipTypeEnum.SUPPLIES_TO) {
+        await this.personaAssignmentService.ensureSupplierPersona(
+          manager,
+          dto.fromOrganizationId,
+        );
+        await this.personaAssignmentService.ensureBuyerPersona(
+          manager,
+          dto.toOrganizationId,
+        );
+      }
+
       const saved = await manager.save(Relationship, relationship);
       await this.outboxEventRepository.record(manager, {
         id: uuid(),

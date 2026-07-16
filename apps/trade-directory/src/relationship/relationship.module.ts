@@ -7,6 +7,7 @@ import {
   OutboxEventRepository,
   RelationshipRepository,
 } from '../repositories';
+import { PersonaModule } from '../persona/persona.module';
 import { DirectoryController } from './directory.controller';
 import { RelationshipController } from './relationship.controller';
 import { RelationshipService } from './relationship.service';
@@ -14,6 +15,7 @@ import { RelationshipService } from './relationship.service';
 @Module({
   imports: [
     DatabaseModule.forFeature([Relationship, Organization, OutboxEvent]),
+    PersonaModule,
   ],
   controllers: [RelationshipController, DirectoryController],
   providers: [

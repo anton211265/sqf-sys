@@ -24,6 +24,7 @@ import {
   OutboxEventRepository,
   PartyRepository,
 } from '../repositories';
+import { PersonaModule } from '../persona/persona.module';
 import { InvoiceController } from './invoice.controller';
 import { InvoiceTradeNetworkService } from './invoice-trade-network.service';
 import { InvoiceService } from './invoice.service';
@@ -48,6 +49,7 @@ import { InvoiceService } from './invoice.service';
       BuyerPersona,
       OutboxEvent,
     ]),
+    PersonaModule,
   ],
   controllers: [InvoiceController],
   providers: [

@@ -4,10 +4,9 @@ import { KafkaTopicEnum } from '@app/common/constants/kafka-topic.enum';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { v4 as uuid } from 'uuid';
-import { BuyerPersona } from '../models/buyer-persona.entity';
 import { Organization } from '../models/organization.entity';
 import { Relationship } from '../models/relationship.entity';
-import { SupplierPersona } from '../models/supplier-persona.entity';
+import { PersonaAssignmentService } from '../persona/persona-assignment.service';
 import { OutboxEventRepository } from '../repositories';
 import { NewOrganizationDto } from './dto/new-organization.dto';
 
@@ -17,60 +16,26 @@ const isUniqueViolation = (err: unknown): boolean =>
   err !== null &&
   (err as { code?: string }).code === '23505';
 
-// Ensures the supplier/buyer personas and the SUPPLIES_TO relationship
-// implied by an invoice's issuer/debtor actually exist in the directory —
-// so the trade network builds itself up as invoices flow through it,
-// instead of requiring an RM to separately create them by hand.
-//
-// Scope: invoice creation only (2026-07-14 decision). Manual Relationship/
-// Contract creation stays purely explicit — see CLAUDE.md.
+// Ensures the SUPPLIES_TO relationship implied by an invoice's
+// issuer/debtor actually exists in the directory, and resolves/auto-creates
+// the organizations themselves — so the trade network builds itself up as
+// invoices flow through it, instead of requiring an RM to separately create
+// them by hand. Persona assignment itself lives in PersonaAssignmentService
+// (extracted 2026-07-15) since RelationshipService's manual "+ New
+// relationship" path needs the exact same guarantee — see CLAUDE.md "Manual
+// relationship creation didn't assign personas" for why that was a real bug.
 //
 // Every method takes the transactional `manager` so callers can run this
 // inside their own `entityManager.transaction(...)` block. Do not add
-// repository injections here for Organization/Relationship/personas — the
-// injected repositories operate on a different (non-transactional)
-// EntityManager and would break atomicity with the invoice write.
+// repository injections here for Organization/Relationship — the injected
+// repositories operate on a different (non-transactional) EntityManager and
+// would break atomicity with the invoice write.
 @Injectable()
 export class InvoiceTradeNetworkService {
-  constructor(private readonly outboxEventRepository: OutboxEventRepository) {}
-
-  async ensureSupplierPersona(
-    manager: EntityManager,
-    organizationId: number,
-  ): Promise<void> {
-    const organization = await manager.findOne(Organization, {
-      where: { id: organizationId },
-      lock: { mode: 'pessimistic_write' },
-    });
-    if (organization.supplierPersonaId) return;
-
-    const persona = await manager.save(SupplierPersona, new SupplierPersona({}));
-    // SupplierPersonaSubscriber.afterInsert sets the SU000001-style id.
-    await manager.update(
-      Organization,
-      { id: organizationId },
-      { supplierPersonaId: persona.id },
-    );
-  }
-
-  async ensureBuyerPersona(
-    manager: EntityManager,
-    organizationId: number,
-  ): Promise<void> {
-    const organization = await manager.findOne(Organization, {
-      where: { id: organizationId },
-      lock: { mode: 'pessimistic_write' },
-    });
-    if (organization.buyerPersonaId) return;
-
-    const persona = await manager.save(BuyerPersona, new BuyerPersona({}));
-    // BuyerPersonaSubscriber.afterInsert sets the BY000001-style id.
-    await manager.update(
-      Organization,
-      { id: organizationId },
-      { buyerPersonaId: persona.id },
-    );
-  }
+  constructor(
+    private readonly outboxEventRepository: OutboxEventRepository,
+    private readonly personaAssignmentService: PersonaAssignmentService,
+  ) {}
 
   async ensureRelationship(
     manager: EntityManager,
@@ -236,8 +201,14 @@ export class InvoiceTradeNetworkService {
       callerSuppliedRelationshipId?: number;
     },
   ): Promise<{ relationshipId: number }> {
-    await this.ensureSupplierPersona(manager, params.issuerOrganizationId);
-    await this.ensureBuyerPersona(manager, params.debtorOrganizationId);
+    await this.personaAssignmentService.ensureSupplierPersona(
+      manager,
+      params.issuerOrganizationId,
+    );
+    await this.personaAssignmentService.ensureBuyerPersona(
+      manager,
+      params.debtorOrganizationId,
+    );
 
     if (params.callerSuppliedRelationshipId) {
       return { relationshipId: params.callerSuppliedRelationshipId };
