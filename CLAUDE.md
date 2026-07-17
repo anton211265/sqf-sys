@@ -149,6 +149,8 @@ The legacy LCM subsystem (pre-SQF loan-case-management screens and backend modul
 - After login, frontend redirects to `/system-setup`
 - `SystemSetupGuard` (not `AuthGuard`) protects the initialize endpoint — verifies JWT directly without requiring `funderPersonaId`
 - SQFSYS creates the Funder Organization and first Super Admin through the UI
+- **Initialization scope is deliberately narrow (confirmed 2026-07-17):** SQFSYS only sets Funder Org + Super Admin parameters. Everything else — roles, `role_permission` rows, product/lending configuration, etc. — starts empty/reset; the appointed Super Admin must configure all of it via their own Super Admin portal (see "Planned: Dynamic RBAC, Multi-Tenancy and Role-Based Dashboard" below). SQFSYS does not seed defaults for any of it.
+- In production, Funder initialization happens through the **SQFSYS Admin Portal** (see "Planned: SQFSYS Admin Portal" below), not this dev-only `/system-setup` screen — that screen assumes a single shared deployment; production provisions a new isolated Funder deployment per subscription.
 
 ### Route Guards (frontend)
 - `PrivateRoute` (defined in `apps/web/src/App.tsx`) — checks JWT `refresh_token` cookie. The only route guard in the app; use for every protected route.
@@ -353,6 +355,7 @@ Expect this phase to cover (none of it exists yet):
 - CI/CD pipeline (GitHub Actions or equivalent) — build, test, deploy per service (including `terraform plan`/`apply` steps), since there's currently no `.github/workflows` and no automated pipeline at all.
 - Closing the open security items above before going live: real TLS/HTTPS, `httpOnly` cookies, secrets management (AWS Secrets Manager / Parameter Store instead of `.env` files), resolving the `@hashgraph/sdk` vulns.
 - This also satisfies the Release Agent and Migration Agent roles described in [AGENT.md](AGENT.md) (`agents/deploy/`), which are currently specs only, not implemented — building real CI/CD is what gives those agents something to actually run.
+- **Per-Funder isolated provisioning, not a single shared prod stack (confirmed 2026-07-17).** Each Funder subscription gets its own bounded cloud environment/account with no shared network or DB — see "Planned: SQFSYS Admin Portal" below. This Terraform work needs to produce a repeatable per-Funder "stamp" (all services + DBs + Kafka provisioned fresh per Funder), not one shared production environment sized for many tenants. Cloud-account ownership model (Synlian-provisioned isolated account vs. Funder-supplied BYOC) is still open — settle before starting Terraform design.
 
 **Sequencing:** do not start this until Tony explicitly says local dev is feature-complete — this is a roadmap note, not a current task.
 
@@ -360,13 +363,66 @@ Expect this phase to cover (none of it exists yet):
 
 ## Multi-Tenancy & Data Governance (Future SaaS Phase)
 
-sqf-sys is moving toward multi-tenant SaaS — multiple unrelated client organizations on one platform, served partly by [domain product agents](AGENT.md) (Risk, Sales & Customer Management, Payment, Finance & Accounting). These principles govern that phase and apply to every product agent's design from the start, not as a later retrofit:
+sqf-sys is moving toward multi-tenant SaaS — multiple unrelated client organizations (Funders) each licensing the platform, served partly by [domain product agents](AGENT.md) (Risk, Sales & Customer Management, Payment, Finance & Accounting). These principles govern that phase and apply to every product agent's design from the start, not as a later retrofit:
+
+**Deployment isolation model (confirmed 2026-07-17).** "Multi-tenant" here means multi-*customer*, not shared-infrastructure multi-tenancy: each Funder's subscription runs in its own bounded cloud environment and cloud provider account, with **no shared network, database, or data connection between Funders.** See "Planned: SQFSYS Admin Portal" below for the platform-operator layer that sits above these isolated deployments (Funder initialization, billing, security/IT-ops, cross-deployment data lake). This sharpens principle 1 below — isolation is enforced at the infrastructure level, not just application-level tenant scoping — and means the existing `funderPersonaId` row-level scoping used throughout trade-directory (Trade Directory Redesign, Dynamic RBAC below) is defense-in-depth *within* a single Funder's own deployment, not the production tenant boundary itself. That's a real gap between the row-scoping design as written and this deployment model — worth reconciling explicitly when the RBAC/dashboard work is actually built, not assumed either way.
 
 1. **Tenant data isolation, with a Tony-level exception.** A product agent may never share another tenant's data or "experience" (learned patterns, extracted context, prior decisions) with a customer it is not contracted with. Cross-tenant leakage is a hard boundary, not a tunable setting. The one exception: agents may share **consolidated** (aggregated/anonymized, not raw per-tenant) experience and data with Tony, e.g. for platform-wide tuning, eval, and oversight. "Consolidated" means tenant-attributable detail has been stripped or aggregated away before it reaches that channel — a per-tenant record is never an acceptable substitute for a consolidated one.
 2. **Daily reporting cadence for product agents.** Each product agent must produce a consolidated daily report to its human supervisor, delivered in both written and verbal form — modeled on a 15-minute daily scrum. This is an operational requirement on every domain agent's harness (see the Observability Agent and the agentic SDLC's "observe & iterate" phase in [AGENT.md](AGENT.md)), not optional telemetry.
 3. **Extensible, tenant-agnostic data architecture.** Because SQF will run financial services SaaS for multiple clients, the data architecture must be designed so onboarding/migrating a new customer's data onto the platform is low-complexity and fast — not a bespoke schema or pipeline per tenant. Favor shared, parameterized schemas and migration tooling over one-off per-tenant customization from the outset.
 
-**Status:** governance principles only — no multi-tenancy implementation exists yet (current per-service Postgres databases are single-tenant). Apply these as design constraints once multi-tenant work starts; do not treat their absence from the current schema as a gap to fix today unless Tony asks.
+**Status:** governance principles only — no multi-tenancy implementation exists yet (current per-service Postgres databases are single-tenant, single shared dev deployment). The deployment *model* (isolated per-Funder cloud environments) is now decided per above; the *implementation* — Terraform per-Funder provisioning, the SQFSYS Admin Portal, reconciling `funderPersonaId` row-scoping against deployment-level isolation — is not. Apply these as design constraints once multi-tenant work starts; do not treat their absence from the current schema as a gap to fix today unless Tony asks.
+
+---
+
+## Planned: SQFSYS Admin Portal (Platform Operator)
+
+Decided 2026-07-17 (Tony). A new, separate portal — the **SQFSYS Admin
+Portal** — is the platform-operator (Synlian) control plane across
+every isolated Funder deployment described above. It is distinct from
+the per-Funder **Super Admin portal** (the Dynamic RBAC /
+role-based-dashboard work described below, which is tenant-scoped and
+lives inside each Funder's own deployment, built by that Funder's own
+appointed Super Admin). The SQFSYS Admin Portal:
+
+1. **Initializes Funders** — creates the Funder Org + first Super
+   Admin (same bootstrap scope as today's dev-only `/system-setup`
+   flow, see "SQFSYS System Role" above), but in production this is
+   the trigger that provisions a new isolated Funder deployment, not a
+   row in a shared dev DB.
+2. **Pulls data from Funder deployments into a central data lake or
+   knowledge graph** owned by SQFSYS/Synlian — separate from each
+   Funder's own `knowledge-graph` service instance, which stays scoped
+   to that Funder's own trade network.
+3. **Drives a single dashboard** for billing Funders and for managing
+   security and IT operations across the whole fleet of Funder
+   deployments.
+
+**Status:** scope decision only, 2026-07-17. Not built — no
+architecture decided yet for which service/app owns this portal, what
+"data lake or knowledge graph" tech choice it uses, or how the data
+pull works across environments that are required to have no shared
+network/DB connection to each other (the pull target is presumably
+the SQFSYS control plane on one side only, never a Funder-to-Funder
+link — needs an explicit design before building).
+
+**Open item — cloud account ownership model not yet specified.**
+"Their own... cloud provider account" could mean Synlian provisions an
+isolated account per Funder within Synlian's own cloud organization
+(e.g. AWS Organizations, one account per Funder) or that each Funder
+supplies their own external cloud account (BYOC). This materially
+changes the Terraform/CI-CD design in "Production Deployment Roadmap"
+below and should be settled before that work starts.
+
+**Open item — data-pull scope vs. the tenant-isolation principle
+above.** Principle 1 above says agents may share only *consolidated*
+(aggregated/anonymized) data with Tony, never raw per-tenant records.
+The SQFSYS Admin Portal's data-lake pull is platform-operator
+telemetry (billing, security, IT ops) — a different category from a
+product agent sharing tenant experience, closer to ordinary SaaS
+vendor operational telemetry — but whether it pulls raw per-Funder
+data or only aggregates hasn't been specified. Confirm with Tony
+before building the pull mechanism.
 
 ---
 
@@ -494,6 +550,20 @@ The system will support multiple tenants. Each tenant (Funder
 organisation) must be able to configure their own permission sets
 through a Super Admin portal without requiring a code change or
 redeployment.
+
+**Note on "multiple tenants" here (2026-07-17):** in production each
+Funder runs in its own isolated deployment (see "Planned: SQFSYS
+Admin Portal" and the deployment-isolation note under Multi-Tenancy &
+Data Governance) — this Super Admin portal and its `role_permission`
+table are a **per-deployment** feature each Funder's own Super Admin
+configures for their own instance, not a shared screen across Funders.
+`funderPersonaId` scoping stays in the design below because it's
+already the implemented tenant-scoping mechanism and remains useful
+within a single Funder's deployment (and for today's shared dev/test
+environment, where multiple orgs coexist) — but it is not the
+production isolation boundary. Build against the design below as
+written; the deployment-model reconciliation is a documentation flag,
+not a blocker for this work.
 
 A Super Admin will access a dedicated admin portal and perform
 three functions:
