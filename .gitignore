@@ -52,3 +52,7 @@ blob-report
 /sql-scripts
 .venv-markitdown/
 ~$*
+
+# Vendor reference docs (local-only, not for distribution)
+/oracleAR.md
+/oracleAR.pdf
