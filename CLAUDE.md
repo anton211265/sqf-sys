@@ -234,6 +234,58 @@ Shared director, shared shareholder, same lending product, and other common-attr
 
 **How to apply:** when this gets built, it means (1) projecting `Person` nodes and `Person -[:MEMBER_OF {designation}]-> Company` edges into Neo4j (trade-directory doesn't currently emit any event when `OrganizationPerson` rows change — a new topic/consumer would be needed, mirroring the existing `RELATIONSHIP_UPSERTED`/`CONTRACT_UPSERTED`/`INVOICE_STATUS_CHANGED` pattern), (2) structuring shareholder data as real entities/edges rather than the free-text/jsonb blob currently buried in `KycAgencyReport.shareholders`, and (3) projecting `LendingProductSubscription` so "same product" is a graph pattern too. The actual "shared director" fact is then a Cypher query (e.g. two `Company` nodes reachable from the same `Person` node via `MEMBER_OF`), exposed through the existing GraphRAG opportunities API pattern (`apps/knowledge-graph/src/opportunities/`) — not a new Postgres migration. Not built yet; this is a design decision only.
 
+### Oracle OBSCF manual — reference for closing invoice/relationship gaps (2026-07-17)
+
+[`oracleAR.md`](oracleAR.md) (repo root) is Oracle Banking Supply Chain
+Finance (OBSCF) Release 14.7's Receivables & Payables user guide — a
+closer domain match than generic Oracle AR, since OBSCF is itself an
+SCF/factoring product. Reviewed 2026-07-17 and compared against
+trade-directory's current invoice/relationship/party model. **Status:
+gaps identified, on hold — not being built now, revisit as the
+Dynamic RBAC / Super Admin portal / dashboard work and any future
+Payment service design progress.** Use `oracleAR.md` as an ongoing
+reference whenever touching this domain, not just a one-time read.
+
+Gaps worth adopting, grouped by what they need:
+
+- **Fits the existing schema, no new service required:** dispute
+  lifecycle (raise/resolve/write-off, dispute amount, dispute code —
+  currently absent from `InvoiceStatusEnum`); aging buckets /
+  days-overdue (no concept of this today); relationship-level policy
+  fields (Oracle's `relationship` record carries auto-acceptance days,
+  overdue-handling policy, excess-payment handling, holiday treatment
+  — ours only has `paymentTermsDays`, volume stats, currency, status);
+  bulk invoice/relationship upload via CSV (currently one-at-a-time
+  only); aging/dispute-triggered notifications (new outbox event
+  types into the existing Kafka+notification pattern).
+- **Real design fork, needs Tony's call before building — not a pure
+  schema question:** Credit Note / Debit Note as functioning
+  instrument types. UBL already has a `CREDIT_NOTE` type code in
+  `InvoiceTypeCodeEnum` but nothing uses it (no adjustment reason, no
+  link back to the original invoice); there's no debit-note code
+  value at all. Two paths: extend `invoice` using the type-code as a
+  discriminator (how UBL itself models it) vs. separate tables —
+  don't pick a side without checking first.
+- **Needs the not-yet-built Payment/Finance service, not
+  trade-directory:** facility/limit utilization tracking (sanctioned
+  vs. drawn, breach thresholds); charge/fee/pricing engine; receipts,
+  cash application, and reconciliation (Oracle's
+  Exact/Generic-FIFO/LIFO/HAFO/LAFO allocation rules are a useful
+  field-list reference for that service's eventual design, not
+  actionable now); Purchase Order as a parallel financeable instrument
+  to Invoice (bigger addition — new table + child schema, not a quick
+  win).
+- **Worth a selective look, not wholesale adoption:** Oracle enforces
+  maker-checker (four-eyes approval) on every reference-data screen —
+  likely too heavy everywhere in sqf-sys, but worth considering for
+  relationship/contract changes specifically once the RBAC/audit-log
+  work lands.
+- **Explicitly out of scope, don't revisit:** GL/accounting-entry
+  mapping, Oracle's ML/NLP model-training UI (already solved
+  differently via Markitdown + Claude vision, see "Document
+  Conversion" below), commodity master, Virtual Account Management,
+  EOD/BOD batch job codes.
+
 ---
 
 ## Coding Conventions
