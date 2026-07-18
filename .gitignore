@@ -56,3 +56,6 @@ blob-report
 # Vendor reference docs (local-only, not for distribution)
 /oracleAR.md
 /oracleAR.pdf
+
+# Marketing collateral (local-only, not for distribution via repo)
+/docs/marketing/
