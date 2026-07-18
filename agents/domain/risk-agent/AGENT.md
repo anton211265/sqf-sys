@@ -20,7 +20,7 @@ Evaluate loan/credit applications and recommend or decide, per policy, in place 
 
 ## Non-Responsibilities
 
-- Payment execution (Payment Agent), sales/customer engagement (Sales & Customer Management Agent), accounting/reconciliation (Finance & Accounting Agent), or any decision above its current autonomy tier.
+- Payment execution and accounting/reconciliation (Finance & Accounting Agent), sales/customer engagement (Sales & Customer Management Agent), or any decision above its current autonomy tier.
 
 ## Inputs
 

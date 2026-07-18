@@ -20,7 +20,7 @@ Manage client engagement and assignee workflows in place of a human Sales & Cust
 
 ## Non-Responsibilities
 
-- Credit/risk decisions (Risk Agent), payment execution (Payment Agent), accounting (Finance & Accounting Agent).
+- Credit/risk decisions (Risk Agent), payment execution and accounting (Finance & Accounting Agent).
 
 ## Inputs
 

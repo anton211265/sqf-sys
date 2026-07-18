@@ -61,8 +61,7 @@ What Build/Deploy/Operate/Governance exist to deliver — the agents that replac
 
 - [Risk Agent](agents/domain/risk-agent/AGENT.md) — replaces the Risk Analyst role; reads applications and credit data, applies policy, recommends or decides.
 - [Sales & Customer Management Agent](agents/domain/sales-customer-management-agent/AGENT.md) — replaces Sales & Customer Management; client engagement and assignee workflows.
-- [Payment Agent](agents/domain/payment-agent/AGENT.md) — replaces the Payment role; highest stakes, last to gain autonomy.
-- [Finance & Accounting Agent](agents/domain/finance-accounting-agent/AGENT.md) — replaces Finance & Accounting; reconciliation, ledger, reporting.
+- [Finance & Accounting Agent](agents/domain/finance-accounting-agent/AGENT.md) — replaces Finance & Accounting and the Payment role; reconciliation, ledger, reporting, and payment initiation/verification via the Payment microservice (a Deterministic Service, not an agent of its own — see CLAUDE.md "Planned: Payment microservice"). Highest-stakes action in its scope, last to gain autonomy.
 - [Orchestrator Agent](agents/domain/orchestrator-agent/AGENT.md) — routes triggers between the above and preserves handoff context; never performs domain logic itself.
 
 ## Coding Standards
@@ -130,7 +129,7 @@ Considered and intentionally not built yet:
 
 - **Memory Agent** (episodic/semantic memory, vector stores, retrieval freshness) — revisit once a domain agent has enough real shadow-mode history to need long-term recall. Building this now means designing retrieval infrastructure against data that doesn't exist yet.
 - **Escalation Agent split by domain** — revisit once Observability/Data Analyst data shows escalation volume is actually a bottleneck.
-- **Capability-centric domain agents** (e.g. a shared Document/KYC/Fraud agent instead of role-centric Risk/Sales/Payment/Finance) — the role-centric split stays, because it's what makes shadow-mode-vs-human comparison and per-role rollback to a human possible. Shared capabilities (e.g. KYC checks) should be built as shared **tools** multiple role-agents call, not as a redesigned org chart.
+- **Capability-centric domain agents** (e.g. a shared Document/KYC/Fraud agent instead of role-centric Risk/Sales/Finance) — the role-centric split stays, because it's what makes shadow-mode-vs-human comparison and per-role rollback to a human possible. Shared capabilities (e.g. KYC checks) should be built as shared **tools** multiple role-agents call, not as a redesigned org chart.
 
 ## Harness
 

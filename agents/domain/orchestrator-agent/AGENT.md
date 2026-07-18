@@ -53,4 +53,4 @@ Anything no domain agent can resolve → Tony.
 
 ## Handoffs
 
-Routes between: Risk Agent, Sales & Customer Management Agent, Payment Agent, Finance & Accounting Agent. Escalations → Escalation Agent.
+Routes between: Risk Agent, Sales & Customer Management Agent, Finance & Accounting Agent (which calls the Payment microservice — not an agent of its own). Escalations → Escalation Agent.
