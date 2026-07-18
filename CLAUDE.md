@@ -200,6 +200,44 @@ The trade-directory redesign (docs/design/trade-directory-redesign.md) is implem
 - **knowledge-graph service**: consumes the three trade-network topics, projects them into Neo4j (`neo4j:5` in compose, browser at http://localhost:7474, bolt 7687, auth neo4j/sqfgraph). Graph is a projection — rebuild any time with `docker compose exec knowledge-graph-service npx ts-node -r tsconfig-paths/register apps/knowledge-graph/src/scripts/rebuild-graph.ts`. Idempotency via ProcessedEvent nodes (graph-side equivalent of processed_event). Opportunities API `/knowledge-graph/api/opportunities` (3 saved GraphRAG queries; `POST .../query` NL→Cypher needs ANTHROPIC_API_KEY in apps/knowledge-graph/.env, off by default).
 - Dev test user for the funder-scoped APIs/screens: `admin@sqf.local` / `Test@1234`, orgId 2.
 
+### Planned: Business Analyst AI Agent — external RAG for opportunity discovery (noted 2026-07-18)
+
+Tony's design note: beyond the internal-graph-only saved opportunity
+queries (`scf-anchor`, `invoice-factoring`, `term-loan-growth` —
+above), a **Business Analyst AI Agent** will use RAG over external
+internet sources tied to organisations already in a Funder's trade
+network (Client/Supplier/Buyer) to surface financing opportunities the
+internal graph alone can't see. Examples Tony gave: Company A (Client)
+publicly announces a yearly loss → may need a term loan; Company B
+(Client) announces a strategic procurement contract with Company C
+(Client) → possible SCF opportunity between them.
+
+**Status:** design note only, 2026-07-18 — not built, no architecture
+decided. Distinct from two things it could be confused with: (1) the
+existing GraphRAG opportunities queries above, which only ever read
+data already inside Neo4j; (2) the SQFSYS Admin Portal's "prospects
+for funders" Knowledge Portal item (see "Planned: SQFSYS Admin
+Portal") — that one is Synlian sourcing new *Funder* customers across
+deployments, this is a per-Funder agent surfacing new *lending*
+opportunities among a Funder's own existing clients.
+
+**Open — not yet decided:**
+- Whether this lives as a new capability inside the existing
+  `knowledge-graph` service/opportunities API, a new standalone agent
+  (parallel to `risk-agent`), or an extension of `risk-agent` — the
+  only AI-agent codebase that exists today.
+- Which "Sales & Customer Management" domain product agent (already
+  named in "Multi-Tenancy & Data Governance" below) this maps to, if
+  any.
+- Data-sourcing mechanics: which external sources, how orgs already in
+  the trade graph get matched to external mentions, whether results
+  get written back into Neo4j as new node/edge types or surfaced
+  separately.
+- Tenant-isolation implications: per the per-Funder deployment
+  isolation model, this needs to run scoped to one Funder's own
+  organisations per deployment, not a shared external-RAG pipeline
+  crossing Funders.
+
 ### Document tables (built 2026-07-14)
 
 Two S3-backed document tables live in trade-directory, both entities in `apps/trade-directory/src/models/`:
@@ -225,6 +263,66 @@ A `bank_account` table existed in trade-directory's original 2024 migration but 
 
 **Why:** bank accounts are disbursement/settlement targets with their own verification lifecycle (e.g. penny-drop checks) — that's Payment's job, not trade-directory's (identity, KYC, and the trade graph). Putting it here would couple an identity service to payment-specific compliance logic it shouldn't own.
 **How to apply:** Payment references organizations/persons by bare `organizationId`/`personId` int, same pattern already used by risk-operation and customer-relationship-management — no cross-DB FK. If the directory UI needs to show bank-verification status alongside org profile data, use a Kafka event (e.g. a future `BANK_ACCOUNT_VERIFIED`) rather than a shared table or synchronous cross-service read on every page load.
+
+### Planned: Payment microservice — pain.001 scoping (noted 2026-07-18, paused)
+
+Tony provided an ISO 20022 `pain.001.001.09` (Customer Credit Transfer
+Initiation) schema/example/data-dictionary as the starting design
+input for the Payment microservice — source files at `SQF
+ARCHITECTURE/SCEHMA/pain001-payment-{schema.json,example.json,data-dictionary.md}`
+(sibling directory to this repo, same convention as the UBL invoice
+schema source noted under "Trade network & knowledge graph" above).
+The data dictionary normalizes it into `payment_message` →
+`payment_batch` → `payment_transaction` →
+`payment_transaction_remittance_line` (+ `payment_status_history` as
+an application-only audit-trail extension, not part of the ISO
+standard), with a `status` lifecycle: `DRAFT → PENDING_APPROVAL →
+APPROVED → SUBMITTED → ACCEPTED/REJECTED → SETTLED/CANCELLED`.
+
+**Confirmed buildable as a Deterministic Service** (per AGENT.md's own
+classification of Payment — "until it needs to reason about ambiguous
+cases beyond verifying approved terms"): this schema is message
+construction, a fixed state machine, and an audit trail — no LLM
+judgment required for its core function. The decision to pay is made
+upstream (by a human or the Finance & Accounting Agent); Payment only
+builds, submits, and tracks an already-approved instruction.
+
+**Status: scoping paused 2026-07-18** — design to be completed
+together in a future session. Tony will capture the full detail in
+the pending platform-wide architecture blueprint (see "Architecture
+blueprint pending" in project memory) rather than iterating further
+here piecemeal.
+
+**Six open items to resolve before/while building** (raised
+2026-07-18, not yet answered):
+1. **Scope boundary** — this schema only covers outbound disbursement
+   (money going out). Inbound repayment/collections/cash-application
+   (a debtor repaying a factored invoice) is a separate, currently
+   unscoped gap — same one already flagged in the Oracle OBSCF manual
+   comparison above. Confirm this build pass is outbound-only.
+2. **Trigger mechanism** — does something call a synchronous API
+   (e.g. the Finance & Accounting Agent calling `POST /payments`), or
+   does Payment consume a Kafka trigger event (e.g. a future
+   `DISBURSEMENT_APPROVED`) via the existing outbox pattern, or both?
+3. **Approval step** — who/what transitions `PENDING_APPROVAL →
+   APPROVED`: a human Finance Officer via UI (ties into the
+   maker-checker idea from the Oracle OBSCF review and the in-flight
+   Dynamic RBAC work), the Finance & Accounting Agent itself, or a
+   mix depending on amount/risk thresholds?
+4. **Submission channel realism** — `ApplicationMetadata.channel`
+   allows SFTP/API/SWIFT, but there's no real banking partner/sandbox
+   identified yet. Build a stubbed/mock submission adapter first
+   (same spirit as the `PENDING_REVIEW` human-gate pattern used for
+   vision-LLM document extraction), or is there an actual integration
+   target?
+5. **Outbound Kafka events** — once a payment settles/is rejected,
+   other services need to know (trade-directory marking an invoice
+   `PAID`, notification emailing someone, knowledge-graph projecting
+   it). Topic names (e.g. `PAYMENT_SETTLED`, `PAYMENT_REJECTED`) not
+   yet decided.
+6. **Tenant scoping** — same `funderPersonaId` pattern as every other
+   service, or something different given Payment is the one service
+   that actually touches bank rails per-Funder?
 
 ### Related-party attributes (director, shareholder, product, ...) are a graph-computed pattern, not a `relationship` row (decided 2026-07-14)
 
@@ -415,7 +513,7 @@ Expect this phase to cover (none of it exists yet):
 
 ## Multi-Tenancy & Data Governance (Future SaaS Phase)
 
-sqf-sys is moving toward multi-tenant SaaS — multiple unrelated client organizations (Funders) each licensing the platform, served partly by [domain product agents](AGENT.md) (Risk, Sales & Customer Management, Payment, Finance & Accounting). These principles govern that phase and apply to every product agent's design from the start, not as a later retrofit:
+sqf-sys is moving toward multi-tenant SaaS — multiple unrelated client organizations (Funders) each licensing the platform, served partly by [domain product agents](AGENT.md) (Risk, Sales & Customer Management, Finance & Accounting). These principles govern that phase and apply to every product agent's design from the start, not as a later retrofit. **Payment is a microservice, not an agent** (corrected 2026-07-18) — it's called by the Finance & Accounting Agent (still to be defined), the same way any other deterministic backend service is called by the agent that needs it; it does not have its own agent.
 
 **Deployment isolation model (confirmed 2026-07-17).** "Multi-tenant" here means multi-*customer*, not shared-infrastructure multi-tenancy: each Funder's subscription runs in its own bounded cloud environment and cloud provider account, with **no shared network, database, or data connection between Funders.** See "Planned: SQFSYS Admin Portal" below for the platform-operator layer that sits above these isolated deployments (Funder initialization, billing, security/IT-ops, cross-deployment data lake). This sharpens principle 1 below — isolation is enforced at the infrastructure level, not just application-level tenant scoping — and means the existing `funderPersonaId` row-level scoping used throughout trade-directory (Trade Directory Redesign, Dynamic RBAC below) is defense-in-depth *within* a single Funder's own deployment, not the production tenant boundary itself. That's a real gap between the row-scoping design as written and this deployment model — worth reconciling explicitly when the RBAC/dashboard work is actually built, not assumed either way.
 
