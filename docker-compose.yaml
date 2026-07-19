@@ -117,6 +117,21 @@ services:
     ports:
       - '5434:5432'
 
+  # Local S3-compatible object store for the document-management redesign
+  # (dev only — production uses real S3 with Object Lock, provisioned via
+  # Terraform; see CLAUDE.md "Planned: Document Management redesign").
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio-data:/data
+
   kafka:
     image: apache/kafka:latest    # Kafka 4.2.0 — KRaft only, no Zookeeper
     ports:
@@ -150,3 +165,4 @@ services:
 
 volumes:
   neo4j-data:
+  minio-data:

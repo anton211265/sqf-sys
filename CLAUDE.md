@@ -586,6 +586,71 @@ A new [Marketing Agent](agents/growth/marketing-agent/AGENT.md) has been added t
 
 ---
 
+## Planned: Document Management redesign (design agreed 2026-07-19, build not started)
+
+Tony has decided to **completely redesign the document-management
+microservice** — replace everything, preserve nothing of the current
+pipeline. Design source: `SQF ARCHITECTURE/Document Management
+Design.docx` (+ `SOFTWARE MANUALS/NewHorizons_DefaultRiskProfile_1.docx`
+for the extraction target). The "Document Conversion (Markitdown)"
+section below describes the **current** implementation and remains
+accurate until the rebuild lands.
+
+**Scope, as designed:**
+1. **Onboarding document intake** — six document types (company
+   registry, KYC credit report, bank statements, proof of address,
+   director ID, P&L/balance sheet), required set determined by the
+   product applied for. CSV/Excel/PDF only; **image-only files are
+   rejected at onboarding** (no vision fallback there — enforce via the
+   existing `MIN_VIABLE_TEXT_LENGTH`-style check, returning an upload
+   error). Claude extracts data to populate the default risk profile
+   (`is_default = 1` in risk-operation — 5 parameters / 10
+   sub-parameters scoring `financial_credit_report` fields; needs
+   latest + prior year financials for the trend sub-parameters).
+2. **Storage** — S3 + Object Lock (Compliance Mode) + versioning for
+   infrastructure-level immutability (production/Terraform concern);
+   SHA-256 + metadata (document ID/company ID/type/hash/timestamp)
+   computed **in-service at upload time** (works identically in dev and
+   prod; a Lambda is only a production-side integrity backstop).
+   Metadata lives in **Postgres** (service's own DB), not DynamoDB.
+   SSE-KMS at rest, virus scan before hashing, presigned short-lived
+   URLs, bucket never public.
+3. **Cross-validation** — extracted data checked against DB
+   (registration numbers, director names, addresses).
+   **Deterministic-first**: exact-matchable fields compared in code;
+   Claude only judges fuzzy cases (name variants, address formats).
+   Discrepancies → flagged on the Applicant list (Risk Dashboard);
+   Risk Officer clears → risk profile created → go/no-go.
+4. **Invoices** — same storage; Markitdown → Claude vision fallback
+   allowed; extraction produces UBL lines + stated total; arithmetic
+   check (line qty×price; Σlines + tax + freight/insurance = stated
+   total). Clean invoices feed the existing lines-only invoice API.
+   Mismatches → Finance Analyst (AR specialist) queue for manual
+   reconciliation, with audit.
+5. **Document search engine** — metadata search (company/type/date)
+   over current + archived files. Not full-text content search.
+
+**Decisions confirmed by Tony (2026-07-19):**
+- Replace everything: DeepSeek extraction + prompt templates, API-key
+  auth, webhook delivery, and the **Hedera consensus-messaging module
+  are all removed** (S3 Object Lock covers tamper-evidence).
+- Claude replaces DeepSeek as the extraction LLM.
+- All cross-service data flow via **Kafka** (outbox pattern) — e.g.
+  extracted org data → trade-directory, financials →
+  risk-operation — never direct cross-DB writes.
+- **No human review on the happy path** — the arithmetic check
+  replaces the 2026-06-25 `PENDING_REVIEW` human gate for
+  vision-transcribed invoices; numeric validation is the gate.
+- Finance Analyst (AR specialist) role: **assume it exists** — Tony is
+  producing the new RBAC design separately; don't add it to
+  `OrganizationPersonRoleEnum`/CASL (per the standing RBAC rule).
+- A generic append-only **`document_event` audit table** (who/what/
+  when/before-after status) covers reconciliation and future audit
+  needs — one table, not per-feature audits.
+
+**Status: design agreed, implementation plan not yet signed off — do
+not start building until the plan is agreed with Tony.**
+
 ## Document Conversion (Markitdown)
 
 [Microsoft Markitdown](https://github.com/microsoft/markitdown) converts Word/Excel/PowerPoint documents to Markdown before LLM extraction. Markdown is far cheaper in tokens than raw OOXML-derived text and preserves structure (tables, headings) better than naive extraction.

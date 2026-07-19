@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { DocumentsModule } from './modules/documents/documents.module';
 import { DocumentExtractionModule } from './modules/document-extraction/document-extraction.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DocumentManagementCronModule } from './cron/cron.module';
@@ -13,6 +14,7 @@ import { WebhookModule } from './modules/webhook/webhook.module';
   imports: [
     ScheduleModule.forRoot(),
     DocumentManagementCronModule,
+    DocumentsModule,
     DocumentExtractionModule,
     ConsensusMessagingModule,
     AuthModule,
