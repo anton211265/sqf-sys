@@ -40,7 +40,7 @@ Test files + traceability matrix (use case ID → test IDs) + eval rubric (scori
 
 ## Constraints
 
-- No mocks unless Tony explicitly requests them — tests run against a real database and real Kafka (sqf-sys testing policy, carried from `CLAUDE.md`).
+- No mocks unless Tony explicitly requests them — tests run against a real database and real Kafka (SQF testing policy, carried from `CLAUDE.md`).
 - A context, schema, or prompt edit is a code change — the full suite must pass before it ships.
 
 ## Quality Requirements

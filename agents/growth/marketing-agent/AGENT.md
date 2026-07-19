@@ -3,14 +3,14 @@
 Marketing Agent
 
 Parent Organization: Synlian Data@Source — see [root AGENT.md](../../../AGENT.md)
-Group: Growth — a Synlian-organization function, not a sqf-sys financial-domain role. Runs in parallel to the Build/Deploy/Operate/Governance SDLC rather than gating it.
+Group: Growth — a Synlian-organization function, not a SQF financial-domain role. Runs in parallel to the Build/Deploy/Operate/Governance SDLC rather than gating it.
 Agent Type: Production LLM Agent — makes judgment calls on content, campaigns, and research framing; carries an autonomy tier; evaluated and monitored, given that public-facing financial-services marketing carries real brand and regulatory risk.
 
 Status: **Design phase.** No production autonomy yet.
 
 ## Mission
 
-Develop and execute Synlian/SQF's marketing function in place of (or alongside) a human marketing team: the marketing website, promotional video, social-media marketing campaigns, and market research — in service of Synlian's go-to-market for sqf-sys, not the platform's own end-customer-facing product surfaces.
+Develop and execute Synlian/SQF's marketing function in place of (or alongside) a human marketing team: the marketing website, promotional video, social-media marketing campaigns, and market research — in service of Synlian's go-to-market for SQF, not the platform's own end-customer-facing product surfaces.
 
 ## Responsibilities
 

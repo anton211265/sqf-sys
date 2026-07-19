@@ -4,7 +4,7 @@ Synlian Data@Source
 
 ## Mission
 
-Design, build, and operate an agentic financial platform for supply-chain finance and invoice factoring (sqf-sys), in which a governed layer of AI agents progressively assumes the judgment-based work currently performed by the Risk Analyst, Sales & Customer Management, Payment, and Finance & Accounting roles — while the existing NestJS microservices remain the deterministic, auditable systems of record beneath them.
+Design, build, and operate an agentic financial platform for supply-chain finance and invoice factoring (SQF), in which a governed layer of AI agents progressively assumes the judgment-based work currently performed by the Risk Analyst, Sales & Customer Management, Payment, and Finance & Accounting roles — while the existing NestJS microservices remain the deterministic, auditable systems of record beneath them.
 
 ## Governance (Hybrid Structure)
 
@@ -148,4 +148,4 @@ When something goes wrong, debug the harness before suspecting the model — mos
 
 ---
 
-Status: v0.5 — living document, developed jointly by Tony and Claude Code as the architecture emerges. Latest revision: added the Marketing Agent under a new cross-cutting **Growth** group (Synlian-organization function — website, promotional video, social media campaigns, market research — distinct from the sqf-sys financial-domain agents). 20 subordinate `AGENT.md` files now exist under [`agents/`](agents/).
+Status: v0.5 — living document, developed jointly by Tony and Claude Code as the architecture emerges. Latest revision: added the Marketing Agent under a new cross-cutting **Growth** group (Synlian-organization function — website, promotional video, social media campaigns, market research — distinct from the SQF financial-domain agents). 20 subordinate `AGENT.md` files now exist under [`agents/`](agents/).

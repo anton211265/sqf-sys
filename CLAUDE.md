@@ -1,4 +1,4 @@
-# sqf-sys — Claude Code Reference
+# SQF — Claude Code Reference
 
 ## Working Agreement (Tony, 2026-07-12)
 
@@ -24,7 +24,7 @@ All should return `404`. A `502` means the service's HTTP server is down (check 
 
 ## What This Is
 
-sqf-sys is a financial platform (supply-chain finance / invoice factoring) built as an Nx monorepo. It has 6 NestJS microservices and a React/Vite frontend.
+SQF is a financial platform (supply-chain finance / invoice factoring) built as an Nx monorepo. It has 6 NestJS microservices and a React/Vite frontend.
 
 ---
 
@@ -375,7 +375,7 @@ Gaps worth adopting, grouped by what they need:
   win).
 - **Worth a selective look, not wholesale adoption:** Oracle enforces
   maker-checker (four-eyes approval) on every reference-data screen —
-  likely too heavy everywhere in sqf-sys, but worth considering for
+  likely too heavy everywhere in SQF, but worth considering for
   relationship/contract changes specifically once the RBAC/audit-log
   work lands.
 - **Explicitly out of scope, don't revisit:** GL/accounting-entry
@@ -402,7 +402,7 @@ Gaps worth adopting, grouped by what they need:
 - `apps/web/src/service/` — raw API call functions
 - **Redesign in progress (2026-07-07):** the gold `#c7760a` primary action colour has been replaced. Source of truth for the palette/typography is `apps/web/design-system/sqf-sys/MASTER.md` — accent/CTA `#0369A1` blue, `#0F172A` navy. **Implemented** in the Mantine theme (`App.tsx`'s `createTheme`: `primaryColor: 'primary'`, `colors.primary`/`colors.navy` tuples generated from those two hexes, `fontFamily: 'Inter'`, `headings.fontFamily: 'Calistoga'`, fonts loaded via Google Fonts `<link>` in `index.html`). All 7 places that previously hardcoded `#c7760a` inline now use `color="primary"`.
 - **Known debt — legacy hardcoded colors bypass the theme.** `apps/web/src/constants/color.tsx` defines a separate hardcoded palette (`GOLD: '#B0A275'`, `DARKBLUE`, `FHGREEN`, etc.) referenced ~30 times via inline `style={{ backgroundColor: color.GOLD }}` — this is why the Login screen and others still look gold-ish after the theme change; it was never `#c7760a` in the first place. Raw hex inline styles appear ~120 times across ~25 files app-wide, all bypassing the Mantine theme. Migrating this is a distinct, larger task — deliberately deferred (Tony's call, 2026-07-07), not an oversight. Do not assume the app is visually consistent with `MASTER.md` outside the 7 spots and the theme defaults until this migration happens.
-- **No per-domain design-system page overrides.** The `ui-ux-pro-max` plugin's auto-generated per-page overrides (credit-risk, finance, compliance, etc.) were reviewed on 2026-07-07 and discarded — they resolved to generic e-commerce/marketing templates (checkout flows, product-review pages, lead-gen forms) unrelated to sqf-sys's internal authenticated screens, with some files duplicated verbatim across unrelated domains. For actual page structure per domain, use the Domain structure and work-queue design already specified by hand below (Planned: Dynamic RBAC, Multi-Tenancy and Role-Based Dashboard section) — not any auto-generated page file.
+- **No per-domain design-system page overrides.** The `ui-ux-pro-max` plugin's auto-generated per-page overrides (credit-risk, finance, compliance, etc.) were reviewed on 2026-07-07 and discarded — they resolved to generic e-commerce/marketing templates (checkout flows, product-review pages, lead-gen forms) unrelated to SQF's internal authenticated screens, with some files duplicated verbatim across unrelated domains. For actual page structure per domain, use the Domain structure and work-queue design already specified by hand below (Planned: Dynamic RBAC, Multi-Tenancy and Role-Based Dashboard section) — not any auto-generated page file.
 
 ### TypeORM
 - Column names: TypeORM default is camelCase → DB column. If the DB column is snake_case (e.g. `system_role`), add `{ name: 'system_role' }` to `@Column()` explicitly.
@@ -496,7 +496,7 @@ Every auth event writes an append-only row to `auth_audit_log` (no UPDATE or DEL
 
 ## Production Deployment Roadmap (Not Yet Started)
 
-sqf-sys currently only runs in local dev (`docker compose` + Vite). Once local-dev build-out is complete, the next phase is standing up **production infrastructure on AWS** and **CI/CD**, with Claude Code acting as build-time Engineering Orchestrator (per [AGENT.md](AGENT.md)) helping Tony design and build it — not just code review it.
+SQF currently only runs in local dev (`docker compose` + Vite). Once local-dev build-out is complete, the next phase is standing up **production infrastructure on AWS** and **CI/CD**, with Claude Code acting as build-time Engineering Orchestrator (per [AGENT.md](AGENT.md)) helping Tony design and build it — not just code review it.
 
 **IaC tool: Terraform.** All AWS infrastructure is defined as Terraform, not manual console/CLI changes — `plan` reviewed before every `apply`, consistent with the human-sign-off gate in [AGENT.md](AGENT.md).
 
@@ -513,7 +513,7 @@ Expect this phase to cover (none of it exists yet):
 
 ## Multi-Tenancy & Data Governance (Future SaaS Phase)
 
-sqf-sys is moving toward multi-tenant SaaS — multiple unrelated client organizations (Funders) each licensing the platform, served partly by [domain product agents](AGENT.md) (Risk, Sales & Customer Management, Finance & Accounting). These principles govern that phase and apply to every product agent's design from the start, not as a later retrofit. **Payment is a microservice, not an agent** (corrected 2026-07-18) — it's called by the Finance & Accounting Agent (still to be defined), the same way any other deterministic backend service is called by the agent that needs it; it does not have its own agent.
+SQF is moving toward multi-tenant SaaS — multiple unrelated client organizations (Funders) each licensing the platform, served partly by [domain product agents](AGENT.md) (Risk, Sales & Customer Management, Finance & Accounting). These principles govern that phase and apply to every product agent's design from the start, not as a later retrofit. **Payment is a microservice, not an agent** (corrected 2026-07-18) — it's called by the Finance & Accounting Agent (still to be defined), the same way any other deterministic backend service is called by the agent that needs it; it does not have its own agent.
 
 **Deployment isolation model (confirmed 2026-07-17).** "Multi-tenant" here means multi-*customer*, not shared-infrastructure multi-tenancy: each Funder's subscription runs in its own bounded cloud environment and cloud provider account, with **no shared network, database, or data connection between Funders.** See "Planned: SQFSYS Admin Portal" below for the platform-operator layer that sits above these isolated deployments (Funder initialization, billing, security/IT-ops, cross-deployment data lake). This sharpens principle 1 below — isolation is enforced at the infrastructure level, not just application-level tenant scoping — and means the existing `funderPersonaId` row-level scoping used throughout trade-directory (Trade Directory Redesign, Dynamic RBAC below) is defense-in-depth *within* a single Funder's own deployment, not the production tenant boundary itself. That's a real gap between the row-scoping design as written and this deployment model — worth reconciling explicitly when the RBAC/dashboard work is actually built, not assumed either way.
 
@@ -578,7 +578,7 @@ before building the pull mechanism.
 
 ## Marketing Agent (Synlian Organization, New)
 
-A new [Marketing Agent](agents/growth/marketing-agent/AGENT.md) has been added to the Synlian Data@Source org under a new cross-cutting **Growth** group in [AGENT.md](AGENT.md) — sibling to Build/Deploy/Operate/Governance/Target Domain Agents, but not gated by or gating the sqf-sys product SDLC.
+A new [Marketing Agent](agents/growth/marketing-agent/AGENT.md) has been added to the Synlian Data@Source org under a new cross-cutting **Growth** group in [AGENT.md](AGENT.md) — sibling to Build/Deploy/Operate/Governance/Target Domain Agents, but not gated by or gating the SQF product SDLC.
 
 - **Scope:** the marketing website (distinct from the product's own `apps/web`), promotional video scripting, social media marketing campaigns, and market research for SQF's go-to-market.
 - **Status:** design phase, no production autonomy.
@@ -598,14 +598,14 @@ A new [Marketing Agent](agents/growth/marketing-agent/AGENT.md) has been added t
 
 Requires `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` env vars (same convention as `apps/risk-agent`).
 
-**Why Markitdown needs Python, and why the base image changed:** Markitdown is a Python package (no Node runtime). Its `magika` dependency requires `onnxruntime`, which has **no Alpine/musl wheel** — `document-management`'s [Dockerfile](apps/document-management/Dockerfile) base image was changed from `node:18-alpine` to `node:18-bookworm-slim` (glibc) for this reason. Every other sqf-sys service stays on `node:18-alpine` unless it also needs Markitdown.
+**Why Markitdown needs Python, and why the base image changed:** Markitdown is a Python package (no Node runtime). Its `magika` dependency requires `onnxruntime`, which has **no Alpine/musl wheel** — `document-management`'s [Dockerfile](apps/document-management/Dockerfile) base image was changed from `node:18-alpine` to `node:18-bookworm-slim` (glibc) for this reason. Every other SQF service stays on `node:18-alpine` unless it also needs Markitdown.
 
 **Install pattern (apply to any new service needing Markitdown):**
 - Local/Docker: `apt-get install python3 python3-venv`, then `python3 -m venv /opt/markitdown-venv && /opt/markitdown-venv/bin/pip install 'markitdown[docx,xlsx,pptx,pdf]'`. Use the `[docx,xlsx,pptx,pdf]` extras, not `[all]` — `[all]` pulls extra OCR/audio dependencies that aren't needed and don't change the Alpine-incompatibility either way.
 - Install at a fixed path outside `WORKDIR` (e.g. `/opt/markitdown-venv`) so the same `MARKITDOWN_BIN_PATH`-style env var works across every Dockerfile stage/target, regardless of each stage's own `WORKDIR`/copy layout.
 - **Never install into global/system Python** on a dev machine — it silently upgrades shared packages (pillow, protobuf) and can break unrelated Python projects (this happened once with a global install clashing with `streamlit`). Always use an isolated venv.
 - Invoke via `child_process.execFile` (not `exec` — avoids shell injection) from the Node service, passing the file path as an argv element, never interpolated into a shell string.
-- Apply this pattern to any sqf-sys service or future Synlian Data@Source project that converts Word/Excel/PDF/PowerPoint for LLM processing.
+- Apply this pattern to any SQF service or future Synlian Data@Source project that converts Word/Excel/PDF/PowerPoint for LLM processing.
 
 ## Proto / gRPC Layer
 
@@ -616,7 +616,7 @@ Requires `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` env vars (same convention as 
 
 ## Planned: Frontend Rebuild — Full Rewrite, Mantine Removed (scoped 2026-07-15)
 
-Tony has decided sqf-sys's frontend will be completely rebuilt, not
+Tony has decided SQF's frontend will be completely rebuilt, not
 incrementally migrated — **Mantine is being removed entirely.** The
 replacement UI layer is the `ui-ux-pro-max` plugin's ui-styling stack
 (shadcn/ui: Radix UI primitives + Tailwind CSS), which Tony has
@@ -870,7 +870,7 @@ When building the dashboard:
 
 ## Authentication & Login Security Requirements
 
-New Horizons is a licensed financial platform handling loan disbursements. All authentication code must meet the security standards below. These are **go-live requirements**, not aspirational goals.
+SQF is a licensed financial platform handling loan disbursements. All authentication code must meet the security standards below. These are **go-live requirements**, not aspirational goals.
 
 ---
 

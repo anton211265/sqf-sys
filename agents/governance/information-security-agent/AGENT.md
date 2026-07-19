@@ -8,7 +8,7 @@ Agent Type: Production LLM Agent — security review requires interpretation and
 
 ## Mission
 
-Audit and gate every Build, Deploy, and Operate output against sqf-sys's security requirements. This agent flags and blocks; it never grants itself the authority to approve its own findings as resolved.
+Audit and gate every Build, Deploy, and Operate output against SQF's security requirements. This agent flags and blocks; it never grants itself the authority to approve its own findings as resolved.
 
 ## Responsibilities
 

@@ -13,7 +13,7 @@ Implement NestJS services, repositories, and Kafka outbox/consumer logic against
 
 ## Responsibilities
 
-- Implement modules/services/controllers/repositories per sqf-sys conventions (`AbstractRepository<T>`, `DatabaseModule.forFeature([...])`).
+- Implement modules/services/controllers/repositories per SQF conventions (`AbstractRepository<T>`, `DatabaseModule.forFeature([...])`).
 - Implement the transactional outbox pattern for every state-changing event — write the `outbox_event` row in the same DB transaction as the business change.
 - Implement the `processed_event` idempotency check on every Kafka consumer before processing a message.
 - Write manual DDL migrations — `POSTGRES_SYNCHRONIZE=false` everywhere, never rely on auto-sync.
