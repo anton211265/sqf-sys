@@ -1,8 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
+import { EntityManager } from 'typeorm';
 import { RiskOperationModule } from '../risk-operation.module';
 import { FinancialCreditReportService } from '../sqf/financial-credit-report/financial-credit-report.service';
 import { RiskQuantitativeProfileScoringService } from '../sqf/risk-quantitative-profile-scoring/risk-quantitative-profile-scoring.service';
+import { RiskProfile } from '../models/risk-profile.entity';
 
 // E2E verification that the scoring engine can now resolve every sub-parameter
 // of the seeded default risk profile from financial_credit_report data, and
@@ -74,6 +76,84 @@ async function bootstrap() {
       ? '\nALL 10 SUB-PARAMETERS RESOLVED WITH EXPECTED OUTCOMES\n'
       : `\n${failures} SUB-PARAMETER(S) DID NOT MATCH EXPECTATIONS\n`,
   );
+
+  // ---- Band-classification check (Tony's ruling 2026-07-20): compute the
+  // weighted total from the DEFAULT profile's stored weights and the
+  // verdicts above, then classify against the profile's stored band ranges.
+  // ABC with seeded weights (30/25/15/15/15, one Leverage sub failing)
+  // scores 87.5 — which must classify LOW risk under the corrected bands.
+  const entityManager = app.get(EntityManager);
+  const defaultProfile = await entityManager.findOne(RiskProfile, {
+    where: { isDefault: 1 },
+  });
+  if (!defaultProfile) {
+    console.log('✗ No default risk profile found');
+    await app.close();
+    process.exit(1);
+  }
+
+  const weightRows: {
+    parameterId: number;
+    parameterWeight: string;
+    subName: string | null;
+    subWeight: string;
+  }[] = await entityManager.query(
+    `SELECT w.quantitative_parameter_id AS "parameterId",
+            pw.weight AS "parameterWeight",
+            sub.name AS "subName",
+            w.weight AS "subWeight"
+     FROM risk_quantitative_profile_weight w
+     JOIN risk_quantitative_sub_parameter sub
+       ON sub.id = w.quantitative_sub_parameter_id
+     JOIN risk_quantitative_profile_weight pw
+       ON pw.quantitative_parameter_id = w.quantitative_parameter_id
+      AND pw.risk_profile_id = w.risk_profile_id
+      AND pw.quantitative_sub_parameter_id IS NULL
+     WHERE w.risk_profile_id = $1
+       AND w.quantitative_sub_parameter_id IS NOT NULL`,
+    [defaultProfile.id],
+  );
+
+  const passedByName = new Map<string, boolean>();
+  for (const e of EXPECTATIONS) {
+    const raw = scoringService.getValueFromCreditReport('', e.name, creditReport);
+    const v = typeof raw === 'number' ? raw : null;
+    passedByName.set(
+      e.name,
+      v !== null && (e.op === '>=' ? v >= e.threshold : v <= e.threshold),
+    );
+  }
+
+  let totalWeightedScore = 0;
+  for (const row of weightRows) {
+    if (!row.subName || !passedByName.has(row.subName)) continue;
+    const contribution = passedByName.get(row.subName)
+      ? (Number(row.parameterWeight) * Number(row.subWeight)) / 100
+      : 0;
+    totalWeightedScore += contribution;
+  }
+
+  const inRange = (r: [number, number]) =>
+    totalWeightedScore >= r[0] && totalWeightedScore <= r[1];
+  const category = inRange(defaultProfile.lowRiskThresholds)
+    ? 'LOW'
+    : inRange(defaultProfile.mediumRiskThresholds)
+      ? 'MEDIUM'
+      : inRange(defaultProfile.highRiskThresholds)
+        ? 'HIGH'
+        : 'UNCLASSIFIED';
+
+  console.log(
+    `Weighted total: ${totalWeightedScore} | stored bands — low risk: [${defaultProfile.lowRiskThresholds}], medium: [${defaultProfile.mediumRiskThresholds}], high risk: [${defaultProfile.highRiskThresholds}]`,
+  );
+  const bandOk = category === 'LOW' && totalWeightedScore >= 71;
+  console.log(
+    bandOk
+      ? `✓ Score ${totalWeightedScore} classifies as LOW risk — band orientation correct (high score = low risk)\n`
+      : `✗ Score ${totalWeightedScore} classified as ${category} — band orientation WRONG\n`,
+  );
+  if (!bandOk) failures++;
+
   await app.close();
   process.exit(failures === 0 ? 0 : 1);
 }
