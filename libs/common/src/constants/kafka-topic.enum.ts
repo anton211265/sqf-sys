@@ -7,7 +7,6 @@ export enum KafkaTopicEnum {
   SQF_GET_ALL_APPLICATIONS = 'sqf_get_all_applications',
   SQF_GET_ORGANIZATION_PERSON_BY_ID = 'sqf_get_organization_person_by_id',
   SQF_GET_APPLICATIONS_BY_ORG_ID = 'sqf_get_applications_by_organization_id',
-  SQF_DOCUMENT_EXTRACTION = 'sqf_document_extraction',
   APPLICATION_SUBMITTED_FOR_REVIEW = 'application_submitted_for_review',
   AUTHENTICATE = 'authenticate',
   AUTHENTICATE_REPLY = 'authenticate.reply',

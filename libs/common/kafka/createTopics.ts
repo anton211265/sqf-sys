@@ -110,14 +110,6 @@ export default async (brokers: string[], ssl: boolean): Promise<void> => {
     });
   }
 
-  if (!topics.includes(KafkaTopicEnum.SQF_DOCUMENT_EXTRACTION)) {
-    topicList.push({
-      topic: KafkaTopicEnum.SQF_DOCUMENT_EXTRACTION,
-      numPartitions: 2,
-      replicationFactor: 1,
-    });
-  }
-
   if (!topics.includes(KafkaTopicEnum.SQF_GET_ORGANIZATION_BY_ID)) {
     topicList.push({
       topic: KafkaTopicEnum.SQF_GET_ORGANIZATION_BY_ID,

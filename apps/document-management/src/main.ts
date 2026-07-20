@@ -7,8 +7,7 @@ import { KafkaOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import { DocumentManagementModule } from './document-management.module';
-import { ConsensusMessagingModule } from './modules/consensus-messaging/consensus-messaging.module';
-import { DocumentExtractionModule } from './modules/document-extraction/document-extraction.module';
+import { DocumentsModule } from './modules/documents/documents.module';
 import { Response } from 'express';
 import { json } from 'express';
 
@@ -38,22 +37,16 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Document Management')
     .setDescription(
-      'The Document Management Service facilitates consensus-based messaging by integrating with distributed ledger technologies, ensuring the integrity and traceability of events. Additionally, it performs data extraction from documents, enabling downstream services to process and analyze document content effectively.',
+      'Immutable document storage (S3 + SHA-256 integrity hashing), Claude field extraction per document class, cross-validation against the trade directory, the deterministic invoice arithmetic gate, and metadata search. Cross-service data flow is Kafka-only (transactional outbox).',
     )
     .addTag(
-      'Consensus Messaging',
-      'Interact with Hedera Consensus Service (HCS) to create topics and submit messages. ' +
-        'A **topic** in Hedera represents a channel where messages can be appended in order. ' +
-        'Each **message** is an immutable entry recorded on the blockchain under that topic and is permanently stored on-chain.',
+      'Documents',
+      'Upload onboarding documents and invoices, retrieve metadata and presigned download URLs, review discrepancies and the invoice reconciliation queue.',
     )
-    .addTag(
-      'Extraction',
-      'Extract structured data from documents based on prompt templates created in the dashboard.',
-    )
-    .setVersion('1.0')
+    .setVersion('2.0')
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    include: [DocumentExtractionModule, ConsensusMessagingModule],
+    include: [DocumentsModule],
   });
   SwaggerModule.setup('document-management/api', app, document);
   app.use('/document-management/api-json', (res: Response) => {
