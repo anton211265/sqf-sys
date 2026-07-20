@@ -35,6 +35,7 @@ import {
   SupplierPersonaRepository,
 } from './repositories';
 import { RelationshipModule } from './relationship/relationship.module';
+import { DocumentValidationModule } from './sqf/document-validation/document-validation.module';
 import { ContractModule } from './contract/contract.module';
 import { InvoiceModule } from './invoice/invoice.module';
 import { LendingProductSubscriptionModule } from './lending-product-subscription/lending-product-subscription.module';
@@ -88,6 +89,7 @@ import { PersonaSubscribersModule } from './models/subscribers/persona-subscribe
 
     // ----------------------TRADE NETWORK----------------------
     RelationshipModule,
+    DocumentValidationModule,
     ContractModule,
     InvoiceModule,
     LendingProductSubscriptionModule,

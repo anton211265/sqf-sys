@@ -73,6 +73,35 @@ export class DocumentsController implements OnModuleInit {
     return this.documentsService.list(user, listDocumentsDto);
   }
 
+  // Declared before ':documentUuid' so the literal path wins route matching.
+  @Get('discrepancies')
+  async listDiscrepancies(
+    @CurrentUser() user: IUserContext,
+  ): Promise<DocumentResponseDto[]> {
+    return this.documentsService.listDiscrepancies(user);
+  }
+
+  @Get(':documentUuid/validation')
+  async getValidationResult(
+    @CurrentUser() user: IUserContext,
+    @Param('documentUuid', ParseUUIDPipe) documentUuid: string,
+  ): Promise<Record<string, unknown>> {
+    return this.documentsService.getValidationResult(user, documentUuid);
+  }
+
+  @Post(':documentUuid/clear-discrepancies')
+  async clearDiscrepancies(
+    @CurrentUser() user: IUserContext,
+    @Param('documentUuid', ParseUUIDPipe) documentUuid: string,
+    @Body() body: { note?: string },
+  ): Promise<DocumentResponseDto> {
+    return this.documentsService.clearDiscrepancies(
+      user,
+      documentUuid,
+      body?.note,
+    );
+  }
+
   @Get(':documentUuid')
   async getByUuid(
     @CurrentUser() user: IUserContext,

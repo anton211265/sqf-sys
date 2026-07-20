@@ -6,12 +6,16 @@ import { DatabaseModule } from '@app/common/database/database.module';
 import { TRADE_SERVICE } from '@app/common/constants/services';
 import { DependencyInjectionTokenEnum } from '@app/common/constants/dependency-injection-token.enum';
 import { OutboxEvent } from '@app/common/database/outbox-event.entity';
+import { ProcessedEvent } from '@app/common/database/processed-event.entity';
 import { StoredDocument } from '../../models/document.entity';
 import { DocumentEvent } from '../../models/document-event.entity';
 import { DocumentRepository } from '../../repositories/document.repository';
 import { DocumentEventRepository } from '../../repositories/document-event.repository';
 import { OutboxEventRepository } from '../../repositories/outbox-event.repository';
+import { ProcessedEventRepository } from '../../repositories/processed-event.repository';
 import { OutboxRelayService } from './outbox-relay.service';
+import { CrossValidationService } from './cross-validation.service';
+import { DocumentsValidationController } from './documents-validation.controller';
 import { MarkitdownModule } from '../markitdown/markitdown.module';
 import { VisionExtractionModule } from '../vision-extraction/vision-extraction.module';
 import { DocumentsController } from './documents.controller';
@@ -27,7 +31,12 @@ import { DocumentExtractionProcessor } from './document-extraction.processor';
     MarkitdownModule,
     VisionExtractionModule,
     DatabaseModule,
-    DatabaseModule.forFeature([StoredDocument, DocumentEvent, OutboxEvent]),
+    DatabaseModule.forFeature([
+      StoredDocument,
+      DocumentEvent,
+      OutboxEvent,
+      ProcessedEvent,
+    ]),
     ClientsModule.registerAsync([
       {
         name: DependencyInjectionTokenEnum.KAFKA_PRODUCER,
@@ -62,7 +71,7 @@ import { DocumentExtractionProcessor } from './document-extraction.processor';
       },
     ]),
   ],
-  controllers: [DocumentsController],
+  controllers: [DocumentsController, DocumentsValidationController],
   providers: [
     {
       provide: 'S3Client',
@@ -83,11 +92,13 @@ import { DocumentExtractionProcessor } from './document-extraction.processor';
     },
     DocumentsService,
     ClaudeExtractionService,
+    CrossValidationService,
     DocumentExtractionProcessor,
     OutboxRelayService,
     DocumentRepository,
     DocumentEventRepository,
     OutboxEventRepository,
+    ProcessedEventRepository,
   ],
   exports: [DocumentsService],
 })

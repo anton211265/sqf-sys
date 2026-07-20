@@ -80,6 +80,11 @@ export class StoredDocument extends AbstractEntity<StoredDocument> {
   @Column({ type: 'text', nullable: true })
   extractionError?: string;
 
+  // Cross-validation outcome (per-field verdicts incl. method + reasoning)
+  // — see modules/documents/cross-validation.service.ts.
+  @Column({ type: 'jsonb', nullable: true })
+  validationResult?: Record<string, unknown>;
+
   @Column({ type: 'timestamp', nullable: true })
   extractedAt?: Date;
 

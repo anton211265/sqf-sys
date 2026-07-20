@@ -70,6 +70,47 @@ Rules:
     return this.parseJson(block.text);
   }
 
+  // Judges whether non-exact field pairs refer to the same real-world value
+  // (name variants, address formats, country spellings). Only called for
+  // pairs deterministic normalization couldn't settle — see
+  // CrossValidationService.
+  async judgeFieldMatches(
+    pairs: { field: string; extractedValue: string; storedValue: string }[],
+  ): Promise<{ field: string; verdict: 'MATCH' | 'MISMATCH'; reasoning: string }[]> {
+    if (!pairs.length) return [];
+
+    const response = await this.anthropic.messages.create({
+      model: this.model,
+      max_tokens: 2048,
+      temperature: 0,
+      system: `You compare pairs of values extracted from a company document against values stored in a corporate directory, and judge whether each pair plausibly refers to the same real-world entity/value despite formatting differences (abbreviations, legal suffixes like "Sdn Bhd", address formatting, country names vs ISO codes).
+
+Return ONLY a JSON object of this shape — no markdown fences, no commentary:
+{ "results": [{ "field": string, "verdict": "MATCH" | "MISMATCH", "reasoning": string }] }
+
+Judge conservatively: verdict MATCH only when the two values clearly refer to the same thing. A different company, person, address, or identifier is MISMATCH.`,
+      messages: [
+        {
+          role: 'user',
+          content: `Judge these pairs:\n${JSON.stringify(pairs, null, 2)}`,
+        },
+      ],
+    });
+
+    const block = response.content.find((c) => c.type === 'text');
+    if (!block || block.type !== 'text') {
+      throw new InternalServerErrorException(
+        'Claude returned no text content for match judgment',
+      );
+    }
+    const parsed = this.parseJson(block.text);
+    return (parsed.results ?? []) as {
+      field: string;
+      verdict: 'MATCH' | 'MISMATCH';
+      reasoning: string;
+    }[];
+  }
+
   // Parses the brace-bounded object, tolerating trailing text after it.
   private parseJson(text: string): Record<string, unknown> {
     const start = text.indexOf('{');

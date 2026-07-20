@@ -25,6 +25,8 @@ import {
   DocumentStatusEnum,
 } from '@app/common/apps/document-management/enums/document-status.enum';
 import { IUserContext } from '@app/common/apps/common/interface/user-context.interface';
+import { DocumentValidationDataEvent } from '@app/common/apps/common/interface/document-validation-data-event.interface';
+import { CrossValidationService } from './cross-validation.service';
 import { StoredDocument } from '../../models/document.entity';
 import { DocumentEvent } from '../../models/document-event.entity';
 import { DocumentRepository } from '../../repositories/document.repository';
@@ -77,6 +79,7 @@ export class DocumentsService {
     @Inject('S3Client') private readonly s3Client: S3Client,
     @Inject(MARKITDOWN_SERVICE)
     private readonly markitdownService: IMarkitdownService,
+    private readonly crossValidationService: CrossValidationService,
     @InjectEntityManager() private readonly entityManager: EntityManager,
     configService: ConfigService,
   ) {
@@ -253,6 +256,129 @@ export class DocumentsService {
       url,
       expiresInSeconds: PRESIGNED_URL_EXPIRY_SECONDS,
     };
+  }
+
+  // Consumes trade-directory's stored-organization snapshot: runs the
+  // deterministic-first comparison and flips the document to VALIDATED or
+  // DISCREPANCY_FLAGGED (Risk Officer clears the latter via the API below).
+  async applyValidationData(event: DocumentValidationDataEvent): Promise<void> {
+    const document = await this.documentRepository.findOne({
+      where: { documentUuid: event.documentUuid },
+    });
+    if (!document) {
+      this.logger.warn(
+        `Validation data for unknown document ${event.documentUuid} — ignoring`,
+      );
+      return;
+    }
+    if (document.status !== DocumentStatusEnum.EXTRACTED) {
+      this.logger.warn(
+        `Validation data for document ${event.documentUuid} in status ${document.status} — ignoring`,
+      );
+      return;
+    }
+
+    const result = await this.crossValidationService.validateCompanyRegistry(
+      document.extractedData ?? {},
+      event,
+    );
+
+    const newStatus = result.hasDiscrepancies
+      ? DocumentStatusEnum.DISCREPANCY_FLAGGED
+      : DocumentStatusEnum.VALIDATED;
+
+    await this.entityManager.transaction(async (manager) => {
+      await manager.update(
+        StoredDocument,
+        { id: document.id },
+        {
+          status: newStatus,
+          validationResult: result as unknown as Record<string, unknown>,
+        },
+      );
+      await this.documentEventRepository.record(
+        {
+          documentId: document.id,
+          eventType: result.hasDiscrepancies
+            ? DocumentEventTypeEnum.DISCREPANCY_FLAGGED
+            : DocumentEventTypeEnum.VALIDATION_COMPLETED,
+          beforeStatus: DocumentStatusEnum.EXTRACTED,
+          afterStatus: newStatus,
+          detail: {
+            organizationFound: result.organizationFound,
+            discrepancyFields: result.fields
+              .filter(
+                (f) =>
+                  f.verdict === 'MISMATCH' || f.verdict === 'MISSING_IN_RECORD',
+              )
+              .map((f) => f.field),
+          },
+        },
+        manager,
+      );
+    });
+
+    this.logger.log(
+      `Document ${event.documentUuid} validation: ${newStatus} (${result.fields.length} fields compared)`,
+    );
+  }
+
+  // Backend for the Applicant-list discrepancy view (screens held for the
+  // storyboard). Intended for the Risk Officer role once dynamic RBAC lands.
+  async listDiscrepancies(user: IUserContext): Promise<DocumentResponseDto[]> {
+    const documents = await this.documentRepository.find({
+      where: {
+        status: DocumentStatusEnum.DISCREPANCY_FLAGGED,
+        subjectOrganizationId: user.orgId,
+      },
+      order: { createdAt: 'DESC' },
+    });
+    return documents.map(DocumentResponseDto.fromEntity);
+  }
+
+  async getValidationResult(
+    user: IUserContext,
+    documentUuid: string,
+  ): Promise<Record<string, unknown>> {
+    const document = await this.findVisibleDocument(user, documentUuid);
+    return document.validationResult ?? {};
+  }
+
+  // Risk Officer clears flagged discrepancies after review (intended role
+  // per design; enforced once dynamic RBAC lands). Audited with actor+note.
+  async clearDiscrepancies(
+    user: IUserContext,
+    documentUuid: string,
+    note?: string,
+  ): Promise<DocumentResponseDto> {
+    const document = await this.findVisibleDocument(user, documentUuid);
+    if (document.status !== DocumentStatusEnum.DISCREPANCY_FLAGGED) {
+      throw new BadRequestException(
+        `Document ${documentUuid} has no flagged discrepancies to clear (status ${document.status})`,
+      );
+    }
+
+    await this.entityManager.transaction(async (manager) => {
+      await manager.update(
+        StoredDocument,
+        { id: document.id },
+        { status: DocumentStatusEnum.VALIDATED },
+      );
+      await this.documentEventRepository.record(
+        {
+          documentId: document.id,
+          eventType: DocumentEventTypeEnum.DISCREPANCY_CLEARED,
+          actorPersonId: user.id,
+          beforeStatus: DocumentStatusEnum.DISCREPANCY_FLAGGED,
+          afterStatus: DocumentStatusEnum.VALIDATED,
+          detail: { note: note ?? null },
+        },
+        manager,
+      );
+    });
+
+    document.status = DocumentStatusEnum.VALIDATED;
+    return DocumentResponseDto.fromEntity(document);
   }
 
   // Visibility: the caller's org must be the document's subject or its

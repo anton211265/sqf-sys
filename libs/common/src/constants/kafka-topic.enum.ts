@@ -25,8 +25,14 @@ export enum KafkaTopicEnum {
 
   // Emitted by document-management (outbox) when Claude field extraction
   // completes on an uploaded document. Consumers filter by documentClass:
-  // risk-operation ingests FINANCIAL_STATEMENTS into financial_credit_report.
+  // risk-operation ingests FINANCIAL_STATEMENTS into financial_credit_report;
+  // trade-directory answers COMPANY_REGISTRY with DOCUMENT_VALIDATION_DATA.
   DOCUMENT_EXTRACTED = 'document_extracted',
+  // trade-directory's reply to a COMPANY_REGISTRY extraction: a snapshot of
+  // the stored organization + director names, which document-management
+  // cross-validates against the extracted fields (deterministic-first,
+  // Claude for fuzzy cases) to flag discrepancies for the Risk Officer.
+  DOCUMENT_VALIDATION_DATA = 'document_validation_data',
 
   REQUEST_KYC_REPORT = 'request_kyc_report',
   RECEIVE_KYC_REPORT = 'receive_kyc_report',
