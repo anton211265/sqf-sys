@@ -9,9 +9,13 @@ import {
   DocumentStatusEnum,
   ExtractionMethodEnum,
 } from '@app/common/apps/document-management/enums/document-status.enum';
+import { randomUUID } from 'crypto';
+import { KafkaTopicEnum } from '@app/common/constants/kafka-topic.enum';
+import { DocumentExtractedEvent } from '@app/common/apps/common/interface/document-extracted-event.interface';
 import { StoredDocument } from '../../models/document.entity';
 import { DocumentRepository } from '../../repositories/document.repository';
 import { DocumentEventRepository } from '../../repositories/document-event.repository';
+import { OutboxEventRepository } from '../../repositories/outbox-event.repository';
 import {
   IMarkitdownService,
   MARKITDOWN_SERVICE,
@@ -41,6 +45,7 @@ export class DocumentExtractionProcessor {
   constructor(
     private readonly documentRepository: DocumentRepository,
     private readonly documentEventRepository: DocumentEventRepository,
+    private readonly outboxEventRepository: OutboxEventRepository,
     private readonly claudeExtractionService: ClaudeExtractionService,
     @Inject('S3Client') private readonly s3Client: S3Client,
     @Inject(MARKITDOWN_SERVICE)
@@ -189,6 +194,25 @@ export class DocumentExtractionProcessor {
         },
         manager,
       );
+
+      // Transactional outbox: the DOCUMENT_EXTRACTED event commits (or
+      // rolls back) atomically with the extraction result itself.
+      const eventId = randomUUID();
+      const payload: DocumentExtractedEvent = {
+        eventId,
+        documentUuid: document.documentUuid,
+        subjectOrganizationId: document.subjectOrganizationId,
+        documentClass: document.documentClass,
+        refId: document.refId,
+        extractionMethod,
+        sha256Hash: document.sha256Hash,
+        extractedData,
+      };
+      await this.outboxEventRepository.record(manager, {
+        id: eventId,
+        topic: KafkaTopicEnum.DOCUMENT_EXTRACTED,
+        payload: payload as unknown as Record<string, unknown>,
+      });
     });
 
     this.logger.log(

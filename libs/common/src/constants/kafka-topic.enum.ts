@@ -23,6 +23,11 @@ export enum KafkaTopicEnum {
   // apps/risk-agent/src/organization-kyc, CLAUDE.md).
   ORGANIZATION_CREATED = 'organization_created',
 
+  // Emitted by document-management (outbox) when Claude field extraction
+  // completes on an uploaded document. Consumers filter by documentClass:
+  // risk-operation ingests FINANCIAL_STATEMENTS into financial_credit_report.
+  DOCUMENT_EXTRACTED = 'document_extracted',
+
   REQUEST_KYC_REPORT = 'request_kyc_report',
   RECEIVE_KYC_REPORT = 'receive_kyc_report',
   SEND_EMAIL = 'send_email',

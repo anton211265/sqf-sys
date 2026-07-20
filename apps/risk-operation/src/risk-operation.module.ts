@@ -47,8 +47,10 @@ import { RiskQuantitativeParameterModule } from './sqf/risk-quantitative-paramet
 import { RiskQuantitativeThresholdRuleModule } from './sqf/risk-quantitative-threshold-rule/risk-quantitative-threshold-rule.module';
 import { RiskApplicationAuditLogModule } from './sqf/risk-application-audit-log/risk-application-audit-log.module';
 import { RiskManualReviewAlertModule } from './sqf/risk-manual-review-alert/risk-manual-review-alert.module';
+import { FinancialReportIntakeModule } from './sqf/financial-report-intake/financial-report-intake.module';
 @Module({
   imports: [
+    FinancialReportIntakeModule,
     CaslModule,
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     DatabaseModule,

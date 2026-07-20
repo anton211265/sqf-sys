@@ -4,10 +4,14 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { S3Client } from '@aws-sdk/client-s3';
 import { DatabaseModule } from '@app/common/database/database.module';
 import { TRADE_SERVICE } from '@app/common/constants/services';
+import { DependencyInjectionTokenEnum } from '@app/common/constants/dependency-injection-token.enum';
+import { OutboxEvent } from '@app/common/database/outbox-event.entity';
 import { StoredDocument } from '../../models/document.entity';
 import { DocumentEvent } from '../../models/document-event.entity';
 import { DocumentRepository } from '../../repositories/document.repository';
 import { DocumentEventRepository } from '../../repositories/document-event.repository';
+import { OutboxEventRepository } from '../../repositories/outbox-event.repository';
+import { OutboxRelayService } from './outbox-relay.service';
 import { MarkitdownModule } from '../markitdown/markitdown.module';
 import { VisionExtractionModule } from '../vision-extraction/vision-extraction.module';
 import { DocumentsController } from './documents.controller';
@@ -23,8 +27,22 @@ import { DocumentExtractionProcessor } from './document-extraction.processor';
     MarkitdownModule,
     VisionExtractionModule,
     DatabaseModule,
-    DatabaseModule.forFeature([StoredDocument, DocumentEvent]),
+    DatabaseModule.forFeature([StoredDocument, DocumentEvent, OutboxEvent]),
     ClientsModule.registerAsync([
+      {
+        name: DependencyInjectionTokenEnum.KAFKA_PRODUCER,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.KAFKA,
+          options: {
+            client: {
+              clientId: 'document-management',
+              brokers: configService.getOrThrow('KAFKA_BROKERS').split(','),
+              ssl: configService.getOrThrow('KAFKA_BROKER_SSL') === 'true',
+            },
+          },
+        }),
+        inject: [ConfigService],
+      },
       {
         name: TRADE_SERVICE,
         useFactory: (configService: ConfigService) => ({
@@ -66,8 +84,10 @@ import { DocumentExtractionProcessor } from './document-extraction.processor';
     DocumentsService,
     ClaudeExtractionService,
     DocumentExtractionProcessor,
+    OutboxRelayService,
     DocumentRepository,
     DocumentEventRepository,
+    OutboxEventRepository,
   ],
   exports: [DocumentsService],
 })
