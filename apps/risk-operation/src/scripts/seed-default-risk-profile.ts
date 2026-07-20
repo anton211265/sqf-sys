@@ -173,9 +173,12 @@ async function bootstrap() {
       capitalCurrency: null,
       isDefault: 1,
       numberOfActiveProfiles: 0,
-      lowRiskThresholds: [0, 30],
+      // Bands are SCORE ranges named by the risk they imply: a high score
+      // means many checks passed, i.e. LOW risk (Tony's ruling 2026-07-20,
+      // matching the manual's worked example — ABC scores 90 → LOW risk).
+      lowRiskThresholds: [71, 100],
       mediumRiskThresholds: [31, 70],
-      highRiskThresholds: [71, 100],
+      highRiskThresholds: [0, 30],
     }),
   );
   logger.log(`Created default risk profile (id=${defaultRiskProfile.id}).`);
