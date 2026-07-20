@@ -652,6 +652,31 @@ Postgres/Kafka/MinIO/Claude before its commit.
   enforced when Dynamic RBAC lands), production S3 Object
   Lock/SSE-KMS/virus scan (Terraform phase).
 
+**Default risk profile scoring alignment (2026-07-20).** Two follow-on
+fixes after the rebuild, both E2E-verified via
+`apps/risk-operation/src/scripts/verify-default-profile-scoring.ts`
+(runs the DefaultRiskProfile manual's ABC Manufacturing worked example
+through the full pipeline):
+- The Filter 1 scoring engine previously could not resolve 9 of the 10
+  seeded default-profile sub-parameters (its lookup only knew legacy
+  Moody's-style names). `FinancialCreditReportService.findOne` now
+  returns a `defaultProfileMeasures` section computed per the manual's
+  formulas — point-in-time ratios from the latest fiscal year,
+  Revenue Growth Rate / Profit Margin Trend across latest + prior
+  year — and the lookup maps all 10 seeded names to it (legacy names
+  kept). `financial_credit_report` gained an `inventory` column
+  (Quick Ratio) and extraction now captures total assets
+  (`total_equity_and_liabilities`). The legacy ratio averaging in
+  `findOne` is null-tolerant (intake-written rows lack legacy
+  columns).
+- **Risk band semantics (Tony's ruling): a HIGH total score means LOW
+  risk** — bands are score ranges named by the risk they imply: Low
+  risk = 71–100, Medium = 31–70, High risk = 0–30. Seed + all
+  existing profiles corrected (the original orientation was inverted
+  vs. the manual's worked example). The classifier itself is
+  range-containment and needed no change. Don't reintroduce the
+  inverted orientation in new profiles, seeds, or screens.
+
 **Original scope, as designed:**
 1. **Onboarding document intake** — six document types (company
    registry, KYC credit report, bank statements, proof of address,
