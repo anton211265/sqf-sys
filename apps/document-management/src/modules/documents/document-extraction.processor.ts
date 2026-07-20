@@ -16,6 +16,7 @@ import { StoredDocument } from '../../models/document.entity';
 import { DocumentRepository } from '../../repositories/document.repository';
 import { DocumentEventRepository } from '../../repositories/document-event.repository';
 import { OutboxEventRepository } from '../../repositories/outbox-event.repository';
+import { InvoiceMathService } from './invoice-math.service';
 import {
   IMarkitdownService,
   MARKITDOWN_SERVICE,
@@ -47,6 +48,7 @@ export class DocumentExtractionProcessor {
     private readonly documentEventRepository: DocumentEventRepository,
     private readonly outboxEventRepository: OutboxEventRepository,
     private readonly claudeExtractionService: ClaudeExtractionService,
+    private readonly invoiceMathService: InvoiceMathService,
     @Inject('S3Client') private readonly s3Client: S3Client,
     @Inject(MARKITDOWN_SERVICE)
     private readonly markitdownService: IMarkitdownService,
@@ -168,17 +170,37 @@ export class DocumentExtractionProcessor {
       document.documentClass,
     );
 
+    // Invoices go through the deterministic arithmetic gate immediately —
+    // pass feeds the invoice-create path, fail lands in the Finance Analyst
+    // reconciliation queue. No human review on the happy path (2026-07-19).
+    const isInvoice = document.documentClass === DocumentClassEnum.INVOICE;
+    const mathResult = isInvoice
+      ? this.invoiceMathService.verify(extractedData)
+      : null;
+
+    const finalStatus = !isInvoice
+      ? DocumentStatusEnum.EXTRACTED
+      : mathResult.passed
+        ? DocumentStatusEnum.VALIDATED
+        : DocumentStatusEnum.INVOICE_MISMATCH;
+
     await this.entityManager.transaction(async (manager) => {
       await manager.update(
         StoredDocument,
         { id: document.id },
         {
-          status: DocumentStatusEnum.EXTRACTED,
+          status: finalStatus,
           rawText,
           extractedData,
           extractionMethod,
           extractionError: null,
           extractedAt: new Date(),
+          ...(mathResult
+            ? {
+                validationResult:
+                  mathResult as unknown as Record<string, unknown>,
+              }
+            : {}),
         },
       );
       await this.documentEventRepository.record(
@@ -186,7 +208,7 @@ export class DocumentExtractionProcessor {
           documentId: document.id,
           eventType: DocumentEventTypeEnum.EXTRACTION_COMPLETED,
           beforeStatus: DocumentStatusEnum.EXTRACTING,
-          afterStatus: DocumentStatusEnum.EXTRACTED,
+          afterStatus: finalStatus,
           detail: {
             extractionMethod,
             fieldCount: Object.keys(extractedData).length,
@@ -195,28 +217,62 @@ export class DocumentExtractionProcessor {
         manager,
       );
 
-      // Transactional outbox: the DOCUMENT_EXTRACTED event commits (or
-      // rolls back) atomically with the extraction result itself.
-      const eventId = randomUUID();
-      const payload: DocumentExtractedEvent = {
-        eventId,
-        documentUuid: document.documentUuid,
-        subjectOrganizationId: document.subjectOrganizationId,
-        documentClass: document.documentClass,
-        refId: document.refId,
-        extractionMethod,
-        sha256Hash: document.sha256Hash,
-        extractedData,
-      };
-      await this.outboxEventRepository.record(manager, {
-        id: eventId,
-        topic: KafkaTopicEnum.DOCUMENT_EXTRACTED,
-        payload: payload as unknown as Record<string, unknown>,
-      });
+      if (isInvoice) {
+        await this.documentEventRepository.record(
+          {
+            documentId: document.id,
+            eventType: mathResult.passed
+              ? DocumentEventTypeEnum.INVOICE_MATH_PASSED
+              : DocumentEventTypeEnum.INVOICE_MATH_MISMATCH,
+            afterStatus: finalStatus,
+            detail: { checks: mathResult.checks },
+          },
+          manager,
+        );
+        if (mathResult.passed) {
+          const submissionEventId = randomUUID();
+          const hydrated = new StoredDocument({ ...document, extractedData });
+          await this.outboxEventRepository.record(manager, {
+            id: submissionEventId,
+            topic: KafkaTopicEnum.INVOICE_EXTRACTION_VALIDATED,
+            payload: this.invoiceMathService.buildSubmission(
+              hydrated,
+              submissionEventId,
+            ) as unknown as Record<string, unknown>,
+          });
+          await this.documentEventRepository.record(
+            {
+              documentId: document.id,
+              eventType: DocumentEventTypeEnum.INVOICE_SUBMITTED,
+              detail: { submissionEventId },
+            },
+            manager,
+          );
+        }
+      } else {
+        // Non-invoice classes: broadcast the extraction for downstream
+        // consumers (risk-operation financials, trade-directory validation).
+        const eventId = randomUUID();
+        const payload: DocumentExtractedEvent = {
+          eventId,
+          documentUuid: document.documentUuid,
+          subjectOrganizationId: document.subjectOrganizationId,
+          documentClass: document.documentClass,
+          refId: document.refId,
+          extractionMethod,
+          sha256Hash: document.sha256Hash,
+          extractedData,
+        };
+        await this.outboxEventRepository.record(manager, {
+          id: eventId,
+          topic: KafkaTopicEnum.DOCUMENT_EXTRACTED,
+          payload: payload as unknown as Record<string, unknown>,
+        });
+      }
     });
 
     this.logger.log(
-      `Extracted ${document.documentClass} document ${document.documentUuid} via ${extractionMethod}`,
+      `Extracted ${document.documentClass} document ${document.documentUuid} via ${extractionMethod} -> ${finalStatus}`,
     );
   }
 

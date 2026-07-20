@@ -26,7 +26,10 @@ import {
 } from '@app/common/apps/document-management/enums/document-status.enum';
 import { IUserContext } from '@app/common/apps/common/interface/user-context.interface';
 import { DocumentValidationDataEvent } from '@app/common/apps/common/interface/document-validation-data-event.interface';
+import { KafkaTopicEnum } from '@app/common/constants/kafka-topic.enum';
 import { CrossValidationService } from './cross-validation.service';
+import { InvoiceMathService } from './invoice-math.service';
+import { OutboxEventRepository } from '../../repositories/outbox-event.repository';
 import { StoredDocument } from '../../models/document.entity';
 import { DocumentEvent } from '../../models/document-event.entity';
 import { DocumentRepository } from '../../repositories/document.repository';
@@ -80,6 +83,8 @@ export class DocumentsService {
     @Inject(MARKITDOWN_SERVICE)
     private readonly markitdownService: IMarkitdownService,
     private readonly crossValidationService: CrossValidationService,
+    private readonly invoiceMathService: InvoiceMathService,
+    private readonly outboxEventRepository: OutboxEventRepository,
     @InjectEntityManager() private readonly entityManager: EntityManager,
     configService: ConfigService,
   ) {
@@ -372,6 +377,116 @@ export class DocumentsService {
           beforeStatus: DocumentStatusEnum.DISCREPANCY_FLAGGED,
           afterStatus: DocumentStatusEnum.VALIDATED,
           detail: { note: note ?? null },
+        },
+        manager,
+      );
+    });
+
+    document.status = DocumentStatusEnum.VALIDATED;
+    return DocumentResponseDto.fromEntity(document);
+  }
+
+  // Finance Analyst (AR specialist) reconciliation queue — invoices that
+  // failed the arithmetic gate. Role enforcement lands with dynamic RBAC.
+  async listInvoiceMismatches(
+    user: IUserContext,
+  ): Promise<DocumentResponseDto[]> {
+    const documents = await this.documentRepository.find({
+      where: {
+        status: DocumentStatusEnum.INVOICE_MISMATCH,
+        uploaderOrgId: user.orgId,
+      },
+      order: { createdAt: 'DESC' },
+    });
+    return documents.map(DocumentResponseDto.fromEntity);
+  }
+
+  // Manual reconciliation: the Finance Analyst corrects the extracted
+  // numbers; the corrected data must itself pass the arithmetic gate before
+  // the invoice proceeds. Fully audited (actor, note, before/after data).
+  async reconcileInvoice(
+    user: IUserContext,
+    documentUuid: string,
+    corrections: {
+      lines?: unknown[];
+      taxTotal?: number;
+      additionalCharges?: unknown[];
+      statedPayableAmount?: number;
+      note?: string;
+    },
+  ): Promise<DocumentResponseDto> {
+    const document = await this.findVisibleDocument(user, documentUuid);
+    if (document.status !== DocumentStatusEnum.INVOICE_MISMATCH) {
+      throw new BadRequestException(
+        `Document ${documentUuid} is not in the reconciliation queue (status ${document.status})`,
+      );
+    }
+
+    const before = document.extractedData ?? {};
+    const corrected: Record<string, unknown> = { ...before };
+    for (const key of [
+      'lines',
+      'taxTotal',
+      'additionalCharges',
+      'statedPayableAmount',
+    ] as const) {
+      if (corrections[key] !== undefined) corrected[key] = corrections[key];
+    }
+
+    const mathResult = this.invoiceMathService.verify(corrected);
+    if (!mathResult.passed) {
+      throw new BadRequestException({
+        message:
+          'Corrected invoice still fails the arithmetic check — not reconciled',
+        checks: mathResult.checks,
+      });
+    }
+
+    await this.entityManager.transaction(async (manager) => {
+      await manager.update(
+        StoredDocument,
+        { id: document.id },
+        {
+          status: DocumentStatusEnum.VALIDATED,
+          extractedData: corrected,
+          validationResult: mathResult as unknown as Record<string, unknown>,
+        },
+      );
+      await this.documentEventRepository.record(
+        {
+          documentId: document.id,
+          eventType: DocumentEventTypeEnum.INVOICE_RECONCILED,
+          actorPersonId: user.id,
+          beforeStatus: DocumentStatusEnum.INVOICE_MISMATCH,
+          afterStatus: DocumentStatusEnum.VALIDATED,
+          detail: {
+            note: corrections.note ?? null,
+            beforeData: before,
+            afterData: corrected,
+          },
+        },
+        manager,
+      );
+
+      const submissionEventId = randomUUID();
+      const hydrated = new StoredDocument({
+        ...document,
+        extractedData: corrected,
+      });
+      await this.outboxEventRepository.record(manager, {
+        id: submissionEventId,
+        topic: KafkaTopicEnum.INVOICE_EXTRACTION_VALIDATED,
+        payload: this.invoiceMathService.buildSubmission(
+          hydrated,
+          submissionEventId,
+        ) as unknown as Record<string, unknown>,
+      });
+      await this.documentEventRepository.record(
+        {
+          documentId: document.id,
+          eventType: DocumentEventTypeEnum.INVOICE_SUBMITTED,
+          actorPersonId: user.id,
+          detail: { submissionEventId },
         },
         manager,
       );

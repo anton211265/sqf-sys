@@ -134,9 +134,13 @@ services:
 
   kafka:
     image: apache/kafka:latest    # Kafka 4.2.0 — KRaft only, no Zookeeper
+    # Kafka repeatedly OOM-exits in dev, silently taking every dependent
+    # service down (see CLAUDE.md known boot issues). Self-heal + capped heap.
+    restart: unless-stopped
     ports:
       - '50001:9092'
     environment:
+      KAFKA_HEAP_OPTS: '-Xmx512M -Xms256M'
       # KRaft identity
       KAFKA_NODE_ID: '1'
       KAFKA_PROCESS_ROLES: 'broker,controller'

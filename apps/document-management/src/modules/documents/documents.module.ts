@@ -15,6 +15,7 @@ import { OutboxEventRepository } from '../../repositories/outbox-event.repositor
 import { ProcessedEventRepository } from '../../repositories/processed-event.repository';
 import { OutboxRelayService } from './outbox-relay.service';
 import { CrossValidationService } from './cross-validation.service';
+import { InvoiceMathService } from './invoice-math.service';
 import { DocumentsValidationController } from './documents-validation.controller';
 import { MarkitdownModule } from '../markitdown/markitdown.module';
 import { VisionExtractionModule } from '../vision-extraction/vision-extraction.module';
@@ -93,6 +94,7 @@ import { DocumentExtractionProcessor } from './document-extraction.processor';
     DocumentsService,
     ClaudeExtractionService,
     CrossValidationService,
+    InvoiceMathService,
     DocumentExtractionProcessor,
     OutboxRelayService,
     DocumentRepository,

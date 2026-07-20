@@ -74,6 +74,29 @@ export class DocumentsController implements OnModuleInit {
   }
 
   // Declared before ':documentUuid' so the literal path wins route matching.
+  @Get('invoice-mismatches')
+  async listInvoiceMismatches(
+    @CurrentUser() user: IUserContext,
+  ): Promise<DocumentResponseDto[]> {
+    return this.documentsService.listInvoiceMismatches(user);
+  }
+
+  @Post(':documentUuid/reconcile')
+  async reconcileInvoice(
+    @CurrentUser() user: IUserContext,
+    @Param('documentUuid', ParseUUIDPipe) documentUuid: string,
+    @Body()
+    body: {
+      lines?: unknown[];
+      taxTotal?: number;
+      additionalCharges?: unknown[];
+      statedPayableAmount?: number;
+      note?: string;
+    },
+  ): Promise<DocumentResponseDto> {
+    return this.documentsService.reconcileInvoice(user, documentUuid, body);
+  }
+
   @Get('discrepancies')
   async listDiscrepancies(
     @CurrentUser() user: IUserContext,

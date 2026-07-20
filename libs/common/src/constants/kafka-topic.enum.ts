@@ -33,6 +33,11 @@ export enum KafkaTopicEnum {
   // cross-validates against the extracted fields (deterministic-first,
   // Claude for fuzzy cases) to flag discrepancies for the Risk Officer.
   DOCUMENT_VALIDATION_DATA = 'document_validation_data',
+  // Emitted by document-management (outbox) when an extracted invoice passes
+  // the deterministic arithmetic gate (or is manually reconciled by the
+  // Finance Analyst). trade-directory consumes it into the existing
+  // lines-only invoice-create path (InvoiceService.create).
+  INVOICE_EXTRACTION_VALIDATED = 'invoice_extraction_validated',
 
   REQUEST_KYC_REPORT = 'request_kyc_report',
   RECEIVE_KYC_REPORT = 'receive_kyc_report',
