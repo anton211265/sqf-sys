@@ -1,6 +1,9 @@
 import { AbstractEntity } from '@app/common/database/abstract.entity';
 import { DocumentClassEnum } from '@app/common/apps/document-management/enums/document-class.enum';
-import { DocumentStatusEnum } from '@app/common/apps/document-management/enums/document-status.enum';
+import {
+  DocumentStatusEnum,
+  ExtractionMethodEnum,
+} from '@app/common/apps/document-management/enums/document-status.enum';
 import {
   Column,
   CreateDateColumn,
@@ -65,6 +68,20 @@ export class StoredDocument extends AbstractEntity<StoredDocument> {
   // (onboarding text-layer check) — saves Phase 2 a reconversion.
   @Column({ type: 'text', nullable: true })
   rawText?: string;
+
+  // Structured fields extracted by Claude per the document class's
+  // extraction target (see modules/documents/extraction-targets.ts).
+  @Column({ type: 'jsonb', nullable: true })
+  extractedData?: Record<string, unknown>;
+
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  extractionMethod?: ExtractionMethodEnum;
+
+  @Column({ type: 'text', nullable: true })
+  extractionError?: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  extractedAt?: Date;
 
   @CreateDateColumn()
   createdAt: Date;

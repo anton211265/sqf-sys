@@ -9,8 +9,12 @@ export interface IVisionExtractionService {
    * Unlike dedicated OCR, this is a generative read of the page images, not a
    * deterministic pixel-to-character mapping — it carries no confidence score
    * and can misread fields (most riskily, numeric ones: amounts, account
-   * numbers, registration numbers). Callers MUST treat the result as requiring
-   * human review before it's trusted for downstream LLM field extraction.
+   * numbers, registration numbers). Per the 2026-07-19 redesign decision,
+   * vision-sourced invoices are gated by the deterministic arithmetic check
+   * (line math must reconcile to the stated total) rather than blanket human
+   * review — mismatches route to manual reconciliation. The legacy
+   * document-extraction pipeline's PENDING_REVIEW human gate still applies
+   * until that pipeline is torn down.
    *
    * @param file - the raw file bytes
    * @param mime - the file's mime type (application/pdf, image/png, image/jpeg)

@@ -9,8 +9,11 @@ import { DocumentEvent } from '../../models/document-event.entity';
 import { DocumentRepository } from '../../repositories/document.repository';
 import { DocumentEventRepository } from '../../repositories/document-event.repository';
 import { MarkitdownModule } from '../markitdown/markitdown.module';
+import { VisionExtractionModule } from '../vision-extraction/vision-extraction.module';
 import { DocumentsController } from './documents.controller';
 import { DocumentsService } from './documents.service';
+import { ClaudeExtractionService } from './claude-extraction.service';
+import { DocumentExtractionProcessor } from './document-extraction.processor';
 
 // Phase 1 of the document-management redesign (CLAUDE.md "Planned: Document
 // Management redesign") — storage core: immutable-object metadata, SHA-256
@@ -18,6 +21,7 @@ import { DocumentsService } from './documents.service';
 @Module({
   imports: [
     MarkitdownModule,
+    VisionExtractionModule,
     DatabaseModule,
     DatabaseModule.forFeature([StoredDocument, DocumentEvent]),
     ClientsModule.registerAsync([
@@ -60,6 +64,8 @@ import { DocumentsService } from './documents.service';
       inject: [ConfigService],
     },
     DocumentsService,
+    ClaudeExtractionService,
+    DocumentExtractionProcessor,
     DocumentRepository,
     DocumentEventRepository,
   ],
