@@ -105,6 +105,10 @@ services:
 
   backend-gateway:
     image: nginx:1.25.3-alpine
+    # nginx exits at startup if any upstream hostname is momentarily
+    # unresolvable (e.g. after a Docker VM restart) — self-heal until the
+    # service containers have network entries.
+    restart: unless-stopped
     ports:
       - '80:80'
     volumes:

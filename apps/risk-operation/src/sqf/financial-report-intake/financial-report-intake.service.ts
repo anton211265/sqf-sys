@@ -15,6 +15,7 @@ interface ExtractedFiscalYear {
   totalEquity?: number | null;
   ebitda?: number | null;
   interestExpense?: number | null;
+  totalAssets?: number | null;
 }
 
 // Ingests FINANCIAL_STATEMENTS extraction results from document-management
@@ -63,6 +64,8 @@ export class FinancialReportIntakeService {
         netProfit: this.num(year.netProfit),
         totalCurrentAssets: this.num(year.totalCurrentAssets),
         totalCurrentLiabilities: this.num(year.totalCurrentLiabilities),
+        inventory: this.num(year.inventory),
+        totalEquityAndLiabilities: this.num(year.totalAssets),
         accountReceivables: this.num(year.accountReceivables),
         totalDebt: this.num(year.totalDebt),
         totalEquity: this.num(year.totalEquity),

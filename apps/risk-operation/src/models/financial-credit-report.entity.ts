@@ -105,6 +105,11 @@ export class FinancialCreditReport extends AbstractEntity<FinancialCreditReport>
   @Column({ name: 'account_receivables', type: 'numeric', nullable: true })
   accountReceivables: string;
 
+  // Needed by the default risk profile's Quick Ratio sub-parameter
+  // ((current assets - inventory) / current liabilities).
+  @Column({ type: 'numeric', nullable: true })
+  inventory: string;
+
   @Column({ type: 'numeric', nullable: true })
   ebitda: string;
 

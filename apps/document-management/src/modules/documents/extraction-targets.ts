@@ -108,7 +108,8 @@ export const EXTRACTION_TARGETS: Partial<
     "totalDebt": number | null,
     "totalEquity": number | null,
     "ebitda": number | null,
-    "interestExpense": number | null
+    "interestExpense": number | null,
+    "totalAssets": number | null
   }]
 }`,
   },

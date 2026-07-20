@@ -87,35 +87,35 @@ export class FinancialCreditReportService {
 
       totalLoanReceivableRatio = addPrecisionDecimals(
         totalLoanReceivableRatio,
-        element['loanToReceivable'],
+        element['loanToReceivable'] ?? '0',
       );
       totalCurrentRatio = addPrecisionDecimals(
         totalCurrentRatio,
-        element['currentRatio'],
+        element['currentRatio'] ?? '0',
       );
       totalDebtToEquityRatio = addPrecisionDecimals(
         totalDebtToEquityRatio,
-        element['debtToEquity'],
+        element['debtToEquity'] ?? '0',
       );
       totalDebtToEbitdaRatio = addPrecisionDecimals(
         totalDebtToEbitdaRatio,
-        element['debtToEbitda'],
+        element['debtToEbitda'] ?? '0',
       );
       totalDebtToCapitalRatio = addPrecisionDecimals(
         totalDebtToCapitalRatio,
-        element['debtToCapital'],
+        element['debtToCapital'] ?? '0',
       );
       totalRcfToNetDebtRatio = addPrecisionDecimals(
         totalRcfToNetDebtRatio,
-        element['rcfToNetDebt'],
+        element['rcfToNetDebt'] ?? '0',
       );
       totalEbitdaToInterestExpenseRatio = addPrecisionDecimals(
         totalEbitdaToInterestExpenseRatio,
-        element['ebitdaToInterestExpense'],
+        element['ebitdaToInterestExpense'] ?? '0',
       );
       totalDebtServiceCoverageRatio = addPrecisionDecimals(
         totalDebtServiceCoverageRatio,
-        element['debtServiceCoverageRatio'],
+        element['debtServiceCoverageRatio'] ?? '0',
       );
     }
 
@@ -476,6 +476,70 @@ export class FinancialCreditReportService {
       leverage: leverageList,
       coverage: coverageList,
       financialCreditReport: financialCreditReportData,
+      defaultProfileMeasures: [
+        this.buildDefaultProfileMeasures(financialCreditReportData),
+      ],
+    };
+  }
+
+  // The default risk profile's 10 sub-parameters (see
+  // seed-default-risk-profile.ts and NewHorizons_DefaultRiskProfile_1),
+  // computed per the manual's formulas: point-in-time ratios from the LATEST
+  // fiscal year, trends across latest + prior year. Distinct from the
+  // averaged legacy sections above — rows arrive ordered reportYear DESC.
+  private buildDefaultProfileMeasures(rows: FinancialCreditReport[]) {
+    const latest = rows[0];
+    const prior = rows[1];
+
+    const n = (v: string | null | undefined): number | null => {
+      if (v === null || v === undefined || v === '') return null;
+      const parsed = Number(v);
+      return isNaN(parsed) ? null : parsed;
+    };
+    const ratio = (a: number | null, b: number | null): number | null =>
+      a === null || !b ? null : a / b;
+
+    const revenue = n(latest?.totalRevenue);
+    const netProfit = n(latest?.netProfit);
+    const tca = n(latest?.totalCurrentAssets);
+    const tcl = n(latest?.totalCurrentLiabilities);
+    const inventory = n(latest?.inventory);
+    const receivables = n(latest?.accountReceivables);
+    const debt = n(latest?.totalDebt);
+    const equity = n(latest?.totalEquity);
+    const ebitda = n(latest?.ebitda);
+    const interest = n(latest?.interestExpense);
+    const totalAssets = n(latest?.totalEquityAndLiabilities);
+    const priorRevenue = n(prior?.totalRevenue);
+    const priorNetProfit = n(prior?.netProfit);
+
+    const capital = debt !== null && equity !== null ? debt + equity : null;
+    const quickAssets =
+      tca !== null && inventory !== null ? tca - inventory : null;
+    const revenueGrowthRate =
+      revenue !== null && priorRevenue ? (revenue - priorRevenue) / priorRevenue : null;
+    const latestMargin = ratio(netProfit, revenue);
+    const priorMargin = ratio(priorNetProfit, priorRevenue);
+    const profitMarginTrend =
+      latestMargin !== null && priorMargin !== null
+        ? latestMargin - priorMargin
+        : null;
+
+    return {
+      currentRatio: ratio(tca, tcl),
+      quickRatio: ratio(quickAssets, tcl),
+      debtToEquityRatio: ratio(debt, equity),
+      gearingRatio: ratio(debt, capital),
+      interestCoverageRatio: ratio(ebitda, interest),
+      assetTurnoverRatio: ratio(revenue, totalAssets),
+      debtorDays:
+        receivables !== null && revenue ? (receivables / revenue) * 365 : null,
+      creditorDays: tcl !== null && revenue ? (tcl / revenue) * 365 : null,
+      // Percentages, matching the seed's thresholds (>= 0).
+      revenueGrowthRate:
+        revenueGrowthRate === null ? null : revenueGrowthRate * 100,
+      profitMarginTrend:
+        profitMarginTrend === null ? null : profitMarginTrend * 100,
     };
   }
 

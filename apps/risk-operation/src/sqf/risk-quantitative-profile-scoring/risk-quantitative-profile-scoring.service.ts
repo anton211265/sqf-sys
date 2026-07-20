@@ -308,7 +308,28 @@ export class RiskQuantitativeProfileScoringService {
       'Years of Operation': ['financialCreditReport', 'yearsOfOperation'],
       'Profitability': ['financialCreditReport', 'profitability'],
       'Loans/Accounts Receivable': ['assetManagement', 'loanReceivableRatio'],
-      'Current Ratio': ['liquidityMeasures', 'currentRatio'],
+      // ---- Default risk profile sub-parameters (seed-default-risk-profile /
+      // NewHorizons_DefaultRiskProfile_1) — names must match the seeded
+      // risk_quantitative_sub_parameter rows exactly. Sourced from the
+      // per-manual-formula section, not the averaged legacy sections.
+      'Current Ratio': ['defaultProfileMeasures', 'currentRatio'],
+      'Quick Ratio': ['defaultProfileMeasures', 'quickRatio'],
+      'Debt-to-Equity Ratio': ['defaultProfileMeasures', 'debtToEquityRatio'],
+      'Gearing Ratio': ['defaultProfileMeasures', 'gearingRatio'],
+      'Interest Coverage Ratio': [
+        'defaultProfileMeasures',
+        'interestCoverageRatio',
+      ],
+      'Asset Turnover Ratio': [
+        'defaultProfileMeasures',
+        'assetTurnoverRatio',
+      ],
+      'Debtor Days': ['defaultProfileMeasures', 'debtorDays'],
+      'Creditor Days': ['defaultProfileMeasures', 'creditorDays'],
+      'Revenue Growth Rate': ['defaultProfileMeasures', 'revenueGrowthRate'],
+      'Profit Margin Trend': ['defaultProfileMeasures', 'profitMarginTrend'],
+      // ---- Legacy Moody's-style sub-parameters (kept for any existing
+      // profiles that still reference these names).
       'Debt/Equity': ['leverage', 'debtToEquityRatio'],
       'Debt/EBITDA': ['leverage', 'debtToEbitdaRatio'],
       'Debt/Capital': ['leverage', 'debtToCapitalRatio'],
