@@ -654,9 +654,14 @@ Postgres/Kafka/MinIO/Claude before its commit.
 
 **Default risk profile scoring alignment (2026-07-20).** Two follow-on
 fixes after the rebuild, both E2E-verified via
-`apps/risk-operation/src/scripts/verify-default-profile-scoring.ts`
-(runs the DefaultRiskProfile manual's ABC Manufacturing worked example
-through the full pipeline):
+`apps/risk-operation/src/scripts/verify-default-profile-scoring.ts` —
+the standing regression guard for the whole scoring chain: it runs the
+DefaultRiskProfile manual's ABC Manufacturing worked example through
+the full pipeline, asserts all 10 sub-parameter verdicts, then computes
+the weighted total from the DEFAULT profile's stored weights (87.5
+under the seeded 30/25/15/15/15) and asserts it classifies LOW risk
+against the stored band ranges. Rerun it after any change to
+extraction targets, intake, the scoring lookup, weights, or bands:
 - The Filter 1 scoring engine previously could not resolve 9 of the 10
   seeded default-profile sub-parameters (its lookup only knew legacy
   Moody's-style names). `FinancialCreditReportService.findOne` now
