@@ -779,6 +779,39 @@ design input before real screens get built — the chassis below is
 infrastructure only (auth, routing skeleton, base components), not a
 green light to build domain screens without that spec in hand.
 
+### Dashboard visualization standard (agreed 2026-07-21)
+
+Tony's upcoming design includes many dashboards (line graphs, donut/pie
+charts, traffic-light indicators, interactive date ranges). Agreed
+tooling for all `apps/web-next` dashboards:
+
+- **Recharts via shadcn/ui's chart components** (`ChartContainer`,
+  `ChartTooltip`, etc.) is the single charting standard. Rationale:
+  native companion to the committed shadcn/Radix/Tailwind stack —
+  charts theme through CSS variables, so ui-ux-pro-max design tokens
+  apply automatically; `recharts` is already a dependency; the legacy
+  app's `@mantine/charts` wraps Recharts too, so it's one mental model
+  across both apps. Line = `LineChart`/`AreaChart`; donut/pie =
+  `PieChart` (+ `innerRadius`); interactivity = tooltips, legend
+  series-toggling, click events (e.g. donut slice → drill-down), and
+  `Brush` for in-chart range zoom.
+- **Date-range interaction is a data-layer concern, not a chart
+  feature**: a shadcn date-range picker outside the chart drives the
+  React Query fetch so the backend aggregates for the selected window;
+  `Brush` only supplements within the fetched window. Build every
+  dashboard this way.
+- **Traffic lights are NOT charts** — build one shared shadcn
+  badge/tile component using semantic design-system color tokens, with
+  a text label (never color alone, accessibility). Used for e.g. the
+  risk-band result (LOW/MEDIUM/HIGH) in tables, cards, and headers.
+- **One chart library only.** Recharts is SVG — fine at dashboard
+  scale; for genuinely huge series (only foreseeable candidate: the
+  SQFSYS system-traffic dashboard) the first answer is server-side
+  aggregation, and ECharts would be a per-screen escape hatch only if
+  that ever proves insufficient — do not adopt it preemptively.
+- Housekeeping at legacy cutover: drop `chart.js` +
+  `react-chartjs-2` from package.json; `web-next` uses Recharts only.
+
 ### `apps/web-next` chassis (built 2026-07-15)
 
 A working, empty-of-domain-content app proving the stack end-to-end:
