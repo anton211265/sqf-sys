@@ -178,11 +178,11 @@ Before processing any Kafka message, check `processedEventRepository.exists(even
 ### Kafka topic roles per service
 | Service | Publishes | Consumes |
 |---|---|---|
-| risk-operation | SEND_EMAIL | — |
-| trade-directory | RECEIVE_KYC_REPORT, SEND_EMAIL, ORGANIZATION_CREATED | REQUEST_KYC_REPORT |
+| risk-operation | SEND_EMAIL | DOCUMENT_EXTRACTED (FINANCIAL_STATEMENTS → financial_credit_report) |
+| trade-directory | RECEIVE_KYC_REPORT, SEND_EMAIL, ORGANIZATION_CREATED, DOCUMENT_VALIDATION_DATA | REQUEST_KYC_REPORT, DOCUMENT_EXTRACTED (COMPANY_REGISTRY → org snapshot reply), INVOICE_EXTRACTION_VALIDATED (→ InvoiceService.create) |
 | customer-relationship-management | — | CREATE_CLIENT_ASSIGNEE |
 | notification | — | SEND_EMAIL |
-| document-management | — | SQF_DOCUMENT_EXTRACTION |
+| document-management | DOCUMENT_EXTRACTED, INVOICE_EXTRACTION_VALIDATED | DOCUMENT_VALIDATION_DATA |
 | knowledge-graph | — | RELATIONSHIP_UPSERTED, CONTRACT_UPSERTED, INVOICE_STATUS_CHANGED |
 | risk-agent | — | APPLICATION_SUBMITTED_FOR_REVIEW, ORGANIZATION_CREATED |
 
@@ -434,7 +434,7 @@ All changes should be reviewed against:
 
 Open items not yet resolved:
 - No HTTPS/TLS configured (required before production)
-- 1 critical + 7 high npm vulns remain in `@hashgraph/sdk` transitive deps
+- ~~1 critical + 7 high npm vulns in `@hashgraph/sdk` transitive deps~~ — resolved 2026-07-20: `@hashgraph/sdk` removed entirely with the Hedera module in the document-management rebuild
 
 ---
 
@@ -503,7 +503,7 @@ SQF currently only runs in local dev (`docker compose` + Vite). Once local-dev b
 Expect this phase to cover (none of it exists yet):
 - AWS account/infra design for the 5 NestJS microservices + React/Vite frontend + Postgres (one DB per service) + Kafka — likely ECS/Fargate or EKS, RDS per service, MSK or a managed Kafka equivalent, S3 (already used for document storage), ALB/CloudFront for the frontend. All provisioned via Terraform.
 - CI/CD pipeline (GitHub Actions or equivalent) — build, test, deploy per service (including `terraform plan`/`apply` steps), since there's currently no `.github/workflows` and no automated pipeline at all.
-- Closing the open security items above before going live: real TLS/HTTPS, `httpOnly` cookies, secrets management (AWS Secrets Manager / Parameter Store instead of `.env` files), resolving the `@hashgraph/sdk` vulns.
+- Closing the open security items above before going live: real TLS/HTTPS, `httpOnly` cookies, secrets management (AWS Secrets Manager / Parameter Store instead of `.env` files). (The `@hashgraph/sdk` vulns were resolved by removing the dependency in the 2026-07-20 document-management rebuild.)
 - This also satisfies the Release Agent and Migration Agent roles described in [AGENT.md](AGENT.md) (`agents/deploy/`), which are currently specs only, not implemented — building real CI/CD is what gives those agents something to actually run.
 - **Per-Funder isolated provisioning, not a single shared prod stack (confirmed 2026-07-17).** Each Funder subscription gets its own bounded cloud environment/account with no shared network or DB — see "Planned: SQFSYS Admin Portal" below. This Terraform work needs to produce a repeatable per-Funder "stamp" (all services + DBs + Kafka provisioned fresh per Funder), not one shared production environment sized for many tenants. Cloud-account ownership model (Synlian-provisioned isolated account vs. Funder-supplied BYOC) is still open — settle before starting Terraform design.
 
@@ -586,17 +586,73 @@ A new [Marketing Agent](agents/growth/marketing-agent/AGENT.md) has been added t
 
 ---
 
-## Planned: Document Management redesign (design agreed 2026-07-19, build not started)
+## Document Management redesign (BUILT 2026-07-20; design agreed 2026-07-19)
 
-Tony has decided to **completely redesign the document-management
-microservice** — replace everything, preserve nothing of the current
-pipeline. Design source: `SQF ARCHITECTURE/Document Management
+The document-management microservice was **completely rebuilt** across
+seven phases (commits 0dbd024 → Phase 7), replacing the legacy pipeline
+entirely. Design source: `SQF ARCHITECTURE/Document Management
 Design.docx` (+ `SOFTWARE MANUALS/NewHorizons_DefaultRiskProfile_1.docx`
-for the extraction target). The "Document Conversion (Markitdown)"
-section below describes the **current** implementation and remains
-accurate until the rebuild lands.
+for the extraction target). Every phase was E2E-verified against real
+Postgres/Kafka/MinIO/Claude before its commit.
 
-**Scope, as designed:**
+**As built:**
+- **Code**: `apps/document-management/src/modules/documents/` (service,
+  controllers, extraction processor, Claude extraction,
+  cross-validation, invoice math gate, outbox relay) + `markitdown` and
+  `vision-extraction` as the only supporting modules. Tables:
+  `document`, `document_event` (append-only audit), `outbox_event`,
+  `processed_event` (migrations 001–005).
+- **Upload** (`POST /documents/upload`, JWT): per-class rules —
+  onboarding classes accept PDF/CSV/Excel only and reject image-only
+  files (no-text-layer PDFs rejected via Markitdown check); SHA-256
+  computed in-service; S3 put before the DB transaction; UPLOADED
+  audit event. Presigned 15-min URLs (`GET /documents/:uuid/url`),
+  each issuance audited.
+- **Extraction**: 30s cron claims UPLOADED docs
+  (optimistic UPLOADED→EXTRACTING), Markitdown conversion (CSV passes
+  through raw — markitdown's CSV table inference drops columns on
+  comma-less title rows), Claude field extraction per class
+  (`extraction-targets.ts`; financial statements target
+  `financial_credit_report` fields incl. latest + prior year), vision
+  fallback for invoices only.
+- **Kafka (outbox everywhere)**: publishes DOCUMENT_EXTRACTED
+  (risk-operation ingests financials incl. deterministically computed
+  ratio columns; trade-directory answers COMPANY_REGISTRY with a
+  DOCUMENT_VALIDATION_DATA snapshot) and INVOICE_EXTRACTION_VALIDATED
+  (trade-directory's InvoiceIntakeModule → existing lines-only
+  `InvoiceService.create`, issuer/debtor via the auto-create/dedup
+  flow).
+- **Cross-validation**: deterministic-first (normalized exact match in
+  code), Claude judges only fuzzy pairs; per-field
+  method/verdict/reasoning stored in `validationResult`. Discrepancies
+  → `GET /documents/discrepancies` + audited
+  `POST /:uuid/clear-discrepancies` (Risk Officer intent).
+- **Invoice math gate**: line qty×price = line total and Σlines + tax +
+  charges = stated payable (cent tolerance, fails closed). Pass →
+  invoice created in trade-directory with payable equal to the stated
+  total exactly (absolute tax spread as uniform per-line percent;
+  charges as tax-free lines). Fail → `GET /documents/invoice-mismatches`
+  queue + audited `POST /:uuid/reconcile` (corrected numbers must
+  themselves pass the gate). **No human review on the happy path.**
+- **Search**: `GET /documents/search` — metadata only (org, class,
+  status, date range, filename, refId), current + archived;
+  `POST /:uuid/archive` (metadata state, never deletes the S3 object).
+- **Local dev**: MinIO in docker-compose is the S3-compatible store
+  (`S3_ENDPOINT` env override; dev AWS creds were placeholders — real
+  S3 + Object Lock is a production/Terraform concern). Kafka has a
+  restart policy + 512M heap cap after repeated dev OOM exits.
+- **Teardown (Phase 6)**: DeepSeek + prompt templates, API-key auth,
+  webhook delivery, Hedera consensus messaging, their cron jobs,
+  entities, and tables all removed; `@hashgraph/sdk` dropped from
+  package.json (clearing the 1 critical + 7 high npm vulns). Legacy
+  `apps/web` Document Management screens now 404 — expected; screens
+  are rebuilt from the storyboard in `apps/web-next`.
+- **Held for later**: screens (storyboard pending), role enforcement
+  (Risk Officer / Finance Analyst intents documented at each endpoint,
+  enforced when Dynamic RBAC lands), production S3 Object
+  Lock/SSE-KMS/virus scan (Terraform phase).
+
+**Original scope, as designed:**
 1. **Onboarding document intake** — six document types (company
    registry, KYC credit report, bank statements, proof of address,
    director ID, P&L/balance sheet), required set determined by the
@@ -648,18 +704,13 @@ accurate until the rebuild lands.
   when/before-after status) covers reconciliation and future audit
   needs — one table, not per-feature audits.
 
-**Status: design agreed, implementation plan not yet signed off — do
-not start building until the plan is agreed with Tony.**
-
 ## Document Conversion (Markitdown)
 
 [Microsoft Markitdown](https://github.com/microsoft/markitdown) converts Word/Excel/PowerPoint documents to Markdown before LLM extraction. Markdown is far cheaper in tokens than raw OOXML-derived text and preserves structure (tables, headings) better than naive extraction.
 
-**Status: implemented in `document-management`. AWS Textract OCR has been fully removed** — Markitdown is now the only document-conversion path for every supported mime type (PDF, PNG, JPEG, DOCX, XLSX, PPTX). `initiateDocumentExtraction()` in [document-extraction.service.ts](apps/document-management/src/modules/document-extraction/document-extraction.service.ts) converts the file via [markitdown.service.ts](apps/document-management/src/modules/markitdown/markitdown.service.ts) synchronously on upload and writes the result straight into `rawText`, with status set directly to `PENDING_LLM_EXTRACTION`. The `ocr` module, `OCR_SERVICE`, `PENDING_OCR` status, `handlePendingOCRCron`, and the `@aws-sdk/client-textract` dependency are all gone.
+**Status: used by the rebuilt `documents` module** ([markitdown.service.ts](apps/document-management/src/modules/markitdown/markitdown.service.ts)) for PDF/DOCX/XLSX conversion. **CSV is deliberately NOT converted** — Markitdown's CSV table inference infers column count from the first row, so a comma-less title row silently drops every other column (found via E2E, 2026-07-19); CSVs are passed to Claude as raw text.
 
-**Vision-LLM fallback for documents with no text layer (implemented 2026-06-25):** Markitdown does **not** do OCR. Its image converter only reads EXIF metadata (no text extraction); its PDF converter (`pdfminer.six`) only extracts text from PDFs that already have an embedded/selectable text layer. For PDF/PNG/JPEG, if Markitdown's output is below `MIN_VIABLE_TEXT_LENGTH` (20 non-whitespace chars) in [document-extraction.service.ts](apps/document-management/src/modules/document-extraction/document-extraction.service.ts), the file is re-sent through [vision-extraction.service.ts](apps/document-management/src/modules/vision-extraction/vision-extraction.service.ts), which calls Claude (`@anthropic-ai/sdk`, PDF via the `pdfs-2024-09-25` beta, images via the standard `image` content block) to transcribe the page images to Markdown.
-
-**This is a generative transcription, not deterministic OCR — it has no confidence score and can misread fields, especially numeric ones (amounts, account numbers).** Per Tony's decision (2026-06-25), the result is therefore **not** trusted automatically: the row is set to a new `PENDING_REVIEW` status (added to `DocumentExtractionStatus`) instead of `PENDING_LLM_EXTRACTION`, and a human must call `POST /extraction/:requestId/approve` (or the future review UI) before the document proceeds to LLM field extraction. `extractionMethod` (`markitdown` | `vision_llm`) is stored on the row and returned in both the list and single-fetch API responses so reviewers can see which path produced the text. **Guardrails — the review workflow itself — are intentionally minimal for now** (a bare approve endpoint, no review UI, no confidence scoring, no audit trail beyond the status change) and are expected to be built out later, consistent with the [AGENT.md](AGENT.md) confidence framework's "below threshold → human review" principle.
+**Vision-LLM fallback for documents with no text layer:** Markitdown does **not** do OCR — its PDF converter (`pdfminer.six`) only extracts embedded text layers, and its image converter reads only EXIF. When Markitdown output is under `MIN_VIABLE_TEXT_LENGTH` (20 non-whitespace chars): **onboarding document classes reject the upload outright** (scanned files not supported for onboarding, per design), while **invoices** fall back to [vision-extraction.service.ts](apps/document-management/src/modules/vision-extraction/vision-extraction.service.ts) — Claude transcribes the page images to Markdown (`pdfs-2024-09-25` beta for PDFs, standard `image` blocks otherwise). Vision transcription is generative, not deterministic OCR; per the 2026-07-19 decision it is gated by the deterministic invoice arithmetic check rather than blanket human review — a misread number that breaks the math lands the invoice in the Finance Analyst reconciliation queue.
 
 Requires `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` env vars (same convention as `apps/risk-agent`).
 

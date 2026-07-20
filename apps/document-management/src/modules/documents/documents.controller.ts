@@ -27,6 +27,7 @@ import { ErrorMessage } from '@app/common/apps/common/enum/error-messages.enum';
 import { DocumentsService } from './documents.service';
 import { UploadDocumentDto } from './dto/request/upload-document.dto';
 import { ListDocumentsDto } from './dto/request/list-documents.dto';
+import { SearchDocumentsDto } from './dto/request/search-documents.dto';
 import {
   DocumentResponseDto,
   PresignedUrlResponseDto,
@@ -74,6 +75,22 @@ export class DocumentsController implements OnModuleInit {
   }
 
   // Declared before ':documentUuid' so the literal path wins route matching.
+  @Get('search')
+  async search(
+    @CurrentUser() user: IUserContext,
+    @Query() searchDocumentsDto: SearchDocumentsDto,
+  ): Promise<DocumentResponseDto[]> {
+    return this.documentsService.search(user, searchDocumentsDto);
+  }
+
+  @Post(':documentUuid/archive')
+  async archive(
+    @CurrentUser() user: IUserContext,
+    @Param('documentUuid', ParseUUIDPipe) documentUuid: string,
+  ): Promise<DocumentResponseDto> {
+    return this.documentsService.archive(user, documentUuid);
+  }
+
   @Get('invoice-mismatches')
   async listInvoiceMismatches(
     @CurrentUser() user: IUserContext,

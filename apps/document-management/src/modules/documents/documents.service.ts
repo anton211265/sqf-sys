@@ -40,6 +40,7 @@ import {
 } from '../markitdown/markitdown.interface';
 import { UploadDocumentDto } from './dto/request/upload-document.dto';
 import { ListDocumentsDto } from './dto/request/list-documents.dto';
+import { SearchDocumentsDto } from './dto/request/search-documents.dto';
 import {
   DocumentResponseDto,
   PresignedUrlResponseDto,
@@ -383,6 +384,93 @@ export class DocumentsService {
     });
 
     document.status = DocumentStatusEnum.VALIDATED;
+    return DocumentResponseDto.fromEntity(document);
+  }
+
+  // Metadata search over current + archived documents (company, class,
+  // status, upload-date range, filename, refId). Deliberately not full-text
+  // content search (design decision 2026-07-19).
+  async search(
+    user: IUserContext,
+    query: SearchDocumentsDto,
+  ): Promise<DocumentResponseDto[]> {
+    const qb = this.entityManager
+      .getRepository(StoredDocument)
+      .createQueryBuilder('document')
+      .where(
+        '(document.subjectOrganizationId = :orgId OR document.uploaderOrgId = :orgId)',
+        { orgId: user.orgId },
+      )
+      .orderBy('document.createdAt', 'DESC')
+      .take(200);
+
+    if (query.subjectOrganizationId !== undefined) {
+      qb.andWhere('document.subjectOrganizationId = :subjectOrgId', {
+        subjectOrgId: query.subjectOrganizationId,
+      });
+    }
+    if (query.documentClass) {
+      qb.andWhere('document.documentClass = :documentClass', {
+        documentClass: query.documentClass,
+      });
+    }
+    if (query.status) {
+      qb.andWhere('document.status = :status', { status: query.status });
+    }
+    if (query.uploadedFrom) {
+      qb.andWhere('document.createdAt >= :uploadedFrom', {
+        uploadedFrom: query.uploadedFrom,
+      });
+    }
+    if (query.uploadedTo) {
+      qb.andWhere('document.createdAt <= :uploadedTo', {
+        uploadedTo: query.uploadedTo,
+      });
+    }
+    if (query.fileName) {
+      qb.andWhere('document.fileName ILIKE :fileName', {
+        fileName: `%${query.fileName}%`,
+      });
+    }
+    if (query.refId) {
+      qb.andWhere('document.refId = :refId', { refId: query.refId });
+    }
+
+    const documents = await qb.getMany();
+    return documents.map(DocumentResponseDto.fromEntity);
+  }
+
+  // Archives a document (it stays stored, hashed, and searchable — archived
+  // is a metadata state, not a deletion; S3 objects are never removed).
+  async archive(
+    user: IUserContext,
+    documentUuid: string,
+  ): Promise<DocumentResponseDto> {
+    const document = await this.findVisibleDocument(user, documentUuid);
+    if (document.status === DocumentStatusEnum.ARCHIVED) {
+      return DocumentResponseDto.fromEntity(document);
+    }
+    const beforeStatus = document.status;
+
+    await this.entityManager.transaction(async (manager) => {
+      await manager.update(
+        StoredDocument,
+        { id: document.id },
+        { status: DocumentStatusEnum.ARCHIVED },
+      );
+      await this.documentEventRepository.record(
+        {
+          documentId: document.id,
+          eventType: DocumentEventTypeEnum.ARCHIVED,
+          actorPersonId: user.id,
+          beforeStatus,
+          afterStatus: DocumentStatusEnum.ARCHIVED,
+        },
+        manager,
+      );
+    });
+
+    document.status = DocumentStatusEnum.ARCHIVED;
     return DocumentResponseDto.fromEntity(document);
   }
 
