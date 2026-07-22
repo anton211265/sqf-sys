@@ -4,11 +4,22 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
   OneToMany,
+  Unique,
 } from 'typeorm';
+import { Organization } from './organization.entity';
 import { OrganizationPersonRole } from './organization-person-role.entity';
+import { RolePermission } from './role-permission.entity';
 
+/**
+ * Dynamic role container (Dynamic RBAC, 2026-07-22): created/renamed/deleted
+ * at runtime by each Funder's Super Admin. Tenant-scoped via organizationId.
+ * isImmutable marks the per-org Super Admin role — it can never be renamed,
+ * deleted, or stripped of its members' last holder (RbacService guards).
+ */
 @Entity()
+@Unique(['organization', 'name'])
 export class OrganizationRole {
   // ------------------------------------- SQF AI -------------------------------------
 
@@ -18,7 +29,13 @@ export class OrganizationRole {
     () => OrganizationPersonRole,
     (organizationPersonRole) => organizationPersonRole.role,
   )
-  organizationPersonRoles: OrganizationPersonRole[]; // Inverse relationship
+  organizationPersonRoles: OrganizationPersonRole[]; // Inverse relationship (legacy enum path)
+
+  @ManyToOne(() => Organization, { onDelete: 'CASCADE' })
+  organization: Organization;
+
+  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role)
+  rolePermissions?: RolePermission[];
 
   // ------------------ Relationship ------------------
 
@@ -30,6 +47,9 @@ export class OrganizationRole {
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   description?: string;
+
+  @Column({ default: false })
+  isImmutable: boolean;
 
   @CreateDateColumn({
     type: 'timestamp without time zone',

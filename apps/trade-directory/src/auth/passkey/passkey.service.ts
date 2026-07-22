@@ -35,6 +35,7 @@ import {
   WebauthnCredentialRepository,
 } from '../../repositories';
 import { AuthAuditLogRepository } from '../../repositories/auth-audit-log.repository';
+import { RbacService } from '../../rbac/rbac.service';
 import { AuthService } from '../auth.service';
 import { TtlMap } from './ttl-map';
 
@@ -77,6 +78,7 @@ export class PasskeyService {
     private readonly enrollmentTokenRepository: EnrollmentTokenRepository,
     private readonly auditLogRepository: AuthAuditLogRepository,
     private readonly authService: AuthService,
+    private readonly rbacService: RbacService,
   ) {
     // localhost is a WebAuthn-secure context, so dev needs no TLS; production
     // must set WEBAUTHN_RP_ID to the real domain (requires HTTPS).
@@ -549,10 +551,10 @@ export class PasskeyService {
 
   /**
    * Issues a one-time enrollment link for a person's first passkey.
-   * Authorization: SQFSYS platform accounts, or a SUPERUSER of the caller's
-   * org for members of that same org.
-   * NOTE: intended role once Dynamic RBAC lands is Super Admin; per the
-   * standing RBAC rule this is a direct check, not a new CASL rule.
+   * Authorization: SQFSYS platform accounts, the Dynamic RBAC
+   * 'admin_enrollment_tokens_issue' permission (Super Admin holds it
+   * implicitly), or the legacy enum SUPERUSER role during the CASL→RBAC
+   * transition.
    */
   async issueEnrollmentToken(
     requesterPersonId: number,
@@ -568,6 +570,13 @@ export class PasskeyService {
 
     let authorized = requester.systemRole === 'SQFSYS';
     if (!authorized) {
+      authorized = await this.rbacService.hasPermission(
+        requesterPersonId,
+        requesterOrgId,
+        'admin_enrollment_tokens_issue',
+      );
+    }
+    if (!authorized) {
       const membership = await this.organizationPersonRepository.findOne({
         where: {
           person: { id: requesterPersonId },
@@ -581,7 +590,7 @@ export class PasskeyService {
     }
     if (!authorized) {
       throw new ForbiddenException(
-        'Only SQFSYS or a SUPERUSER can issue enrollment links',
+        'Only SQFSYS, a Super Admin, or a SUPERUSER can issue enrollment links',
       );
     }
 

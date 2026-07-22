@@ -893,94 +893,98 @@ wholesale, not migrated screen-by-screen. Keep it running and
 functional for reference and local dev until cutover, but treat any
 further work on it as maintenance, not investment.
 
-## Planned: Dynamic RBAC, Multi-Tenancy and Role-Based Dashboard
+## Dynamic RBAC (backend BUILT 2026-07-22) and Planned Role-Based Dashboard
 
-### Current state — permissions
-Permissions are hardcoded in
-libs/common/src/modules/casl/casl-ability.factory.ts.
-Roles and what they can do are written by a developer and require a
-code change and redeployment to update. Several roles exist in
-OrganizationPersonRoleEnum but have no CASL rules yet:
-- RISK_OFFICER (no rules)
-- CLIENT / borrower (no rules)
-- SQFSYS (no rules)
+### Dynamic RBAC — as built
 
-### Requirement — dynamic RBAC
-The system will support multiple tenants. Each tenant (Funder
-organisation) must be able to configure their own permission sets
-through a Super Admin portal without requiring a code change or
-redeployment.
+Backend + APIs shipped 2026-07-22 from Tony's "Dynanic RBAC.pdf" spec, with
+scope agreed before building: **fluid runtime roles** (created/renamed/deleted
+via UI at runtime — this SUPERSEDES the earlier "Option B / global role names
+only" ruling), grafted onto the existing identity tables (no parallel `users`
+table), backend-only for now (the three Funder Administration Portal screens —
+Role Builder, User Directory, Audit Ledger — await Tony's frontend design),
+enforcement phase 1 = trade-directory + manifest.
 
-**Note on "multiple tenants" here (2026-07-17):** in production each
-Funder runs in its own isolated deployment (see "Planned: SQFSYS
-Admin Portal" and the deployment-isolation note under Multi-Tenancy &
-Data Governance) — this Super Admin portal and its `role_permission`
-table are a **per-deployment** feature each Funder's own Super Admin
-configures for their own instance, not a shared screen across Funders.
-`funderPersonaId` scoping stays in the design below because it's
-already the implemented tenant-scoping mechanism and remains useful
-within a single Funder's deployment (and for today's shared dev/test
-environment, where multiple orgs coexist) — but it is not the
-production isolation boundary. Build against the design below as
-written; the deployment-model reconciliation is a documentation flag,
-not a blocker for this work.
+**Core rule: code checks permission KEYS, never roles.** Guard endpoints with
+`@UseGuards(PermissionGuard)` + `@RequirePermission('domain_action_subaction')`
+(`apps/trade-directory/src/rbac/permission.guard.ts`); the frontend reads
+`GET /api/rbac/manifest` (identity + permission keys + categories) — no
+hardcoded role checks anywhere.
 
-A Super Admin will access a dedicated admin portal and perform
-three functions:
-1. User management — create internal staff accounts, set credentials,
-   assign users to the organisation
-2. Role management — define roles and configure exactly what each
-   role can do (which actions on which resources with which conditions)
-3. Role assignment — assign one or more roles to a user
+- **Tables** (migration `1784700000000-DynamicRbac.ts`): `organization_role`
+  extended in place (`organizationId` FK = tenant scope, `isImmutable`, unique
+  org+name — the previously-empty table CLAUDE.md earmarked for this);
+  `permission` (code-owned dictionary, 40 keys across 9 categories seeded by
+  the migration — never rename a key in place, add + migrate);
+  `role_permission`, `person_role` (junctions, cascade deletes);
+  `rbac_audit_log` (append-only, jsonb `metadataPayload` with
+  historical_state/transformed_state snapshots, written **in the same
+  transaction** as the change — deliberately not async, and the "Last Admin" /
+  session-kill corrections from the spec review apply).
+- **Bypass rules**: SQFSYS accounts and holders of an immutable role (the
+  per-org "Super Admin" role) hold every key implicitly — the immutable role
+  needs no role_permission upkeep as the dictionary grows.
+- **Safeguards** (all E2E-tested): immutable role cannot be renamed/deleted/
+  permission-edited (attempt → 403 + `TAMPER_ATTEMPT` audit row); the last
+  holder of an immutable role cannot be unassigned (400); org isolation —
+  roles resolve only within the caller's JWT orgId.
+- **APIs** (`/trade-directory/api/rbac/…`): `manifest` (any authenticated
+  user); `permissions` (grouped dictionary); `roles` CRUD +
+  `PUT roles/:id/permissions` (whole-set replace, Role Builder save);
+  `users` + `POST/DELETE users/:personId/roles[…]`; `audit` (org-scoped,
+  paginated); `POST users/:personId/revoke-sessions` (kill switch = revokes
+  all refresh-token rows; access tokens die ≤15min). Admin endpoints require
+  the `admin_*` keys.
+- **Permission changes are effectively immediate**: permissions resolve live
+  per request behind a 30s in-process cache that's cleared on every RBAC
+  write (single-instance dev; multi-instance production would move the bust
+  to a Redis broadcast — Terraform phase, same story as the passkey TTL maps).
+- **Bootstrap**: SystemSetup initialize now also creates the Funder org's
+  immutable Super Admin role and assigns the first Super Admin (everything
+  else still starts empty per the narrow-initialization ruling).
+  `apps/trade-directory/src/scripts/backfill-super-admin-roles.ts` converts
+  legacy enum SUPERUSER holders (idempotent; run 2026-07-22 for the dev DB,
+  plus a manual grant of org-2 Super Admin to `admin@sqf.local`, which holds
+  no legacy enum role). Passkey enrollment-token issuance now also accepts
+  `admin_enrollment_tokens_issue` holders.
+- **E2E regression guard:** `node apps/trade-directory/src/scripts/e2e-rbac.mjs`
+  (host, Node ≥22) — 45 checks: backfill path, manifest, guard deny/allow
+  flips on live permission edits, role lifecycle, immutable/last-admin
+  safeguards, tenant isolation across two orgs, session revocation, audit
+  snapshot assertions. Shares `scripts/lib/soft-authenticator.mjs` with
+  e2e-passkey.mjs (both must stay green).
+- **Gotcha that cost a debugging round:** the global
+  `ValidationPipe({ whitelist: true })` STRIPS any DTO property that has no
+  class-validator decorator — an undecorated `roleId` arrived as `undefined`,
+  and TypeORM drops undefined criteria, matching an arbitrary row. Every DTO
+  property needs a decorator, and repository lookups by client-supplied ids
+  should reject non-integers (see `getOwnOrgRole`).
 
-### Role design decision
-Use global role names with tenant-specific permissions (Option B).
-Every tenant shares the same role names (RISK_OFFICER, CLIENT_COVERAGE
-etc.) defined in OrganizationPersonRoleEnum, but each tenant's Super
-Admin configures what those roles can do independently. Do NOT build
-fully custom role names per tenant at this stage — that can be added
-later when genuinely needed.
+**Not done yet (deliberate):** the three portal screens (await Tony's
+frontend design; build in web-next); rolling `@RequirePermission` onto
+existing feature endpoints (they keep JwtAuthGuard + funderPersonaId scoping
+until their screens go manifest-driven — do the swap per-domain, not
+big-bang); retiring CASL + the enum `organization_person_role` path (legacy,
+untouched); cross-service enforcement (each service adopts the guard when its
+domain is built); production INSERT-only DB grant for rbac_audit_log
+(Terraform phase). Row-level rules ("RM sees only own applications") stay
+code-side by design — flat keys gate features, funderPersonaId +
+ownership filters gate rows.
 
-### Database changes required (future sprint)
-A new role_permission table is needed:
-
-role_permission
-──────────────────────────────────────────
-id               PK
-funderPersonaId  int     (tenant scope — each tenant owns their rules)
-roleName         varchar (e.g. RISK_OFFICER)
-action           varchar (create/read/update/delete/manage)
-subject          varchar (Application/ClientAssignee/all)
-conditions       jsonb?  (e.g. { "assigneePersonId": "{{userId}}" })
-createdAt / updatedAt
-
-Every write to role_permission and organization_person_role must be
-timestamped and attributed to the Super Admin who made the change
-(audit log — Bank Negara compliance requirement).
-
-### CaslAbilityFactory update required
-CaslAbilityFactory must be updated to load rules from the
-role_permission table at runtime, scoped to the current user's
-funderPersonaId, instead of reading from hardcoded if/else blocks.
-
-### Current tables that already support this design
-These tables exist in trade-directory and will be driven by the
-new admin portal UI:
-- organization_role — role definitions per org
-- organization_person_role — user-to-role assignments
-- organization_person — user membership per org
+**Note on "multiple tenants" (2026-07-17 ruling, still applies):** in
+production each Funder runs in its own isolated deployment — this portal and
+these tables are a **per-deployment** feature. Org scoping via the role's
+organizationId is defense-in-depth within a deployment (and what makes the
+shared dev DB safe), not the production isolation boundary.
 
 ### Impact on current development
-- Token/auth refactor (Stages 1-5 in CLAUDE.md): not affected,
-  proceed as planned
-- Payment microservice: when adding permission checks, use a
-  stub/placeholder that reads from the future role_permission table
-  rather than adding new hardcoded CASL rules
-- New screens and endpoints: add a comment documenting which role
-  should have access, but do NOT implement as hardcoded CASL rules
+- New screens and endpoints: guard with `@RequirePermission(<key>)` — never
+  hardcoded role checks, never new CASL rules
+- Payment microservice: use `@RequirePermission('finance_payments_view'/'…_approve')`
+  (already in the dictionary as placeholders)
 - Do NOT add new hardcoded rules to casl-ability.factory.ts
-- Do NOT add new roles to OrganizationPersonRoleEnum without a
-  corresponding database-driven permissions design
+- Do NOT add new roles to OrganizationPersonRoleEnum — dynamic roles replace it;
+  the enum stays only for the legacy CASL path until retirement
 
 ---
 
@@ -991,6 +995,9 @@ must never appear — if a user cannot access something it simply
 does not appear in their navigation at all.
 
 ### Permissions manifest
+**Backend half exists (2026-07-22):** `GET /trade-directory/api/rbac/manifest`
+returns identity + permission keys + categories. The navigation-structure and
+work-queue parts below are still to be designed with the dashboard.
 After login the frontend calls a single backend endpoint that
 returns a permissions manifest for that user. The frontend renders
 the dashboard from this manifest — no hardcoded role checks in
@@ -1068,8 +1075,9 @@ table — design this before implementing if needed.
 ### Dashboard implementation notes for Claude Code
 When building the dashboard:
 - Design information architecture before writing any code
-- The permissions manifest endpoint must be built in trade-directory
-  alongside the dynamic RBAC work — not as a hardcoded role map
+- The permissions manifest endpoint exists (`/api/rbac/manifest`); extend it
+  with the navigation/work-queue structure once the layout is agreed — never
+  a hardcoded role map
 - Each new microservice (payment, compliance) must register its
   resources in the permissions framework from day one
 - The dashboard layout decision (sidebar vs top nav vs domain cards)

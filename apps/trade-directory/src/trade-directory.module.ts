@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { z } from 'zod';
 import { AuthModule } from './auth/auth.module';
+import { RbacModule } from './rbac/rbac.module';
 import { KycAgencyModule } from './kyc-agency/kyc-agency.module';
 import {
   ClientPersona,
@@ -53,6 +54,7 @@ import { PersonaSubscribersModule } from './models/subscribers/persona-subscribe
     CaslModule,
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     AuthModule,
+    RbacModule,
     DatabaseModule,
     DatabaseModule.forFeature([
       Person,

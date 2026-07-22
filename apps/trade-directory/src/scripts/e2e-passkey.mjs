@@ -12,12 +12,8 @@
 // Requires Node >= 22 (global fetch + WebSocket).
 
 import { execSync } from 'node:child_process';
-import {
-  createHash,
-  createSign,
-  generateKeyPairSync,
-  randomBytes,
-} from 'node:crypto';
+import { randomBytes } from 'node:crypto';
+import { SoftAuthenticator, b64u, sha256 } from './lib/soft-authenticator.mjs';
 
 const BASE = 'http://localhost/trade-directory';
 const ORIGIN = 'http://localhost:3001';
@@ -25,8 +21,6 @@ const RP_ID = 'localhost';
 const TEST_EMAIL = 'e2e-passkey@test.local';
 const ORG_ID = 2; // Synlian — existing dev org
 
-const b64u = (buf) => Buffer.from(buf).toString('base64url');
-const sha256 = (data) => createHash('sha256').update(data).digest();
 
 let passed = 0;
 let failed = 0;
@@ -47,145 +41,6 @@ const psql = (sql) =>
     )}`,
     { cwd: process.cwd(), encoding: 'utf8' },
   ).trim();
-
-// ---------------------------------------------------------------------
-// Minimal CBOR encoder — only the shapes WebAuthn needs
-// ---------------------------------------------------------------------
-function cborUint(n) {
-  if (n < 24) return Buffer.from([n]);
-  if (n < 256) return Buffer.from([0x18, n]);
-  throw new Error('uint too large for this encoder');
-}
-function cborInt(n) {
-  if (n >= 0) return cborUint(n);
-  const m = -1 - n;
-  if (m < 24) return Buffer.from([0x20 | m]);
-  throw new Error('negative int too small for this encoder');
-}
-function cborBytes(buf) {
-  const header =
-    buf.length < 24
-      ? Buffer.from([0x40 | buf.length])
-      : buf.length < 256
-        ? Buffer.from([0x58, buf.length])
-        : Buffer.from([0x59, buf.length >> 8, buf.length & 0xff]);
-  return Buffer.concat([header, buf]);
-}
-function cborText(str) {
-  const bytes = Buffer.from(str, 'utf8');
-  const header =
-    bytes.length < 24
-      ? Buffer.from([0x60 | bytes.length])
-      : Buffer.from([0x78, bytes.length]);
-  return Buffer.concat([header, bytes]);
-}
-function cborMap(entries) {
-  // entries: array of [encodedKey, encodedValue]
-  return Buffer.concat([
-    Buffer.from([0xa0 | entries.length]),
-    ...entries.flat(),
-  ]);
-}
-
-// ---------------------------------------------------------------------
-// Software authenticator
-// ---------------------------------------------------------------------
-class SoftAuthenticator {
-  constructor() {
-    const { publicKey, privateKey } = generateKeyPairSync('ec', {
-      namedCurve: 'P-256',
-    });
-    this.privateKey = privateKey;
-    const jwk = publicKey.export({ format: 'jwk' });
-    this.x = Buffer.from(jwk.x, 'base64url');
-    this.y = Buffer.from(jwk.y, 'base64url');
-    this.credentialId = randomBytes(32);
-    this.counter = 0;
-  }
-
-  coseKey() {
-    // EC2, ES256, P-256
-    return cborMap([
-      [cborInt(1), cborInt(2)],
-      [cborInt(3), cborInt(-7)],
-      [cborInt(-1), cborInt(1)],
-      [cborInt(-2), cborBytes(this.x)],
-      [cborInt(-3), cborBytes(this.y)],
-    ]);
-  }
-
-  makeRegistrationResponse(challenge) {
-    const clientDataJSON = Buffer.from(
-      JSON.stringify({
-        type: 'webauthn.create',
-        challenge,
-        origin: ORIGIN,
-        crossOrigin: false,
-      }),
-    );
-    const flags = 0x45; // UP | UV | AT
-    const authData = Buffer.concat([
-      sha256(RP_ID),
-      Buffer.from([flags]),
-      Buffer.alloc(4), // sign count 0
-      Buffer.alloc(16), // AAGUID
-      Buffer.from([this.credentialId.length >> 8, this.credentialId.length & 0xff]),
-      this.credentialId,
-      this.coseKey(),
-    ]);
-    const attestationObject = cborMap([
-      [cborText('fmt'), cborText('none')],
-      [cborText('attStmt'), cborMap([])],
-      [cborText('authData'), cborBytes(authData)],
-    ]);
-    return {
-      id: b64u(this.credentialId),
-      rawId: b64u(this.credentialId),
-      type: 'public-key',
-      clientExtensionResults: {},
-      response: {
-        clientDataJSON: b64u(clientDataJSON),
-        attestationObject: b64u(attestationObject),
-        transports: ['internal'],
-      },
-    };
-  }
-
-  makeAssertionResponse(challenge, counterOverride = null) {
-    this.counter = counterOverride ?? this.counter + 1;
-    const clientDataJSON = Buffer.from(
-      JSON.stringify({
-        type: 'webauthn.get',
-        challenge,
-        origin: ORIGIN,
-        crossOrigin: false,
-      }),
-    );
-    const flags = 0x05; // UP | UV
-    const counterBuf = Buffer.alloc(4);
-    counterBuf.writeUInt32BE(this.counter);
-    const authenticatorData = Buffer.concat([
-      sha256(RP_ID),
-      Buffer.from([flags]),
-      counterBuf,
-    ]);
-    const signer = createSign('sha256');
-    signer.update(Buffer.concat([authenticatorData, sha256(clientDataJSON)]));
-    const signature = signer.sign(this.privateKey); // DER, as WebAuthn expects
-    return {
-      id: b64u(this.credentialId),
-      rawId: b64u(this.credentialId),
-      type: 'public-key',
-      clientExtensionResults: {},
-      response: {
-        clientDataJSON: b64u(clientDataJSON),
-        authenticatorData: b64u(authenticatorData),
-        signature: b64u(signature),
-        userHandle: null,
-      },
-    };
-  }
-}
 
 // ---------------------------------------------------------------------
 // HTTP helpers

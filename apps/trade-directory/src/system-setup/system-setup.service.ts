@@ -8,6 +8,7 @@ import {
 import { createHash, randomBytes } from 'crypto';
 import { EntityManager } from 'typeorm';
 import { PasskeyService } from '../auth/passkey/passkey.service';
+import { RbacService } from '../rbac/rbac.service';
 import {
   EnrollmentToken,
   FunderPersona,
@@ -34,6 +35,7 @@ export class SystemSetupService {
     private readonly personRepository: PersonRepository,
     private readonly organizationPersonRepository: OrganizationPersonRepository,
     private readonly passkeyService: PasskeyService,
+    private readonly rbacService: RbacService,
     private readonly entityManager: EntityManager,
   ) {}
 
@@ -109,6 +111,17 @@ export class SystemSetupService {
         organizationPersonRoles: [orgPersonRole],
       });
       await manager.save(OrganizationPerson, orgPerson);
+
+      // 4b — Dynamic RBAC: create the org's immutable Super Admin role and
+      // assign it (holders carry every permission implicitly; the rest of
+      // the RBAC config is the Super Admin's own job, per the narrow
+      // initialization-scope ruling).
+      await this.rbacService.ensureSuperAdminRole(
+        manager,
+        funderOrg.id,
+        savedAdmin.id,
+        callerId,
+      );
 
       // 5 — Issue the Super Admin's one-time passkey enrollment token
       const rawToken = randomBytes(48).toString('base64url');

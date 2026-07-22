@@ -18,3 +18,8 @@ export * from './lending-product-subscription.repository';
 export * from './party.repository';
 export * from './webauthn-credential.repository';
 export * from './enrollment-token.repository';
+export * from './organization-role.repository';
+export * from './permission.repository';
+export * from './role-permission.repository';
+export * from './person-role.repository';
+export * from './rbac-audit-log.repository';

@@ -28,3 +28,7 @@ export * from './invoice-additional-document-reference.entity';
 export * from './invoice-payment-means.entity';
 export * from './invoice-tax-subtotal.entity';
 export * from './invoice-allowance-charge.entity';
+export * from './permission.entity';
+export * from './role-permission.entity';
+export * from './person-role.entity';
+export * from './rbac-audit-log.entity';
