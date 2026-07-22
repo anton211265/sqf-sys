@@ -9,6 +9,8 @@ import { setData } from 'redux/user';
 import axiosClient, { getAccessToken, setAccessToken } from 'api/axiosClient';
 import { AUTH, HOME } from 'constants/routes';
 import Login from 'screens/Auth/Login';
+import Enroll from 'screens/Auth/Enroll';
+import MobileAuth from 'screens/Auth/MobileAuth';
 import Home from 'screens/Home/Home';
 
 const client = new QueryClient();
@@ -59,6 +61,15 @@ function Pages() {
   return (
     <Routes>
       <Route path={AUTH.LOGIN} element={<Login />} />
+      <Route path={AUTH.ENROLL} element={<Enroll />} />
+      <Route
+        path={AUTH.MOBILE_AUTH}
+        element={
+          <PrivateRoute>
+            <MobileAuth />
+          </PrivateRoute>
+        }
+      />
       <Route
         path={HOME}
         element={

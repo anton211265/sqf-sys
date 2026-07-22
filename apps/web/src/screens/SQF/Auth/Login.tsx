@@ -1,15 +1,16 @@
-import { IconMeteor } from '@tabler/icons-react';
+import { IconFingerprint, IconMeteor, IconQrcode } from '@tabler/icons-react';
 import ActionCard from 'components/SQF/BaseComponents/ActionCard';
 import LoginHero from 'components/SQF/BaseComponents/LoginHero';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import TextInput from 'components/TextBox/TextBox';
+import { QRCodeSVG } from 'qrcode.react';
 import {
   Button,
   Checkbox,
   MantineProvider,
-  PasswordInput,
   Select,
   Stepper,
+  Text,
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { ADMIN, CLIENT_DASHBOARD, CLIENTONBOARDING, SUPER_ADMIN, SYSTEM } from 'constants/routes';
@@ -18,13 +19,25 @@ import { useForm } from '@mantine/form';
 import useGetOrgsByEmail from 'hooks/useGetOrgsByEmail';
 import { notifications } from '@mantine/notifications';
 import { IGetOrgsByEmailResponse } from 'service/getOrgsByEmail';
-import useLogin from 'hooks/useLogin';
 import { useLocalStorage } from '@mantine/hooks';
 import useGetLogInPersonDetail from 'hooks/useGetLogInPersonDetail';
 import { useDispatch } from 'react-redux';
 import { setData } from '../../../redux/user';
 import { getAccessToken } from '../../../api/axiosClient';
+import {
+  IQrSession,
+  isUnsupportedError,
+  openQrSocket,
+  passkeyLogin,
+  qrComplete,
+  qrInitiate,
+} from 'service/passkey';
 
+/**
+ * Login is passkey-only since password removal (2026-07-22): email -> org
+ * selection -> WebAuthn prompt, with a QR relay fallback (approve from an
+ * already signed-in phone) for machines without a usable authenticator.
+ */
 const Login: FC = () => {
   const [savedEmail, setSavedEmail] = useLocalStorage({
     key: 'rememberedEmail',
@@ -34,14 +47,16 @@ const Login: FC = () => {
   const [active, setActive] = useState(0);
   const orgsMutation = useGetOrgsByEmail();
   const [orgs, setOrgs] = useState<IGetOrgsByEmailResponse[]>([]);
-  const loginMutation = useLogin();
+  const [passkeyBusy, setPasskeyBusy] = useState(false);
+  const [qrSession, setQrSession] = useState<IQrSession | null>(null);
+  const [, setRenderTick] = useState(0); // re-render once tokens land
+  const wsRef = useRef<WebSocket | null>(null);
   const { data, error, isLoading, refetch: refetchMe } = useGetLogInPersonDetail();
   const dispatch = useDispatch();
 
   const form = useForm({
     initialValues: {
       email: '',
-      password: '',
       orgId: '',
       rememberMe: false,
     },
@@ -56,7 +71,6 @@ const Login: FC = () => {
       if (active === 1) {
         const isSentinel = orgs.length === 1 && orgs[0].id === 0;
         return {
-          password: values.password ? null : 'Invalid password',
           orgId: isSentinel || values.orgId ? null : 'Please select an organization',
         };
       }
@@ -117,6 +131,9 @@ const Login: FC = () => {
     }
   }, [savedEmail]);
 
+  // Close any open QR socket when leaving the screen
+  useEffect(() => () => wsRef.current?.close(), []);
+
   const handleGetOrgs = () => {
     const { email, rememberMe } = form.values;
 
@@ -154,35 +171,76 @@ const Login: FC = () => {
     );
   };
 
-  const handleLogin = () => {
-    const { email, password, orgId } = form.values;
+  const notifyError = (message: string) => {
+    notifications.show({
+      id: 'error',
+      title: 'Error',
+      message,
+      color: 'red',
+      autoClose: 3000,
+    });
+  };
 
-    loginMutation.mutate(
-      { email, password, orgId: parseInt(orgId) },
-      {
-        onSuccess: () => {
-          if (orgs.length === 1 && orgs[0].id === 0) {
-            navigate(SYSTEM.SETUP);
-            return;
-          }
-          refetchMe();
-        },
-        onError: (e) => {
-          const message = (e as Error).message;
-
-          notifications.show({
-            id: 'error',
-            title: 'Error',
-            message,
-            color: 'red',
-            autoClose: 2000,
-          });
-        },
+  const handlePasskeyLogin = async () => {
+    const { email, orgId } = form.values;
+    setPasskeyBusy(true);
+    try {
+      await passkeyLogin({ email, orgId: parseInt(orgId || '0') });
+      setRenderTick((t) => t + 1);
+      if (orgs.length === 1 && orgs[0].id === 0) {
+        navigate(SYSTEM.SETUP);
+        return;
       }
-    );
+      refetchMe();
+    } catch (e) {
+      if (isUnsupportedError(e)) {
+        await startQrFallback();
+      } else if ((e as { name?: string })?.name === 'NotAllowedError') {
+        notifyError('Passkey prompt was cancelled.');
+      } else {
+        notifyError((e as Error).message);
+      }
+    } finally {
+      setPasskeyBusy(false);
+    }
+  };
+
+  const startQrFallback = async () => {
+    wsRef.current?.close();
+    try {
+      const session = await qrInitiate();
+      setQrSession(session);
+      wsRef.current = openQrSocket(session.qrSessionId, {
+        onAuthCode: async (authCode) => {
+          try {
+            await qrComplete(session.qrSessionId, authCode);
+            setQrSession(null);
+            setRenderTick((t) => t + 1);
+            refetchMe();
+          } catch (e) {
+            notifyError((e as Error).message);
+          }
+        },
+        // QR sessions live 60s — mint a fresh one automatically
+        onExpired: () => startQrFallback(),
+        onInvalid: () => {
+          setQrSession(null);
+          notifyError('QR session was rejected. Try again.');
+        },
+      });
+    } catch (e) {
+      notifyError((e as Error).message);
+    }
   };
 
   const nextStep = () => {
+    if (qrSession) {
+      // QR panel is showing — primary button backs out to passkey mode
+      wsRef.current?.close();
+      setQrSession(null);
+      return;
+    }
+
     if (form.validate().hasErrors) {
       return;
     }
@@ -192,7 +250,7 @@ const Login: FC = () => {
     }
 
     if (active === 1) {
-      handleLogin();
+      handlePasskeyLogin();
     }
   };
 
@@ -204,14 +262,6 @@ const Login: FC = () => {
     navigate(CLIENTONBOARDING.NEWAPPLICATION);
   };
 
-  const onClickRedirectToWelcomePage = () => {
-    navigate(CLIENTONBOARDING.WElCOMEPAGE);
-  };
-
-  const onClickRedirectToConfigureRisk = () => {
-    navigate(ADMIN.ADD_RISK);
-  };
-
   return (
     <>
       <div className="flex min-h-screen bg-zinc-100">
@@ -219,14 +269,37 @@ const Login: FC = () => {
         <div className="flex-1 flex items-center justify-center flex-col px-6 py-12">
         <ActionCard
           title={'Welcome back ! 🎉'}
-          description={'Enter your details to sign in to your account'}
+          description={
+            qrSession
+              ? 'Scan the QR code with the phone you already use for SQF'
+              : 'Sign in with your passkey — no password needed'
+          }
           Icon={IconMeteor}
-          primaryButtonLabel="Login"
+          primaryButtonLabel={
+            qrSession
+              ? 'Back to passkey sign-in'
+              : active === 0
+                ? 'Continue'
+                : passkeyBusy
+                  ? 'Waiting for passkey…'
+                  : 'Sign in with passkey'
+          }
           onClickPrimaryButtonAction={nextStep}
           onClickSecondaryButtonAction={prevStep}
-          secondaryButtonLabel={active !== 0 ? 'Back' : ''}
-          loading={orgsMutation.isLoading || loginMutation.isLoading}
+          secondaryButtonLabel={active !== 0 && !qrSession ? 'Back' : ''}
+          loading={orgsMutation.isLoading || passkeyBusy}
         >
+          {qrSession ? (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ background: '#fff', display: 'inline-block', padding: 12, borderRadius: 8 }}>
+                <QRCodeSVG value={qrSession.loginUrl} size={180} />
+              </div>
+              <Text size="xs" c="dimmed" mt="sm">
+                The code expires in {qrSession.expiresInSeconds}s and refreshes
+                automatically. Approve on your phone to sign in here.
+              </Text>
+            </div>
+          ) : (
           <Stepper
             active={active}
             styles={{
@@ -256,12 +329,6 @@ const Login: FC = () => {
                 disabled={true}
                 {...form.getInputProps('email')}
               />
-              <PasswordInput
-                mt="md"
-                label="Password"
-                placeholder="Password"
-                {...form.getInputProps('password')}
-              />
               {orgs.length === 1 && orgs[0].id === 0 ? null : (
                 <Select
                   mt="md"
@@ -274,8 +341,23 @@ const Login: FC = () => {
                   {...form.getInputProps('orgId')}
                 />
               )}
+              <Text size="xs" c="dimmed" mt="md">
+                <IconFingerprint size={14} style={{ verticalAlign: 'text-bottom' }} />{' '}
+                Your device will ask for Touch ID, Face ID, or your screen-lock
+                PIN.
+              </Text>
+              <Button
+                variant="subtle"
+                size="compact-xs"
+                mt="xs"
+                leftSection={<IconQrcode size={14} />}
+                onClick={startQrFallback}
+              >
+                No passkey on this device? Sign in with your phone
+              </Button>
             </Stepper.Step>
           </Stepper>
+          )}
         </ActionCard>
         <div className="mt-7 flex gap-5">
           <Button

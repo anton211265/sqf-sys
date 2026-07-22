@@ -6,7 +6,6 @@ import {
   Group,
   Loader,
   NumberInput,
-  PasswordInput,
   Select,
   Stepper,
   Text,
@@ -110,6 +109,8 @@ const SystemSetup: React.FC = () => {
   const [active, setActive] = useState(0);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  // One-time passkey enrollment link for the new Super Admin (passwords are gone)
+  const [enrollmentUrl, setEnrollmentUrl] = useState<string | null>(null);
 
   const orgForm = useForm({
     initialValues: {
@@ -150,8 +151,6 @@ const SystemSetup: React.FC = () => {
     initialValues: {
       name: '',
       email: '',
-      password: '',
-      confirmPassword: '',
       designation: '',
     },
     validate: (values) => {
@@ -159,8 +158,6 @@ const SystemSetup: React.FC = () => {
         return {
           name: values.name.trim() ? null : 'Full name is required',
           email: /^\S+@\S+\.\S+$/.test(values.email) ? null : 'Valid email is required',
-          password: values.password.length >= 8 ? null : 'Password must be at least 8 characters',
-          confirmPassword: values.password === values.confirmPassword ? null : 'Passwords do not match',
         };
       }
       return {};
@@ -179,7 +176,7 @@ const SystemSetup: React.FC = () => {
     if (adminForm.validate().hasErrors) return;
     setLoading(true);
 
-    const { confirmPassword, ...adminValues } = adminForm.values;
+    const adminValues = adminForm.values;
 
     const payload = {
       organization: {
@@ -198,11 +195,12 @@ const SystemSetup: React.FC = () => {
 
     try {
       const accessToken = getAccessToken();
-      await axios.post(
+      const response = await axios.post(
         `${BASE_URL}/trade-directory/system-setup/initialize`,
         payload,
         { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } },
       );
+      setEnrollmentUrl(response.data?.enrollmentUrl ?? null);
       setDone(true);
       setActive(2);
       notifications.show({
@@ -508,22 +506,6 @@ const SystemSetup: React.FC = () => {
                     {...adminForm.getInputProps('email')}
                   />
                 </Grid.Col>
-                <Grid.Col span={6}>
-                  <PasswordInput
-                    label="Password"
-                    placeholder="Minimum 8 characters"
-                    required
-                    {...adminForm.getInputProps('password')}
-                  />
-                </Grid.Col>
-                <Grid.Col span={6}>
-                  <PasswordInput
-                    label="Confirm Password"
-                    placeholder="Re-enter password"
-                    required
-                    {...adminForm.getInputProps('confirmPassword')}
-                  />
-                </Grid.Col>
               </Grid>
 
               <div
@@ -538,9 +520,10 @@ const SystemSetup: React.FC = () => {
                 <Text size="xs" c="dimmed">
                   <strong>Note:</strong> This account will be assigned the{' '}
                   <strong>Super User</strong> role and linked to the Funder Organization
-                  created in Step 1. The login email and password set here are used
-                  to sign in via the standard login screen at{' '}
-                  <code>/auth/login</code>.
+                  created in Step 1. No password is set — initialization returns a
+                  one-time <strong>passkey enrollment link</strong> that you hand to
+                  the Super Admin. They register a passkey (Touch ID, Face ID,
+                  security key) and sign in with it at <code>/auth/login</code>.
                 </Text>
               </div>
             </>
@@ -566,11 +549,46 @@ const SystemSetup: React.FC = () => {
               <Title order={3} mb={8} style={{ color: '#1a1a2e' }}>
                 System Initialized Successfully
               </Title>
-              <Text size="sm" c="dimmed" mb={24}>
+              <Text size="sm" c="dimmed" mb={16}>
                 The Funder Organization and Super Admin account have been created.
-                You can now log in with the Super Admin credentials at{' '}
-                <strong>/auth/login</strong>.
+                Hand the one-time enrollment link below to the Super Admin — they
+                open it, register a passkey, and sign in at <strong>/auth/login</strong>.
+                The link is valid for 24 hours and can only be used once.
               </Text>
+              {enrollmentUrl && (
+                <div
+                  style={{
+                    background: '#f1f3f5',
+                    borderRadius: 8,
+                    padding: '12px 16px',
+                    marginBottom: 20,
+                    wordBreak: 'break-all',
+                    fontFamily: 'monospace',
+                    fontSize: 12,
+                    textAlign: 'left',
+                  }}
+                >
+                  {enrollmentUrl}
+                </div>
+              )}
+              {enrollmentUrl && (
+                <Button
+                  variant="outline"
+                  color="primary"
+                  mr="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(enrollmentUrl);
+                    notifications.show({
+                      title: 'Copied',
+                      message: 'Enrollment link copied to clipboard.',
+                      color: 'green',
+                      autoClose: 2000,
+                    });
+                  }}
+                >
+                  Copy enrollment link
+                </Button>
+              )}
               <Button
                 component="a"
                 href="/auth/login"

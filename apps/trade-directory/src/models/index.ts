@@ -13,6 +13,8 @@ export * from './supplier-persona.entity';
 export * from './organization-role.entity';
 export * from './reset-password-token.entity';
 export * from './auth-audit-log.entity';
+export * from './webauthn-credential.entity';
+export * from './enrollment-token.entity';
 export * from './relationship.entity';
 export * from './contract.entity';
 export * from './invoice.entity';

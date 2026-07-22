@@ -1,8 +1,5 @@
 import { AuthResponseDto } from '@app/common/guards/auth/dtos/auth-response.dto';
 import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
@@ -33,10 +30,8 @@ import { TokenPayload } from './interface/token.interface';
 import { IUserContext } from '@app/common/apps/common/interface/user-context.interface';
 import { OrganizationsResponseDto } from './dto/response/organizations-response.dto';
 import { LogoutResponseDto } from './dto/response/logout-response.dto';
-import { ResetPasswordDto } from './dto/request/reset-password.dto';
-import { EntityManager, MoreThanOrEqual } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { ResetPasswordTokenRepository } from '../repositories/reset-password-token.repository';
 import { OutboxEventRepository } from '../repositories/outbox-event.repository';
 import { AuthAuditLogRepository } from '../repositories/auth-audit-log.repository';
 import { AuthAuditEvent } from '../models/auth-audit-log.entity';
@@ -52,9 +47,6 @@ export class AuthService {
   private readonly ENTRA_TENANT_ID: string;
   private readonly ENTRA_APPLICATION_ID: string;
 
-  private readonly LOCKOUT_MAX_ATTEMPTS = 5;
-  private readonly LOCKOUT_DURATION_MS = 15 * 60 * 1000;
-
   // TO REFACTOR
   constructor(
     private readonly personRepository: PersonRepository,
@@ -62,7 +54,6 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly tokenRepository: TokenRepository,
     private readonly jwtService: JwtService,
-    private readonly resetRepository: ResetPasswordTokenRepository,
     private readonly organizationPersonRepository: OrganizationPersonRepository,
     private readonly outboxEventRepository: OutboxEventRepository,
     private readonly auditLogRepository: AuthAuditLogRepository,
@@ -77,71 +68,6 @@ export class AuthService {
       jwksUri: `https://login.microsoftonline.com/${this.ENTRA_TENANT_ID}/discovery/v2.0/keys`,
     });
   }
-
-  dummyAuthenticate = async (data: {
-    username: string;
-    password: string;
-    inputOrganizationName: string;
-    inputOrganizationPersonName: string;
-  }) => {
-    if (
-      data.username !== 'dummy_username-123' ||
-      data.password !== 'mUutgR%JDVHUT8R@H7u2'
-    ) {
-      throw new UnauthorizedException('Invalid Credentials');
-    }
-
-    const userOrganization = await this.organizationRepository.findOne({
-      where: {
-        organizationName: data.inputOrganizationName,
-      },
-      relations: {
-        organizationPersons: {
-          organizationPersonRoles: true,
-          person: true,
-        },
-        clientPersona: true,
-        buyerPersona: true,
-        supplierPersona: true,
-        funderPersona: true,
-      },
-    });
-    if (!userOrganization) {
-      throw new BadRequestException('Unable to find user organization');
-    }
-
-    const userOrganizationPerson = userOrganization.organizationPersons.find(
-      (organizationPerson) =>
-        organizationPerson.person.name === data.inputOrganizationPersonName,
-    );
-
-    if (!userOrganizationPerson) {
-      throw new BadRequestException('Unable to find user organization person');
-    }
-
-    const response: AuthResponseDto = {
-      personId: userOrganizationPerson.person.id,
-      name: userOrganizationPerson.person.name,
-      preferredUsername: userOrganizationPerson.person.preferredUsername,
-      identificationNumber: userOrganizationPerson.person.identificationNumber,
-      mobileNumber: userOrganizationPerson.person.mobileNumber,
-      email: userOrganizationPerson.person.email,
-      sub: userOrganizationPerson.sub,
-      organizationPersonId: userOrganizationPerson.id,
-      organizationPersonRoles:
-        userOrganizationPerson.organizationPersonRoles.map(
-          (organizationPersonRole) => ({
-            role: organizationPersonRole.role,
-          }),
-        ),
-      organizationId: userOrganization.id,
-      clientPersonaId: userOrganization.clientPersona?.id,
-      buyerPersonaId: userOrganization.buyerPersona?.id,
-      supplierPersonaId: userOrganization.supplierPersona?.id,
-      funderPersonaId: userOrganization.funderPersona?.id,
-    };
-    return response;
-  };
 
   async organizations(email: string): Promise<OrganizationsResponseDto> {
     const person = await this.personRepository.findOne({
@@ -176,164 +102,37 @@ export class AuthService {
     return { organizations: uniqueOrganizations };
   }
 
-  async login(
-    email: string,
-    password: string,
+  /**
+   * Mints a fresh access/refresh token pair for an already-authenticated
+   * person. Authentication itself now happens exclusively via WebAuthn
+   * passkeys (PasskeyService) — password login was removed 2026-07-22.
+   * Callers: passkey login-verify and QR login complete.
+   */
+  async issueSession(
+    user: Person,
     orgId: number,
     userAgent: string | null = null,
     ipAddress: string | null = null,
+    auditEvent: AuthAuditEvent = AuthAuditEvent.PASSKEY_LOGIN_SUCCESS,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const user = await this.personRepository.findOne({ where: { email } });
-
-    if (!user) {
-      await this.auditLogRepository.record({
-        event: AuthAuditEvent.LOGIN_FAILURE,
-        email,
-        outcome: 'FAILURE',
-        personId: null,
-        ipAddress,
-        userAgent,
-        detail: 'Email not found',
+    // SQFSYS accounts have no org — sentinel orgId 0 bypasses the membership check
+    if (!(user.systemRole === 'SQFSYS' && orgId === 0)) {
+      const membership = await this.organizationPersonRepository.findOne({
+        where: {
+          person: { id: user.id },
+          organization: { id: orgId },
+        },
       });
-      throw new UnauthorizedException('Invalid credentials');
-    }
 
-    // Check account lockout
-    if (user.lockedUntil && user.lockedUntil > new Date()) {
-      const secondsRemaining = Math.ceil(
-        (user.lockedUntil.getTime() - Date.now()) / 1000,
-      );
-      await this.auditLogRepository.record({
-        event: AuthAuditEvent.LOGIN_BLOCKED,
-        email,
-        outcome: 'FAILURE',
-        personId: user.id,
-        ipAddress,
-        userAgent,
-        detail: `Account locked, ${secondsRemaining}s remaining`,
-      });
-      throw new HttpException(
-        `Account is locked. Try again in ${secondsRemaining} seconds.`,
-        HttpStatus.TOO_MANY_REQUESTS,
-      );
-    }
-
-    const passwordValid = await bcrypt.compare(password, user.password);
-
-    if (!passwordValid) {
-      const attempts = (user.failedLoginAttempts ?? 0) + 1;
-      user.failedLoginAttempts = attempts;
-
-      if (attempts >= this.LOCKOUT_MAX_ATTEMPTS) {
-        const lockedUntil = new Date(Date.now() + this.LOCKOUT_DURATION_MS);
-        user.lockedUntil = lockedUntil;
-
-        await this.entityManager.transaction(async (manager) => {
-          await manager.save(Person, user);
-          await this.outboxEventRepository.record(manager, {
-            id: uuid(),
-            topic: KafkaTopicEnum.SEND_EMAIL,
-            payload: {
-              eventId: uuid(),
-              emailSender: 'notification@sqf.ai',
-              emailReceivers: [user.email],
-              emailCc: [],
-              emailBcc: [],
-              emailReplyTo: [],
-              emailSubject: 'SQF.AI - Account Locked',
-              emailTemplate: {
-                templateName: '/account-locked.pug',
-                templateVariables: {
-                  recipientName: user.name ?? user.email,
-                  lockedUntil: lockedUntil.toISOString(),
-                },
-              },
-            } as Record<string, unknown>,
-          });
-        });
-
-        this.logger.warn(
-          `Account locked for email=${email} after ${attempts} failed attempts`,
-        );
-
-        await this.auditLogRepository.record({
-          event: AuthAuditEvent.LOGIN_LOCKED,
-          email,
-          outcome: 'FAILURE',
-          personId: user.id,
-          ipAddress,
-          userAgent,
-          detail: `Locked until ${lockedUntil.toISOString()}`,
-        });
-
-        throw new HttpException(
-          `Account locked after ${this.LOCKOUT_MAX_ATTEMPTS} failed attempts. Try again in 15 minutes.`,
-          HttpStatus.TOO_MANY_REQUESTS,
+      if (!membership) {
+        throw new UnauthorizedException(
+          'You do not belong to this organization',
         );
       }
-
-      await this.personRepository.save(user);
-      await this.auditLogRepository.record({
-        event: AuthAuditEvent.LOGIN_FAILURE,
-        email,
-        outcome: 'FAILURE',
-        personId: user.id,
-        ipAddress,
-        userAgent,
-        detail: `Invalid password (attempt ${attempts})`,
-      });
-      throw new UnauthorizedException('Invalid credentials');
     }
-
-    // Successful login — reset lockout counters
-    user.failedLoginAttempts = 0;
-    user.lockedUntil = null;
-    await this.personRepository.save(user);
 
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-    // SQFSYS accounts have no org — bypass membership check when orgId sentinel (0) is sent
-    if (user.systemRole === 'SQFSYS' && orgId === 0) {
-      const tokenPayload: TokenPayload = { userId: user.id, orgId: 0 };
-      const accessToken = this.jwtService.sign(tokenPayload, { expiresIn: '15m' });
-      const refreshToken = this.jwtService.sign(tokenPayload, { expiresIn: '7d' });
-      const refreshTokenHash = await bcrypt.hash(this.tokenDigest(refreshToken), 10);
-      const token = new Token({
-        person: user,
-        refreshTokenHash,
-        issuedAt: now,
-        lastUsedAt: now,
-        expiresAt,
-        revokedAt: null,
-        revokedReason: null,
-        userAgent,
-        ipAddress,
-        tokenFamilyId: uuid(),
-      });
-      await this.tokenRepository.save(token);
-      await this.auditLogRepository.record({
-        event: AuthAuditEvent.LOGIN_SUCCESS,
-        email,
-        outcome: 'SUCCESS',
-        personId: user.id,
-        ipAddress,
-        userAgent,
-      });
-      return { accessToken, refreshToken };
-    }
-
-    const membership = await this.organizationPersonRepository.findOne({
-      where: {
-        person: { id: user.id },
-        organization: { id: orgId },
-      },
-    });
-
-    if (!membership) {
-      throw new UnauthorizedException('You do not belong to this organization');
-    }
-
     const tokenPayload: TokenPayload = { userId: user.id, orgId };
 
     const accessToken = this.jwtService.sign(tokenPayload, { expiresIn: '15m' });
@@ -355,8 +154,8 @@ export class AuthService {
 
     await this.tokenRepository.save(token);
     await this.auditLogRepository.record({
-      event: AuthAuditEvent.LOGIN_SUCCESS,
-      email,
+      event: auditEvent,
+      email: user.email,
       outcome: 'SUCCESS',
       personId: user.id,
       ipAddress,
@@ -579,57 +378,6 @@ export class AuthService {
     }
 
     return { id: userId, orgId };
-  }
-
-  async resetPassword(
-    resetPasswordDto: ResetPasswordDto,
-    userAgent: string | null = null,
-    ipAddress: string | null = null,
-  ) {
-    const { token, password, confirmPassword } = resetPasswordDto;
-    if (password !== confirmPassword) {
-      throw new BadRequestException('Password do not match');
-    }
-
-    let reset = null;
-    reset = await this.resetRepository.findOne({
-      where: {
-        token,
-        tokenExpirationAt: MoreThanOrEqual(new Date(Date.now())),
-      },
-    });
-
-    if (!reset) {
-      throw new BadRequestException('Invalid token');
-    }
-
-    const user = await this.personRepository.findOne({
-      where: { email: reset.email },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    await this.personRepository.update(
-      { id: user.id },
-      { password: await bcrypt.hash(password, 10) },
-    );
-
-    await this.resetRepository.delete({ id: reset.id });
-
-    await this.auditLogRepository.record({
-      event: AuthAuditEvent.PASSWORD_RESET,
-      email: user.email,
-      outcome: 'SUCCESS',
-      personId: user.id,
-      ipAddress,
-      userAgent,
-    });
-
-    return {
-      message: 'success',
-    };
   }
 
   async kafkaAuthenticate(token: string): Promise<IUserContext> {

@@ -1,19 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Lock, User } from 'lucide-react';
+import { Fingerprint, QrCode, User } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 
 import { Button } from 'components/ui/button';
 import { Input } from 'components/ui/input';
 import { Label } from 'components/ui/label';
 import { Card, CardContent, CardFooter } from 'components/ui/card';
 import useGetOrgsByEmail from 'hooks/useGetOrgsByEmail';
-import useLogin from 'hooks/useLogin';
 import useGetLogInPersonDetail from 'hooks/useGetLogInPersonDetail';
 import { getAccessToken } from 'api/axiosClient';
 import { setData } from 'redux/user';
 import { HOME } from 'constants/routes';
 import { IGetOrgsByEmailResponse } from 'service/getOrgsByEmail';
+import {
+  IQrSession,
+  isUnsupportedError,
+  openQrSocket,
+  passkeyLogin,
+  qrComplete,
+  qrInitiate,
+} from 'service/passkey';
 import LoginHero from 'components/LoginHero';
 
 // Heading/button colors sampled from an earlier version of the hero artwork
@@ -24,27 +32,25 @@ const HEADING_NAVY = '#0B2D82';
 const BUTTON_GRADIENT = 'linear-gradient(to right, #1F72CE, #0F4CAF)';
 
 /**
- * Auth screen for the web-next chassis — same 2-step email -> password+org
- * flow as apps/web, rebuilt on shadcn/ui + Tailwind instead of Mantine.
- * Card floats in the open space of the hero artwork (LoginHero), styled
- * with navy heading/gradient button/icon-prefixed fields to fit that
- * artwork's palette. No SSO option — Microsoft SSO/MSAL was fully removed
- * from this platform (see CLAUDE.md "Auth Flow"), email/password JWT is
- * the only auth flow.
+ * Auth screen for the web-next chassis. 2-step email -> org flow, then
+ * WebAuthn passkey sign-in (password login was removed 2026-07-22). If this
+ * machine has no usable authenticator, a QR fallback lets an already
+ * signed-in phone approve the login (see /mobile-auth).
  */
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [step, setStep] = useState<'email' | 'credentials'>('email');
+  const [step, setStep] = useState<'email' | 'passkey'>('email');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [orgId, setOrgId] = useState('');
   const [orgs, setOrgs] = useState<IGetOrgsByEmailResponse[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [qrSession, setQrSession] = useState<IQrSession | null>(null);
+  const [, setRenderTick] = useState(0); // re-render after tokens land
+  const wsRef = useRef<WebSocket | null>(null);
 
   const orgsMutation = useGetOrgsByEmail();
-  const loginMutation = useLogin();
   const { data: person, error: personError } = useGetLogInPersonDetail();
 
   useEffect(() => {
@@ -57,6 +63,9 @@ const Login: React.FC = () => {
     if (personError) setError((personError as Error).message);
   }, [personError]);
 
+  // Close any open QR socket when leaving the screen
+  useEffect(() => () => wsRef.current?.close(), []);
+
   const handleGetOrgs = () => {
     setError(null);
     orgsMutation.mutate(
@@ -65,19 +74,59 @@ const Login: React.FC = () => {
         onSuccess: (data) => {
           setOrgs(data);
           if (data.length === 1) setOrgId(data[0].id.toString());
-          setStep('credentials');
+          setStep('passkey');
         },
         onError: (e) => setError((e as Error).message),
       },
     );
   };
 
-  const handleLogin = () => {
+  const handlePasskeyLogin = async () => {
     setError(null);
-    loginMutation.mutate(
-      { email, password, orgId: parseInt(orgId, 10) },
-      { onError: (e) => setError((e as Error).message) },
-    );
+    setBusy(true);
+    try {
+      await passkeyLogin({ email, orgId: parseInt(orgId, 10) });
+      setRenderTick((t) => t + 1); // token now in memory — person query enables
+    } catch (e) {
+      if (isUnsupportedError(e)) {
+        // This machine can't do passkeys — switch to the QR relay
+        await startQrFallback();
+      } else if ((e as { name?: string })?.name === 'NotAllowedError') {
+        setError('Passkey prompt was cancelled.');
+      } else {
+        setError((e as Error).message);
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const startQrFallback = async () => {
+    setError(null);
+    wsRef.current?.close();
+    try {
+      const session = await qrInitiate();
+      setQrSession(session);
+      wsRef.current = openQrSocket(session.qrSessionId, {
+        onAuthCode: async (authCode) => {
+          try {
+            await qrComplete(session.qrSessionId, authCode);
+            setQrSession(null);
+            setRenderTick((t) => t + 1);
+          } catch (e) {
+            setError((e as Error).message);
+          }
+        },
+        // QR sessions live 60s — mint a fresh one automatically
+        onExpired: () => startQrFallback(),
+        onInvalid: () => {
+          setQrSession(null);
+          setError('QR session was rejected. Try again.');
+        },
+      });
+    } catch (e) {
+      setError((e as Error).message);
+    }
   };
 
   const isSentinel = orgs.length === 1 && orgs[0].id === 0;
@@ -105,47 +154,24 @@ const Login: React.FC = () => {
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="email"
-                placeholder="Email"
-                className="pl-9"
-                value={email}
-                disabled={step === 'credentials'}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {step === 'credentials' && (
+          {!qrSession && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="email">Email</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Password"
-                    className="pl-9 pr-9"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    id="email"
+                    placeholder="Email"
+                    className="pl-9"
+                    value={email}
+                    disabled={step === 'passkey'}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
-                  <button
-                    type="button"
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                    onClick={() => setShowPassword((v) => !v)}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
                 </div>
               </div>
 
-              {!isSentinel && (
+              {step === 'passkey' && !isSentinel && (
                 <div className="space-y-2">
                   <Label htmlFor="org">Organization</Label>
                   <select
@@ -165,24 +191,65 @@ const Login: React.FC = () => {
                   </select>
                 </div>
               )}
+
+              <div className="flex gap-2">
+                {step === 'passkey' && (
+                  <Button variant="outline" onClick={() => setStep('email')}>
+                    Back
+                  </Button>
+                )}
+                <Button
+                  className="flex-1 text-white border-0"
+                  style={{ background: BUTTON_GRADIENT }}
+                  disabled={busy || orgsMutation.isPending || (step === 'passkey' && !orgId)}
+                  onClick={step === 'email' ? handleGetOrgs : handlePasskeyLogin}
+                >
+                  {step === 'email' ? (
+                    'Continue'
+                  ) : (
+                    <>
+                      <Fingerprint className="mr-2 h-4 w-4" />
+                      {busy ? 'Waiting for passkey…' : 'Sign in with passkey'}
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {step === 'passkey' && (
+                <button
+                  type="button"
+                  className="mx-auto flex items-center gap-1 text-xs text-muted-foreground underline"
+                  onClick={startQrFallback}
+                >
+                  <QrCode className="h-3 w-3" />
+                  No passkey on this device? Sign in with your phone
+                </button>
+              )}
             </>
           )}
 
-          <div className="flex gap-2">
-            {step === 'credentials' && (
-              <Button variant="outline" onClick={() => setStep('email')}>
-                Back
-              </Button>
-            )}
-            <Button
-              className="flex-1 text-white border-0"
-              style={{ background: BUTTON_GRADIENT }}
-              disabled={orgsMutation.isPending || loginMutation.isPending}
-              onClick={step === 'email' ? handleGetOrgs : handleLogin}
-            >
-              {step === 'email' ? 'Continue' : 'Login'}
-            </Button>
-          </div>
+          {qrSession && (
+            <div className="space-y-3 text-center">
+              <p className="text-sm font-medium">Sign in with your phone</p>
+              <p className="text-xs text-muted-foreground">
+                Scan with the phone you already use for SQF. The code expires
+                in {qrSession.expiresInSeconds}s and refreshes automatically.
+              </p>
+              <div className="mx-auto inline-block rounded bg-white p-3">
+                <QRCodeSVG value={qrSession.loginUrl} size={180} />
+              </div>
+              <button
+                type="button"
+                className="mx-auto block text-xs text-muted-foreground underline"
+                onClick={() => {
+                  wsRef.current?.close();
+                  setQrSession(null);
+                }}
+              >
+                Back to passkey sign-in
+              </button>
+            </div>
+          )}
         </CardContent>
         <CardFooter className="pt-0 justify-center">
           <p

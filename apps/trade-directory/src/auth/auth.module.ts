@@ -7,15 +7,18 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { z } from 'zod';
 import {
+  EnrollmentToken,
   Organization,
   OrganizationPerson,
   Person,
-  ResetPasswordToken,
+  WebauthnCredential,
 } from '../models';
 import {
+  EnrollmentTokenRepository,
   OrganizationPersonRepository,
   OrganizationRepository,
   PersonRepository,
+  WebauthnCredentialRepository,
 } from '../repositories';
 import { OutboxEventRepository } from '../repositories/outbox-event.repository';
 import { AuthController } from './auth.controller';
@@ -23,7 +26,10 @@ import { AuthService } from './auth.service';
 import { Token } from '../models/token.entity';
 import { TokenRepository } from '../repositories/token.repository';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { ResetPasswordTokenRepository } from '../repositories/reset-password-token.repository';
+import { BearerContextGuard } from './guards/bearer-context.guard';
+import { PasskeyController, QrLoginController } from './passkey/passkey.controller';
+import { PasskeyService } from './passkey/passkey.service';
+import { QrLoginService } from './passkey/qr-login.service';
 
 @Global()
 @Module({
@@ -33,9 +39,10 @@ import { ResetPasswordTokenRepository } from '../repositories/reset-password-tok
       Person,
       Token,
       OrganizationPerson,
-      ResetPasswordToken,
       OutboxEvent,
       AuthAuditLog,
+      WebauthnCredential,
+      EnrollmentToken,
     ]),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -58,18 +65,22 @@ import { ResetPasswordTokenRepository } from '../repositories/reset-password-tok
       inject: [ConfigService],
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, PasskeyController, QrLoginController],
   providers: [
     AuthService,
+    PasskeyService,
+    QrLoginService,
+    BearerContextGuard,
     OrganizationRepository,
     PersonRepository,
     OrganizationPersonRepository,
     TokenRepository,
-    ResetPasswordTokenRepository,
+    WebauthnCredentialRepository,
+    EnrollmentTokenRepository,
     OutboxEventRepository,
     AuthAuditLogRepository,
     JwtStrategy,
   ],
-  exports: [AuthService, JwtModule],
+  exports: [AuthService, PasskeyService, QrLoginService, JwtModule],
 })
 export class AuthModule {}

@@ -710,6 +710,7 @@ class PersonProtoConverter {
       failedLoginAttempts: 0,
       lockedUntil: null,
       supportingDocuments: undefined,
+      webauthnCredentials: undefined,
     };
   };
 

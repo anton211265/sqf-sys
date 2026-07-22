@@ -34,6 +34,8 @@ import ApplicationSteps from 'screens/SQF/Client/Onboarding/ApplicationSteps';
 import { AuthoriseSignatoryESignatureSetup } from 'screens/SQF/AuthoriseSignatory/Onboarding/ESignatureSetup';
 import NewApplication from 'screens/SQF/Client/Onboarding/NewApplication';
 import Login from 'screens/SQF/Auth/Login';
+import Enroll from 'screens/SQF/Auth/Enroll';
+import MobileAuth from 'screens/SQF/Auth/MobileAuth';
 import SetupNewPassword from 'screens/SQF/Auth/SetupNewPassword';
 import RiskConfiguration from 'screens/SQF/Admin/Configuration/Risk Model/NewRiskFactor';
 import OrganizationList from 'screens/SQF/Admin/Organization/OrganizationList';
@@ -192,6 +194,17 @@ function Pages() {
         {/* ------------AUTH------------ */}
 
         <Route path={AUTH.LOGIN} element={<Login />} />
+
+        <Route path={AUTH.ENROLL} element={<Enroll />} />
+
+        <Route
+          path={AUTH.MOBILE_AUTH}
+          element={
+            <PrivateRoute>
+              <MobileAuth />
+            </PrivateRoute>
+          }
+        />
 
         <Route path={AUTH.SETUPNEWPASSWORD} element={<SetupNewPassword />} />
 

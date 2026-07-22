@@ -5,9 +5,11 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import * as bcrypt from 'bcryptjs';
+import { createHash, randomBytes } from 'crypto';
 import { EntityManager } from 'typeorm';
+import { PasskeyService } from '../auth/passkey/passkey.service';
 import {
+  EnrollmentToken,
   FunderPersona,
   Organization,
   OrganizationPerson,
@@ -31,13 +33,20 @@ export class SystemSetupService {
     private readonly funderPersonaRepository: FunderPersonaRepository,
     private readonly personRepository: PersonRepository,
     private readonly organizationPersonRepository: OrganizationPersonRepository,
+    private readonly passkeyService: PasskeyService,
     private readonly entityManager: EntityManager,
   ) {}
 
   async initialize(
     dto: InitializeSystemDto,
     callerId: number,
-  ): Promise<{ message: string; organizationId: number; personId: number }> {
+  ): Promise<{
+    message: string;
+    organizationId: number;
+    personId: number;
+    enrollmentUrl: string;
+    enrollmentExpiresAt: Date;
+  }> {
     const caller = await this.personRepository.findOne({ where: { id: callerId } });
     if (!caller || caller.systemRole !== OrganizationPersonRoleEnum.SQFSYS) {
       throw new ForbiddenException(
@@ -79,12 +88,12 @@ export class SystemSetupService {
         await manager.save(FunderPersona, funderPersona);
       }
 
-      // 3 — Create Super Admin person with hashed password
-      const hashedPassword = await bcrypt.hash(dto.superAdmin.password, 10);
+      // 3 — Create Super Admin person. No password: authentication is
+      // passkey-only, so the response carries a one-time enrollment URL
+      // instead (SQFSYS hands it to the Super Admin out-of-band).
       const superAdmin = manager.create(Person, {
         name: dto.superAdmin.name,
         email: dto.superAdmin.email,
-        password: hashedPassword,
       });
       const savedAdmin = await manager.save(Person, superAdmin);
       this.logger.log(`Super admin created: ${savedAdmin.email} (id=${savedAdmin.id})`);
@@ -101,10 +110,26 @@ export class SystemSetupService {
       });
       await manager.save(OrganizationPerson, orgPerson);
 
+      // 5 — Issue the Super Admin's one-time passkey enrollment token
+      const rawToken = randomBytes(48).toString('base64url');
+      const enrollmentExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      await manager.save(
+        EnrollmentToken,
+        manager.create(EnrollmentToken, {
+          person: savedAdmin,
+          tokenHash: createHash('sha256').update(rawToken).digest('hex'),
+          expiresAt: enrollmentExpiresAt,
+          usedAt: null,
+          createdByPersonId: callerId,
+        }),
+      );
+
       return {
         message: 'System initialized successfully.',
         organizationId: funderOrg.id,
         personId: savedAdmin.id,
+        enrollmentUrl: this.passkeyService.buildEnrollmentUrl(rawToken),
+        enrollmentExpiresAt,
       };
     });
   }

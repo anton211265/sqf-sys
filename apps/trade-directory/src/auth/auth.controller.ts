@@ -15,12 +15,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { Throttle } from '@nestjs/throttler';
 import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/request/login.dto';
-import { LoginResponseDto } from './dto/response/login-response.dto';
 import { RefreshResponseDto } from './dto/response/refresh-response.dto';
 import { OrganizationsDto } from './dto/request/organizations.dto';
 import { OrganizationsResponseDto } from './dto/response/organizations-response.dto';
@@ -28,10 +25,9 @@ import { LogoutDto } from './dto/request/logout.dto';
 import { LogoutResponseDto } from './dto/response/logout-response.dto';
 import { KafkaTopicEnum } from '@app/common/constants/kafka-topic.enum';
 import { IUserContext } from '@app/common/apps/common/interface/user-context.interface';
-import { ResetPasswordDto } from './dto/request/reset-password.dto';
 
-const REFRESH_COOKIE = 'refresh_token';
-const COOKIE_OPTIONS = (isProduction: boolean) => ({
+export const REFRESH_COOKIE = 'refresh_token';
+export const COOKIE_OPTIONS = (isProduction: boolean) => ({
   httpOnly: true,
   secure: isProduction,
   sameSite: 'strict' as const,
@@ -61,19 +57,6 @@ export class AuthController {
     return await this.authService.authenticate(token);
   }
 
-  @Post('dummy-login')
-  async authenticateDummy(
-    @Body()
-    data: {
-      username: string;
-      password: string;
-      inputOrganizationName: string;
-      inputOrganizationPersonName: string;
-    },
-  ) {
-    return await this.authService.dummyAuthenticate(data);
-  }
-
   @Post('organizations')
   async organizations(
     @Body() organizationsDto: OrganizationsDto,
@@ -81,20 +64,8 @@ export class AuthController {
     return this.authService.organizations(organizationsDto.email);
   }
 
-  @Throttle({ default: { limit: 5, ttl: 900000 } })
-  @Post('login')
-  async login(
-    @Body() loginDto: LoginDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<LoginResponseDto> {
-    const { email, password, orgId } = loginDto;
-    const ipAddress = (req.headers['x-forwarded-for'] as string) ?? req.ip ?? null;
-    const userAgent = (req.headers['user-agent'] as string) ?? null;
-    const { accessToken, refreshToken } = await this.authService.login(email, password, orgId, userAgent, ipAddress);
-    res.cookie(REFRESH_COOKIE, refreshToken, COOKIE_OPTIONS(this.isProduction));
-    return { accessToken };
-  }
+  // Password login was removed 2026-07-22 — WebAuthn passkeys are the only
+  // authentication method. See PasskeyController (./passkey/).
 
   @Post('refresh')
   async refresh(
@@ -124,16 +95,6 @@ export class AuthController {
     }
     res.clearCookie(REFRESH_COOKIE, { path: '/trade-directory/auth' });
     return { message: 'Logged out successfully' };
-  }
-
-  @Post('reset')
-  async reset(
-    @Body() resetPasswordDto: ResetPasswordDto,
-    @Req() req: Request,
-  ) {
-    const ipAddress = (req.headers['x-forwarded-for'] as string) ?? req.ip ?? null;
-    const userAgent = (req.headers['user-agent'] as string) ?? null;
-    return this.authService.resetPassword(resetPasswordDto, userAgent, ipAddress);
   }
 
   @MessagePattern(KafkaTopicEnum.AUTHENTICATE)

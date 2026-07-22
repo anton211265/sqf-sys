@@ -16,3 +16,5 @@ export * from './contract.repository';
 export * from './invoice.repository';
 export * from './lending-product-subscription.repository';
 export * from './party.repository';
+export * from './webauthn-credential.repository';
+export * from './enrollment-token.repository';

@@ -13,7 +13,6 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  MinLength,
   ValidateNested,
 } from 'class-validator';
 
@@ -110,9 +109,8 @@ export class InitializeSuperAdminDto {
   @IsEmail()
   email: string;
 
-  @IsString()
-  @MinLength(8)
-  password: string;
+  // No password — the response returns a one-time passkey enrollment URL
+  // that the Super Admin uses to register their first credential.
 
   @IsString()
   @IsOptional()

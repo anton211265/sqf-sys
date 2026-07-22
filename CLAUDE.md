@@ -128,15 +128,30 @@ docker compose exec postgres psql -U postgres -d "risk-operation"
 
 ## Architecture
 
-### Auth Flow (email/password)
-1. `POST /trade-directory/auth/organizations` — returns orgs for the email
-2. `POST /trade-directory/auth/login` — returns `{ accessToken, refreshToken }`
-3. Tokens stored in cookies (`access_token`, `refresh_token`) via `js-cookie`
-4. `GET /trade-directory/api/person/me` — returns logged-in person profile
+### Auth Flow (WebAuthn passkeys — passwords removed 2026-07-22)
+1. `POST /trade-directory/auth/organizations` — returns orgs for the email (unchanged)
+2. `POST /trade-directory/auth/passkey/login-options` `{ email, orgId }` — membership pre-check, returns `{ loginSessionId, options }` (server-side challenge, 2-min TTL, single-use)
+3. Browser `startAuthentication(options)` → `POST /trade-directory/auth/passkey/login-verify` `{ loginSessionId, response }` — verifies the assertion (`userVerification: 'required'`, signature counter persisted for clone detection), returns `{ accessToken }` + sets the httpOnly `refresh_token` cookie
+4. `GET /trade-directory/api/person/me` — unchanged; refresh/logout/rotation/audit flows unchanged (passkey login calls the same `AuthService.issueSession`)
 
-Microsoft SSO (MSAL) has been removed from the platform. Email/password JWT is now the only auth flow, frontend and backend.
+**Password login is gone**: `POST /auth/login`, `/auth/reset`, `/auth/dummy-login` removed; `person.password` column retained but unused. Microsoft SSO (MSAL) was already removed. The dormant Kafka invite flow (`SqfOrganizationPersonService`) still writes `reset_password_token` rows that nothing can redeem — convert it to enrollment tokens if it's ever revived.
 
-Frontend uses two axios clients, both JWT-cookie-based now that MSAL is gone:
+**Enrollment (first passkey)** — the only way into an account with no credential:
+- `POST /auth/passkey/register-options` `{ enrollmentToken }` + `register-verify` → `/enroll#token=...` screen in both frontends (token rides in the URL fragment, never in server logs; 24h, single-use, sha256-hashed at rest in `enrollment_token`)
+- Issued by: seed scripts (`seed-funder.ts` prints a fresh SQFSYS link on every run — that's the SQFSYS recovery path; `issue-enrollment-token.ts <email>` for anyone else), the SystemSetup initialize response (Super Admin gets an `enrollmentUrl` instead of a password), or `POST /auth/passkey/enrollment-tokens` (SQFSYS or SUPERUSER-of-own-org only — Super Admin intent, direct check pending Dynamic RBAC)
+- Add-device mode: `register-options` with a Bearer token instead of an enrollment token
+- Management: `GET/PATCH/DELETE /auth/passkey/credentials[/:id]` — soft-revoke (`revokedAt`), revoking the last active credential is blocked (400)
+
+**QR cross-device login (Tier 3)** — for desktops with no usable authenticator; browser-native hybrid (Chrome/Safari's own QR) is preferred and needs none of this:
+1. Desktop: `POST /auth/qr/initiate` → `{ qrSessionId, loginUrl }` (60s TTL, single-attempt pin in the URL fragment), renders QR, listens on WS `/trade-directory/auth/qr/ws?qrSessionId=...` (nginx has a dedicated upgrade location)
+2. Phone (already signed in) scans → `/mobile-auth?session=...#pin=...` → `POST /auth/passkey/reauth-options` (JWT) + fresh assertion → `POST /auth/qr/authorize-mobile` `{ qrSessionId, pin, reauthSessionId, response }` — wrong pin kills the session; IP/device-type metadata checks are strict in production, warn-only in dev (QRLjacking mitigation)
+3. Desktop WS receives a one-time **auth code only — never tokens** (an httpOnly cookie cannot be set over a WS); `POST /auth/qr/complete` `{ qrSessionId, authCode }` mints the desktop its **own** token pair (fresh family) and sets the refresh cookie. The phone's tokens are never shared.
+
+**Implementation notes:** `@simplewebauthn/server`+`/browser` pinned to **v9** (v10+ needs Node 20; containers run Node 18). Challenges/QR sessions live in in-memory TTL maps (`TtlMap`) — single-instance dev only, Redis is a production/Terraform concern. `rpID` defaults to `localhost` (env `WEBAUTHN_RP_ID`), `expectedOrigin` derives from `FRONTEND_DOMAIN` (override `WEBAUTHN_ORIGINS`), QR link base = first `FRONTEND_DOMAIN` origin (override `QR_LOGIN_BASE_URL`) — production needs all three set to the real HTTPS domain. New audit events: `PASSKEY_REGISTERED/…_FAILURE/…_LOGIN_SUCCESS/…_LOGIN_FAILURE/…_REVOKED`, `ENROLLMENT_TOKEN_ISSUED`, `QR_LOGIN_INITIATED/APPROVED/REJECTED/COMPLETED`. Key files: `apps/trade-directory/src/auth/passkey/` (service, QR service, controller, `ttl-map.ts`), `guards/bearer-context.guard.ts` (JWT guard that accepts SQFSYS orgId 0, unlike passport `JwtAuthGuard`), migration `1784600000000-PasskeyAuth.ts` (`webauthn_credential`, `enrollment_token`).
+
+**E2E regression guard:** `node apps/trade-directory/src/scripts/e2e-passkey.mjs` (host, Node ≥22) — software authenticator (real P-256/CBOR/DER) driving all endpoints through nginx incl. the WS handshake, replay/clone/pin-abuse negatives, and audit-trail assertions; creates and removes its own test identity. Note: editing anything under `apps/trade-directory/src` (this script included) triggers a webpack-watch rebuild — the script waits for the service to come back before testing. Passkeys with required user verification satisfy the MFA go-live line for login; TOTP step-up for disbursement approval remains open.
+
+Frontend uses two axios clients, both JWT-cookie-based:
 - `axiosClient` (`apps/web/src/api/axiosClient.ts`) — used by Login, SystemSetup, and the login/logout services. Reads `access_token` from cookies, retries once on 401 via `/trade-directory/auth/refresh`, and redirects to login if refresh fails.
 - `apiClient` / `publicClient` (`apps/web/src/utils/reactQuery.ts`) — same cookie + refresh pattern, used by the SQF screens. Kept as a separate client rather than merged with `axiosClient` to avoid a cross-cutting refactor; both should stay behaviorally in sync if either's refresh logic changes.
 
@@ -442,13 +457,13 @@ Open items not yet resolved:
 
 ### Token lifecycle
 
-1. **Login** (`POST /trade-directory/auth/login`)
-   - Server bcrypt-compares the submitted password.
-   - On success: issues a short-lived **access token** (15 min JWT) and a long-lived **refresh token** (7-day JWT).
+1. **Login** (`POST /trade-directory/auth/passkey/login-verify`, or `POST /trade-directory/auth/qr/complete` for the QR relay — password login removed 2026-07-22)
+   - Server verifies a WebAuthn assertion (SimpleWebAuthn, `userVerification: 'required'`, signature counter checked and persisted for clone detection).
+   - On success: issues a short-lived **access token** (15 min JWT) and a long-lived **refresh token** (7-day JWT) via `AuthService.issueSession`.
    - Access token returned in the JSON response body.
    - Refresh token set as an **httpOnly, Secure, SameSite=Strict cookie** (`refresh_token`, path `/trade-directory/auth`). It never appears in the response body and is invisible to JavaScript — XSS cannot steal it.
    - A bcrypt hash of the refresh token is stored in the `token` table alongside session metadata (`issuedAt`, `expiresAt`, `userAgent`, `ipAddress`, `tokenFamilyId`).
-   - `failedLoginAttempts` and `lockedUntil` are reset to 0 / null on success.
+   - `failedLoginAttempts`/`lockedUntil` are dormant (password brute-force lockout no longer applies; passkeys aren't guessable — QR pin abuse is handled by session-kill instead).
 
 2. **Frontend token storage**
    - Access token is held in a **module-level in-memory variable** (`inMemoryAccessToken` in `axiosClient.ts`). It is never written to localStorage, sessionStorage, or any JS-readable cookie. It is lost on page refresh — by design.
@@ -469,8 +484,8 @@ Open items not yet resolved:
 |---|---|
 | Rotated token replayed (theft detected) | All active tokens in the same `tokenFamilyId` family are revoked (`ROTATION_ABUSE`). A security alert email is sent to the account holder via the Kafka outbox. 401 returned. |
 | Refresh token expired (`expiresAt < now`) | Token row revoked (`FORCE_REVOKE`). 401 returned. |
-| 5 consecutive wrong passwords | Account locked for 15 minutes (`lockedUntil`). Lockout alert email sent via Kafka outbox. |
-| Account locked and login attempted | 429 returned with seconds remaining. Logged as `LOGIN_BLOCKED`. |
+| QR authorization pin mismatch | Entire QR session killed instantly (desktop WS gets `SESSION_INVALID`); logged as `QR_LOGIN_REJECTED`. (Password lockout rows retired with password login, 2026-07-22.) |
+| Stale passkey signature counter (cloned authenticator) | Assertion rejected, logged as `PASSKEY_LOGIN_FAILURE`. |
 
 ### Audit trail
 

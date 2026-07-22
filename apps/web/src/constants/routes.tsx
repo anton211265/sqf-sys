@@ -7,6 +7,10 @@ export const SYSTEM = {
 export const AUTH = {
   LOGIN: '/auth/login',
   SETUPNEWPASSWORD: '/auth/set-password',
+  // One-time passkey enrollment (link carries #token=... in the fragment)
+  ENROLL: '/enroll',
+  // Phone side of the QR cross-device login (?session=...#pin=...)
+  MOBILE_AUTH: '/mobile-auth',
 };
 
 export const CLIENTONBOARDING = {

@@ -8,6 +8,7 @@ import { GrpcOptions, KafkaOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import * as path from 'path';
+import { QrLoginService } from './auth/passkey/qr-login.service';
 import { TradeDirectoryModule } from './trade-directory.module';
 
 async function bootstrap() {
@@ -77,6 +78,10 @@ async function bootstrap() {
   });
   await app.startAllMicroservices();
   await app.listen(configService.getOrThrow('PORT'));
+  // QR cross-device login: desktop browsers listen on this raw WebSocket for
+  // the one-time auth code (see QrLoginService). Attached to the same HTTP
+  // server/port; nginx proxies the upgrade at /trade-directory/auth/qr/ws.
+  app.get(QrLoginService).attachWebSocketServer(app.getHttpServer());
   process.on('SIGTERM', async () => await app.close());
   process.on('SIGINT', async () => await app.close());
 }

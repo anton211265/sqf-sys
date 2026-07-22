@@ -10,6 +10,7 @@ import { KycAgencyReport } from './kyc-agency-report.entity';
 import { OrganizationPerson } from './organization-person.entity';
 import { PersonSupportingDocument } from './person-supporting-document.entity';
 import { Token } from './token.entity';
+import { WebauthnCredential } from './webauthn-credential.entity';
 import { OnBoardProcessEnum } from '@app/common/apps/trade-directory/enums/onboard-process.enum';
 
 @Entity()
@@ -27,6 +28,9 @@ export class Person extends AbstractEntity<Person> {
 
   @OneToMany(() => Token, (token) => token.person)
   tokens: Token[];
+
+  @OneToMany(() => WebauthnCredential, (credential) => credential.person)
+  webauthnCredentials?: WebauthnCredential[];
 
   // ------------------ Relationship ------------------
 
