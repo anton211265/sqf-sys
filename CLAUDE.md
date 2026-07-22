@@ -95,12 +95,28 @@ On a fresh Kafka boot, a service may crash with `KafkaJSProtocolError: UNKNOWN_T
 
 ## Key Commands
 
-### Run seed script (SQFSYS bootstrap account)
+### Run seed script (SQFSYS bootstrap account + enrollment link)
 ```bash
 docker compose exec trade-directory-service \
   npx ts-node -r tsconfig-paths/register \
   apps/trade-directory/src/scripts/seed-funder.ts
 ```
+Creates the SQFSYS account (`tony.murphy@synlian.net`) if missing and **prints a
+one-time passkey enrollment URL (24h, single use) on every run** — there is no
+password. Re-running on an existing account just issues a fresh link, never
+touches registered credentials, so this is also the SQFSYS lost-device
+recovery path.
+
+### Issue a passkey enrollment link for any existing user
+```bash
+docker compose exec trade-directory-service \
+  npx ts-node -r tsconfig-paths/register \
+  apps/trade-directory/src/scripts/issue-enrollment-token.ts <email>
+```
+Out-of-band bootstrap/recovery for any person row (e.g. `admin@sqf.local`, or a
+user who lost all devices when no SUPERUSER is around to use
+`POST /auth/passkey/enrollment-tokens`). Prints a one-time `/enroll#token=...`
+URL, valid 24h.
 
 ### Backfill missing relationship personas (one-off, idempotent)
 ```bash
