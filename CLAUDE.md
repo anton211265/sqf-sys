@@ -971,6 +971,44 @@ domain is built); production INSERT-only DB grant for rbac_audit_log
 code-side by design — flat keys gate features, funderPersonaId +
 ownership filters gate rows.
 
+### Portal screens — design spec from "Dynanic RBAC.pdf" (not built)
+
+Source: `SQF ARCHITECTURE/Dynanic RBAC.pdf` §3 (UI Component Blueprint & UX
+Interaction Rules). Tony's Funder Administration Portal frontend design will
+refine layout/visuals, but these interaction rules are the agreed baseline —
+build in `apps/web-next` (shadcn/Tailwind, Recharts standard for any charts)
+against the existing `/api/rbac` endpoints:
+
+1. **Dynamic Role Builder Workspace** — 30/70 master-detail split. Left:
+   role list from `GET roles` + "+ Create New Role". Right: permission
+   matrix as accordions grouped by `permCategory` (from `GET permissions`),
+   checkboxes per `permKey`. Rules: category header "Select All" toggles all
+   children; `permDescription` rendered as inline tooltip text under each
+   checkbox label; **dirty-state guard** — intercept route navigation with
+   unsaved checkbox changes ("You have unsaved access control changes…").
+   Save = `PUT roles/:id/permissions` (whole-set replace).
+2. **User Directory & Provisioning Portal** — data grid of org members
+   (`GET users`); row click opens a 40%-width slide-out drawer; active roles
+   as dismissable token chips (✕ queues removal); **live capability
+   preview** — read-only aggregate permission list at the drawer base,
+   recomputed client-side as chips change, showing exactly what the user
+   will hold if saved. Apply via `POST/DELETE users/:personId/roles[…]`.
+3. **Live Security Audit & Session Ledger** — read-only stream from
+   `GET audit` (+ auth_audit_log for authentication events). Columns:
+   timestamp, user entity, action key, impacted target, IP/geo metadata,
+   risk-level badge (traffic-light = shared badge component per the
+   dashboard standard, never color alone). **Session kill switch**: red
+   "Force Terminate Session" per active-session row →
+   `POST users/:personId/revoke-sessions`.
+
+Production-hardening items from the spec deferred to the Terraform phase:
+Redis-broadcast cache invalidation (replaces the in-process bust),
+INSERT-only DB service account for audit tables, WAF in front of the
+services. Rejected from the spec (recorded 2026-07-22): parallel `users`
+table (person/organization_person already own identity), async audit
+logging (same-transaction writes instead), CASL-style condition jsonb
+(row-level stays code-side).
+
 **Note on "multiple tenants" (2026-07-17 ruling, still applies):** in
 production each Funder runs in its own isolated deployment — this portal and
 these tables are a **per-deployment** feature. Org scoping via the role's
