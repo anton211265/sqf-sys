@@ -1008,6 +1008,48 @@ Rules:
   `risk_applications_approve`, `dashboard_executive_view` (surfaced by the
   Finance Manager onboarding walkthrough, 2026-07-22).
 
+### Sitemap annotation notation (agreed with Tony, 2026-07-22)
+
+Tony's sitemap inventory (built per domain/subdomain as he designs the
+frontend) is the **single authoritative source** for permission keys: if a
+node/action is in the sitemap with a key, it's enforceable and grantable;
+if it isn't, it doesn't exist. The chain is: annotated sitemap → dictionary
+migration → `@RequirePermission` on endpoints → manifest → navigation.
+
+Notation — three annotation types:
+
+```
+Finance (domain)
+├─ Disbursements                    [gate: finance_payments_view]
+│   ├─ Payment detail               [gate: finance_payments_view]
+│   │   ├─ btn Approve              [action: finance_payments_approve]
+│   │   └─ btn Edit draft           [inherit: finance_payments_manage]
+│   └─ Reconciliation queue         [gate: finance_payments_reconcile]
+└─ Executive Dashboard              [gate: dashboard_executive_view]
+```
+
+- `[gate: key]` — every nav node (domain/subdomain/screen) gets one, almost
+  always a `_view`. Drives manifest navigation: node renders only if the
+  key is held ("not permitted" = absent, never greyed out/forbidden).
+- `[action: key]` — an in-screen action with its own key, ONLY where the
+  segregation-of-duties litmus test passes (approve/reconcile/issue/…).
+- `[inherit: key]` — ordinary edit/save actions covered by the screen's
+  `manage`/`view` key; documents the mapping without minting a new key.
+- **Not 1:1**: one key may gate several screens (list + detail); one screen
+  may surface one gate + several action keys.
+- Work-queue screens also note their queue rule in the sitemap ("status IN
+  (…), funderPersonaId scope, assignee = me") — row-level rules stay
+  code-side per the flat-keys ruling, and the sitemap is where they're
+  specified.
+
+When an annotated inventory lands, Claude's side is mechanical: dictionary
+migration for new keys (Tony's domain grouping = permCategory = Role
+Builder accordions), `@RequirePermission` on the matching endpoints, and
+extending the manifest with the navigation structure (route ↔ gate-key
+mapping — the open "design the nav part of the manifest" item). Renaming a
+screen in the inventory is free; renaming a shipped KEY is not
+(add + migrate, never rename).
+
 ### Portal screens — design spec from "Dynanic RBAC.pdf" (not built)
 
 Source: `SQF ARCHITECTURE/Dynanic RBAC.pdf` §3 (UI Component Blueprint & UX
