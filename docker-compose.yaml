@@ -51,6 +51,19 @@ services:
       - .:/usr/src/app
     command: npm run start:dev --project=document-management
 
+  product-configurator-service:
+    build:
+      context: .
+      dockerfile: ./apps/product-configurator/Dockerfile
+      target: development
+    env_file:
+      - ./apps/product-configurator/.env
+    environment:
+      ROOT_DIR: '/usr/src/app/dist/apps/product-configurator'
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:dev --project=product-configurator
+
   notification-service:
     build:
       context: .

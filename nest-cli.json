@@ -121,6 +121,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/risk-agent/tsconfig.app.json"
       }
+    },
+    "product-configurator": {
+      "type": "application",
+      "root": "apps/product-configurator",
+      "entryFile": "main",
+      "sourceRoot": "apps/product-configurator/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/product-configurator/tsconfig.app.json"
+      }
     }
   }
 }

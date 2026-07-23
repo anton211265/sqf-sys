@@ -1,0 +1,36 @@
+{
+  "name": "product-configurator",
+  "sourceRoot": "apps/product-configurator/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:backend"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nest build product-configurator --webpackPath ./apps/product-configurator/webpack.config.js",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "export NODE_ENV=development && nest start --watch product-configurator --webpackPath ./apps/product-configurator/webpack.config.js",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "jest --testPathPattern=apps/product-configurator",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint \"apps/product-configurator/src/**/*.ts\" --fix",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

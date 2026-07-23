@@ -38,6 +38,12 @@ export enum KafkaTopicEnum {
   // lines-only invoice-create path (InvoiceService.create).
   INVOICE_EXTRACTION_VALIDATED = 'invoice_extraction_validated',
 
+  // Emitted by product-configurator (outbox). No consumers yet — future
+  // candidates: trade-directory (lending_product_subscription sync) and
+  // knowledge-graph (projecting product/pricing facts).
+  RATE_CARD_PUBLISHED = 'rate_card_published',
+  PRODUCT_ASSIGNMENT_CREATED = 'product_assignment_created',
+
   REQUEST_KYC_REPORT = 'request_kyc_report',
   RECEIVE_KYC_REPORT = 'receive_kyc_report',
   SEND_EMAIL = 'send_email',

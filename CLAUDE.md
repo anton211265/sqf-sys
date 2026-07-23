@@ -10,10 +10,10 @@ Claude is authorized to run **all scripts and commands without asking for approv
 
 ## Session Start Checklist
 
-At the start of every session, verify all 6 microservices are healthy before doing any work:
+At the start of every session, verify all 7 microservices are healthy before doing any work:
 
 ```bash
-for svc in trade-directory risk-operation customer-relationship-management document-management notification knowledge-graph; do
+for svc in trade-directory risk-operation customer-relationship-management document-management notification knowledge-graph product-configurator; do
   echo -n "$svc: "; curl -s -o /dev/null -w "%{http_code}\n" http://localhost/$svc/
 done
 ```
@@ -39,6 +39,7 @@ sqf-sys/
 │   ├── document-management/    # Document extraction, webhooks, API keys
 │   ├── notification/           # Email sending (Kafka consumer)
 │   ├── knowledge-graph/        # Neo4j projection of the trade network + GraphRAG opportunities
+│   ├── product-configurator/   # Product registry, master rate cards, legal templates, snapshotted assignments
 │   └── web/                    # React + Vite frontend (src/ inside)
 ├── libs/
 │   └── common/                 # Shared entities, guards, decorators, enums, proto
@@ -80,7 +81,7 @@ docker compose logs trade-directory-service --tail=10
 
 ### Health check all services
 ```bash
-for svc in trade-directory risk-operation customer-relationship-management document-management notification knowledge-graph; do
+for svc in trade-directory risk-operation customer-relationship-management document-management notification knowledge-graph product-configurator; do
   echo -n "$svc: "; curl -s -o /dev/null -w "%{http_code}\n" http://localhost/$svc/
 done
 ```
@@ -764,6 +765,69 @@ extraction targets, intake, the scoring lookup, weights, or bands:
 - A generic append-only **`document_event` audit table** (who/what/
   when/before-after status) covers reconciliation and future audit
   needs — one table, not per-feature audits.
+
+## Product Configurator microservice (BUILT 2026-07-24)
+
+New NestJS microservice `apps/product-configurator` (own Postgres DB
+`product-configurator`, nginx route `/product-configurator/`, port 3000
+internal) — the backbone of the Funder Administration Portal per the SQF
+Blueprint HLD. Design source: `SQF ARCHITECTURE/product_configurator.md`
+("Final Approved Specification"), implemented with four recorded adaptations
+(each documented on the entity): (1) surrogate int PKs +
+UNIQUE(funderOrganizationId, productCode) instead of a global VARCHAR
+product_id PK — the shared dev DB holds several funders; (2) **no local
+`clients` table** — bare trade-directory `organizationId` ints per the house
+cross-service rule; (3) rate cards carry a DRAFT/PUBLISHED/ARCHIVED lifecycle
+(publish = separate governed action, exactly one PUBLISHED version per
+product, publishing archives the predecessor); (4) audit rows are written
+app-side **in the same transaction** (no PG triggers), matching the RBAC
+audit ruling, into `product_config_audit_log` (HUMAN_PM/AI_AGENT actor +
+old/new jsonb). `legal_document_template.templateBody` stores Handlebars
+source inline so the injection previewer works before S3-backed template
+files (a later phase); the renderer is a dependency-free mini-engine
+(`{{key}}` + `{{multiply a b}}`, unknown keys render `[missing: key]`).
+
+- **APIs** (`/product-configurator/api/…`, all through nginx): `products`
+  (list/create/patch + `products/bespoke` — creates a client-restricted
+  `CST_xxxxxx` product with its v1 rate card PUBLISHED in one transaction;
+  also the CRA's Provisional Offer path), `products/:id/rate-cards` +
+  `rate-cards/:id[/publish]` (drafts auto-number; only DRAFT editable; IF
+  advance rate hard-limited to 0.80–0.95; tenure ≤ 3650 and min ≤ max),
+  `legal-templates` + `products/:id/legal-templates` (whole-set-replace
+  binding), `assignments` (snapshot of the PUBLISHED card — the Snapshotted
+  Assignment Pattern; bespoke products only assignable to their owning
+  client; `assignments/:id/render/:templateId` = previewer), `audit`.
+  Everything tenant-scoped by `funderOrganizationId` = caller's JWT orgId
+  (SQFSYS orgId 0 sees all); the automated "client status → active"
+  assignment trigger is NOT built yet — arrives with the Product Approval
+  flow as a Kafka consumer on the same `AssignmentsService.create` path.
+- **Cross-service Dynamic RBAC — first adopter.**
+  `src/rbac/remote-permission.guard.ts`: verifies the JWT locally (shared
+  `JWT_SECRET`), then resolves the caller's permission set by calling
+  trade-directory's existing `GET /api/rbac/manifest` with the forwarded
+  bearer token (env `RBAC_MANIFEST_URL`), cached in-process for 30s per
+  token, **fail closed** on manifest errors. trade-directory stays the single
+  RBAC authority; no new endpoint was needed. Gotcha: trade-directory's own
+  manifest cache busts only on RBAC **API** writes — permission changes made
+  via raw SQL stay visible for up to 30s (the e2e revokes via the real Role
+  Builder endpoint for exactly this reason). Future services adopt this same
+  guard pattern; production replaces both 30s caches with Redis (Terraform
+  phase).
+- **Kafka**: standard outbox (`outbox_event` + 5s relay). Emits
+  `RATE_CARD_PUBLISHED` and `PRODUCT_ASSIGNMENT_CREATED` — no consumers yet
+  (future: trade-directory subscription sync, knowledge-graph projection).
+- **E2E regression guard:**
+  `node apps/product-configurator/scripts/e2e-product-configurator.mjs`
+  (host, Node ≥22) — 38 checks: cross-service guard allow/deny, registry
+  CRUD + dedup, IF/tenure rules, version lifecycle incl. archive-on-publish,
+  binding, snapshot immutability across later publishes, previewer, bespoke
+  restrictions, tenant isolation, audit actions with old/new snapshots,
+  outbox relay to real Kafka, and API-driven permission revocation. All
+  writes happen in a script-created org; org 2 is only read for isolation.
+- **Migration bookkeeping fix (2026-07-24):** trade-directory's
+  `PasskeyAuth`/`DynamicRbac` migrations had been applied without rows in
+  the `migrations` table (blocking `migration:run`); their rows are now
+  recorded, so `npm run migration:run --project=<app>` works normally again.
 
 ## Document Conversion (Markitdown)
 
