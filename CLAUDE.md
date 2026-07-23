@@ -915,7 +915,8 @@ hardcoded role checks anywhere.
   extended in place (`organizationId` FK = tenant scope, `isImmutable`, unique
   org+name — the previously-empty table CLAUDE.md earmarked for this);
   `permission` (code-owned dictionary, 40 keys across 9 categories seeded by
-  the migration — never rename a key in place, add + migrate);
+  the migration — never rename a key in place, add + migrate; naming
+  convention below);
   `role_permission`, `person_role` (junctions, cascade deletes);
   `rbac_audit_log` (append-only, jsonb `metadataPayload` with
   historical_state/transformed_state snapshots, written **in the same
@@ -970,6 +971,42 @@ domain is built); production INSERT-only DB grant for rbac_audit_log
 (Terraform phase). Row-level rules ("RM sees only own applications") stay
 code-side by design — flat keys gate features, funderPersonaId +
 ownership filters gate rows.
+
+### Permission-key naming convention (agreed with Tony, 2026-07-22)
+
+Authoring permission keys is an ARCHITECTURE activity: as Tony designs each
+screen/process, the keys are part of the design output and land as a
+migration with the feature. Each key is a contract between a Role Builder
+checkbox and an enforced code path — that's why the dictionary is code-owned
+and admins can't invent keys at runtime.
+
+Format: `domain_resource_verb`, category = portal domain (drives the Role
+Builder accordion grouping). **CRUD-plus, not raw CRUD** — a constrained
+verb vocabulary:
+
+| Verb | Meaning | Use when |
+|---|---|---|
+| `view` | read (list + detail) | almost every resource — read/write split is nearly always governance-relevant |
+| `create` | create only | ONLY where maker-checker applies (the maker's half) |
+| `manage` | create/update/delete lifecycle | where no realistic role holds one side but not the other |
+| `approve` | decision transitions | every governance gate — loans, disbursements, write-offs |
+| business verbs (`assess`, `reconcile`, `resolve`, `clear`, `issue`, `terminate`, `archive`, …) | named workflow actions | actions a regulator or process doc would name |
+
+Rules:
+- **Litmus test for a separate key:** is there a realistic role that should
+  hold one side and not the other? Yes → split; no → fold into `manage`.
+  Segregation-of-duties-driven granularity, never entity-schema-driven
+  (raw CRUD-per-entity both explodes the checkbox matrix AND collapses
+  approve into update, destroying maker-checker).
+- **Author keys from user intents, not tables** — for each storyboard
+  screen, list the verbs a human performs there; those become keys.
+- **When in doubt start coarse** (`view`/`manage`) — splitting later is a
+  cheap add-key-and-re-tick migration. Renaming is NOT cheap: code
+  references keys as strings, so a rename silently un-guards every endpoint
+  using the old name. Add + migrate, never rename.
+- Known keys still to add when their features are built:
+  `risk_applications_approve`, `dashboard_executive_view` (surfaced by the
+  Finance Manager onboarding walkthrough, 2026-07-22).
 
 ### Portal screens — design spec from "Dynanic RBAC.pdf" (not built)
 
