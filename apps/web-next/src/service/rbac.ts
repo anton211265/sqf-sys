@@ -36,6 +36,18 @@ export const setRolePermissions = async (id: number, permissionKeys: string[]) =
 export const getUsers = async (): Promise<DirectoryUser[]> =>
   (await axiosClient().get(`${BASE}/users`)).data;
 
+export const createUser = async (input: {
+  name: string;
+  email: string;
+  designation?: string;
+}): Promise<{
+  personId: number;
+  name: string;
+  email: string;
+  enrollmentUrl: string;
+  enrollmentExpiresAt: string;
+}> => (await axiosClient().post(`${BASE}/users`, input)).data;
+
 export const assignRole = async (personId: number, roleId: number) =>
   (await axiosClient().post(`${BASE}/users/${personId}/roles`, { roleId })).data;
 

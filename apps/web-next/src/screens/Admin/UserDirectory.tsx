@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { Copy, KeyRound, Search, ShieldOff, X } from 'lucide-react';
+import { Copy, KeyRound, Plus, Search, ShieldOff, X } from 'lucide-react';
 
 import { Badge } from 'components/ui/badge';
 import { Button } from 'components/ui/button';
 import { Dialog, DialogDescription, DialogFooter, DialogTitle } from 'components/ui/dialog';
 import { Input } from 'components/ui/input';
+import { Label } from 'components/ui/label';
 import { Sheet } from 'components/ui/sheet';
 import {
   Table,
@@ -16,6 +17,7 @@ import {
 } from 'components/ui/table';
 import {
   useAssignRole,
+  useCreateUser,
   useHasPermission,
   useIssueEnrollmentToken,
   useRemoveRole,
@@ -41,6 +43,7 @@ const UserDirectory: React.FC = () => {
   const canManageRoles = hasPermission('admin_roles_manage');
   const canIssueEnrollment = hasPermission('admin_enrollment_tokens_issue');
   const canTerminate = hasPermission('admin_sessions_terminate');
+  const canCreateUser = hasPermission('admin_users_create');
   // Role list (with permission sets, for the capability preview) needs
   // admin_roles_manage; without it the drawer still works from the roles
   // already visible on the directory rows.
@@ -50,6 +53,34 @@ const UserDirectory: React.FC = () => {
   const removeRole = useRemoveRole();
   const revokeSessions = useRevokeSessions();
   const issueEnrollment = useIssueEnrollmentToken();
+  const createUser = useCreateUser();
+
+  const [createOpen, setCreateOpen] = React.useState(false);
+  const [newName, setNewName] = React.useState('');
+  const [newEmail, setNewEmail] = React.useState('');
+  const [newDesignation, setNewDesignation] = React.useState('');
+  const [createError, setCreateError] = React.useState<string | null>(null);
+  const [createdEnrollment, setCreatedEnrollment] = React.useState<{
+    email: string;
+    url: string;
+  } | null>(null);
+
+  const handleCreateUser = async () => {
+    setCreateError(null);
+    try {
+      const result = await createUser.mutateAsync({
+        name: newName.trim(),
+        email: newEmail.trim(),
+        designation: newDesignation.trim() || undefined,
+      });
+      setCreatedEnrollment({ email: result.email, url: result.enrollmentUrl });
+      setNewName('');
+      setNewEmail('');
+      setNewDesignation('');
+    } catch (e) {
+      setCreateError(getApiResponseErrorMsg(e));
+    }
+  };
 
   const [search, setSearch] = React.useState('');
   const [openUserId, setOpenUserId] = React.useState<number | null>(null);
@@ -161,6 +192,17 @@ const UserDirectory: React.FC = () => {
             Organization members and their role assignments
           </p>
         </div>
+        {canCreateUser && (
+          <Button
+            onClick={() => {
+              setCreatedEnrollment(null);
+              setCreateError(null);
+              setCreateOpen(true);
+            }}
+          >
+            <Plus className="mr-2 h-4 w-4" /> Create User
+          </Button>
+        )}
       </div>
 
       <div className="mb-3 max-w-sm">
@@ -365,6 +407,83 @@ const UserDirectory: React.FC = () => {
           </div>
         )}
       </Sheet>
+
+      {/* Create User: person + org membership + first enrollment link */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogTitle>Create User</DialogTitle>
+        <DialogDescription>
+          Creates the account and issues a one-time passkey enrollment link
+          (valid 24 hours). Assign roles afterwards from the directory.
+        </DialogDescription>
+        {createdEnrollment ? (
+          <div className="space-y-3">
+            <p className="text-sm text-emerald-700">
+              Account created for {createdEnrollment.email}.
+            </p>
+            <div className="rounded-md border bg-muted/40 p-2">
+              <p className="mb-1 text-xs text-muted-foreground">
+                One-time enrollment link — hand it to the user directly:
+              </p>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 truncate text-xs">{createdEnrollment.url}</code>
+                <button
+                  type="button"
+                  aria-label="Copy enrollment link"
+                  onClick={() => navigator.clipboard?.writeText(createdEnrollment.url)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={() => setCreateOpen(false)}>Done</Button>
+            </DialogFooter>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="new-user-name">Full name</Label>
+                <Input
+                  id="new-user-name"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="new-user-email">Email</Label>
+                <Input
+                  id="new-user-email"
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="new-user-designation">Designation (optional)</Label>
+                <Input
+                  id="new-user-designation"
+                  value={newDesignation}
+                  onChange={(e) => setNewDesignation(e.target.value)}
+                />
+              </div>
+              {createError && <p className="text-sm text-destructive">{createError}</p>}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setCreateOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                disabled={!newName.trim() || !newEmail.trim() || createUser.isPending}
+                onClick={handleCreateUser}
+              >
+                {createUser.isPending ? 'Creating…' : 'Create & Issue Link'}
+              </Button>
+            </DialogFooter>
+          </>
+        )}
+      </Dialog>
 
       <Dialog open={confirmTerminate} onOpenChange={setConfirmTerminate}>
         <DialogTitle>Force terminate sessions?</DialogTitle>

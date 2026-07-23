@@ -91,6 +91,14 @@ export const useRemoveRole = () => {
   });
 };
 
+export const useCreateUser = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: rbac.createUser,
+    onSuccess: () => invalidate('users', 'audit'),
+  });
+};
+
 export const useRevokeSessions = () => {
   const invalidate = useInvalidate();
   return useMutation({

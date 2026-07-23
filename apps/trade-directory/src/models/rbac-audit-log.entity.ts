@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 
 export enum RbacAuditEvent {
+  USER_CREATED = 'USER_CREATED',
   ROLE_CREATED = 'ROLE_CREATED',
   ROLE_UPDATED = 'ROLE_UPDATED',
   ROLE_DELETED = 'ROLE_DELETED',

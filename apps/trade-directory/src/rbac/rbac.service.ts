@@ -9,8 +9,10 @@ import {
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import {
+  OrganizationPerson,
   OrganizationRole,
   Permission,
+  Person,
   PersonRole,
   RolePermission,
 } from '../models';
@@ -390,6 +392,62 @@ export class RbacService {
   // ------------------------------------------------------------------
   // User directory + assignments
   // ------------------------------------------------------------------
+
+  /**
+   * Create User (blueprint Section 1 process 2): person + org membership in
+   * one transaction, audited as USER_CREATED. The first enrollment link is
+   * issued by the controller via PasskeyService (pre-authorized — the
+   * annotation folds first-link issuance under admin_users_create; later
+   * re-issues require admin_enrollment_tokens_issue).
+   */
+  async createUser(
+    ctx: RbacRequestContext,
+    input: { name: string; email: string; designation?: string },
+  ) {
+    this.assertOrgScope(ctx);
+    const email = input.email.trim().toLowerCase();
+    const existing = await this.personRepository.findOne({ where: { email } });
+    if (existing) {
+      throw new ConflictException(
+        `An account with ${email} already exists — assign roles or re-issue an enrollment link instead`,
+      );
+    }
+
+    return this.entityManager.transaction(async (manager) => {
+      const person = await manager.save(
+        Person,
+        manager.create(Person, { name: input.name, email }),
+      );
+      await manager.save(
+        OrganizationPerson,
+        manager.create(OrganizationPerson, {
+          person: { id: person.id } as never,
+          organization: { id: ctx.orgId } as never,
+          designation: input.designation ?? null,
+        }),
+      );
+      await this.rbacAuditLogRepository.record(
+        {
+          event: RbacAuditEvent.USER_CREATED,
+          executedByPersonId: ctx.personId,
+          organizationId: ctx.orgId,
+          targetType: 'person',
+          targetId: person.id,
+          metadataPayload: {
+            transformed_state: {
+              name: input.name,
+              email,
+              designation: input.designation ?? null,
+            },
+          },
+          ipAddress: ctx.ipAddress,
+          userAgent: ctx.userAgent,
+        },
+        manager,
+      );
+      return { personId: person.id, name: person.name, email: person.email };
+    });
+  }
 
   async listUsers(ctx: RbacRequestContext) {
     this.assertOrgScope(ctx);

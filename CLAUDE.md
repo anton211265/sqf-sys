@@ -1177,9 +1177,34 @@ before/after vault rendering real metadataPayload):
   (`components/ui/{badge,table,checkbox,dialog,sheet}.tsx`) — swap for the
   Radix-based shadcn set when the ui-ux-pro-max token pass lands. MASTER.md
   accent #0369A1 applied to --primary/--ring in index.css meanwhile.
-- Known nits: the "Permission set saved" notice is cleared instantly by the
-  post-save query re-sync; Create User (admin_users_create) needs its
-  backend endpoint before the button ships.
+- Known nit: the "Permission set saved" notice is cleared instantly by the
+  post-save query re-sync.
+- **Create User (2026-07-24):** `POST /api/rbac/users` (trade-directory,
+  `admin_users_create`) creates person + org membership in one transaction
+  (USER_CREATED audit) and returns the first enrollment link — issued via
+  `PasskeyService.issueEnrollmentToken(..., preauthorized=true)` (first link
+  inherits under admin_users_create per the annotation; re-issues still
+  require admin_enrollment_tokens_issue; never wire preauthorized to a
+  request parameter). UI: Create User dialog in the User Directory shows the
+  one-time URL. e2e-rbac now 51 checks (section 5b).
+- **Configurator screens (2026-07-24), same session:**
+  `screens/Config/{ProductRegistry,ProductDetail,LegalTemplates,ConfigAudit}.tsx`
+  under `/config/*` gated by `config_products_view`, sidebar now grouped
+  (Security & Access / Product Configuration). Registry = standard matrix
+  with is_active switches + bespoke workbench dialog; detail = version list
+  with draft editor (percent inputs ⇄ fraction API via RateCardForm),
+  publish action, template binding checkboxes (whole-set replace),
+  snapshot-assignment table with per-row Handlebars render preview; template
+  registry with inline-body editor; config audit with old/new JSON drawer.
+  Verified live end-to-end in the browser: org 2's four standard products
+  (AR/SCF/IF/TL), IF rate card v1 published, NOTICE_OF_ASSIGNMENT template
+  bound, snapshot assignment to SUMMERSCAPE (org 5) and its rendered notice —
+  all created through the UI and kept as dev seed config.
+- **Browser-verification gotcha (session minting):** a successful silent
+  refresh ROTATES the cookie server-side — the browser then holds an
+  httpOnly refresh_token that document.cookie can neither see nor replace,
+  so a second injected session 401s until `POST /auth/logout` clears the
+  stale cookie first. The ui-session flow is: logout → set cookie → refresh.
 - Org-2 dev DB now has a real mutable role: "Risk Operations Manager"
   (risk_profiles_view/approve, config_risk_filters_assign,
   config_credit_ranges_manage) — created during verification, kept

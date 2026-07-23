@@ -20,6 +20,7 @@ const ORIGIN = 'http://localhost:3001';
 const ORG_A = 2; // Synlian — existing dev org
 const ADMIN_EMAIL = 'e2e-rbac-admin@test.local';
 const USER_EMAIL = 'e2e-rbac-user@test.local';
+const CREATED_EMAIL = 'e2e-rbac-created@test.local';
 const ORGB_EMAIL = 'e2e-rbac-orgb@test.local';
 const ORGB_USER_EMAIL = 'e2e-rbac-orgb-user@test.local';
 const ORG_B_NAME = 'E2E RBAC Org B';
@@ -144,7 +145,7 @@ function setup() {
 }
 
 function teardown() {
-  const emails = `'${ADMIN_EMAIL}','${USER_EMAIL}','${ORGB_EMAIL}','${ORGB_USER_EMAIL}'`;
+  const emails = `'${ADMIN_EMAIL}','${USER_EMAIL}','${ORGB_EMAIL}','${ORGB_USER_EMAIL}','${CREATED_EMAIL}'`;
   psql(`DELETE FROM enrollment_token WHERE "personId" IN (SELECT id FROM person WHERE email IN (${emails}))`);
   psql(`DELETE FROM webauthn_credential WHERE "personId" IN (SELECT id FROM person WHERE email IN (${emails}))`);
   psql(`DELETE FROM auth_audit_log WHERE email IN (${emails})`);
@@ -271,6 +272,24 @@ async function main() {
   const revokedNow = await get('/api/rbac/users', user.accessToken);
   check('guard denies immediately after permission removal (403)', revokedNow.status === 403);
 
+  // ── [5b] Create user (admin_users_create + pre-authorized first link) ──
+  console.log('\n[5b] Create user');
+  const createDenied = await post('/api/rbac/users', { name: 'X', email: CREATED_EMAIL }, user.accessToken);
+  check('create user denied without admin_users_create (403)', createDenied.status === 403);
+  const createdUser = await post('/api/rbac/users', { name: 'Created ByE2E', email: CREATED_EMAIL, designation: 'Analyst' }, admin.accessToken);
+  check(
+    'user created with first enrollment link (201)',
+    createdUser.status === 201 && !!createdUser.data?.personId && String(createdUser.data?.enrollmentUrl).includes('/enroll#token='),
+    JSON.stringify(createdUser.data),
+  );
+  const dupUser = await post('/api/rbac/users', { name: 'Dup', email: CREATED_EMAIL }, admin.accessToken);
+  check('duplicate email rejected (409)', dupUser.status === 409);
+  const directoryAfterCreate = await get('/api/rbac/users', admin.accessToken);
+  check(
+    'created user appears in directory with no roles',
+    (directoryAfterCreate.data ?? []).some((u) => u.email === CREATED_EMAIL && u.roles.length === 0),
+  );
+
   // ── [6] Immutable role guards ──
   console.log('\n[6] Immutable Super Admin guards');
   const superAdminRole = (adminRoles.data ?? []).find((r) => r.isImmutable);
@@ -340,6 +359,7 @@ async function main() {
   check('audit ledger readable', audit.status === 200 && audit.data?.total > 0);
   const events = new Set((audit.data?.rows ?? []).map((r) => r.event));
   for (const expected of [
+    'USER_CREATED',
     'ROLE_CREATED',
     'ROLE_UPDATED',
     'ROLE_DELETED',

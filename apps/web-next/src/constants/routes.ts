@@ -18,3 +18,12 @@ export const ADMIN = {
   USERS: '/admin/users',
   AUDIT: '/admin/audit',
 };
+
+// Product Configuration domain — served by the product-configurator
+// microservice; all screens gate on config_products_view.
+export const CONFIG = {
+  PRODUCTS: '/config/products',
+  PRODUCT_DETAIL: '/config/products/:id',
+  TEMPLATES: '/config/legal-templates',
+  AUDIT: '/config/audit',
+};

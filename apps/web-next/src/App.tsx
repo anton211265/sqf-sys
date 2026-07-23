@@ -7,7 +7,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { store, persistor, RootState } from 'redux/store';
 import { setData } from 'redux/user';
 import axiosClient, { getAccessToken, setAccessToken } from 'api/axiosClient';
-import { ADMIN, AUTH, HOME } from 'constants/routes';
+import { ADMIN, AUTH, CONFIG, HOME } from 'constants/routes';
 import PortalLayout from 'components/layout/PortalLayout';
 import Login from 'screens/Auth/Login';
 import Enroll from 'screens/Auth/Enroll';
@@ -16,6 +16,10 @@ import Home from 'screens/Home/Home';
 import RoleBuilder from 'screens/Admin/RoleBuilder';
 import UserDirectory from 'screens/Admin/UserDirectory';
 import AuditLedger from 'screens/Admin/AuditLedger';
+import ProductRegistry from 'screens/Config/ProductRegistry';
+import ProductDetail from 'screens/Config/ProductDetail';
+import LegalTemplates from 'screens/Config/LegalTemplates';
+import ConfigAudit from 'screens/Config/ConfigAudit';
 
 const client = new QueryClient();
 
@@ -86,6 +90,10 @@ function Pages() {
         <Route path={ADMIN.ROLES} element={<RoleBuilder />} />
         <Route path={ADMIN.USERS} element={<UserDirectory />} />
         <Route path={ADMIN.AUDIT} element={<AuditLedger />} />
+        <Route path={CONFIG.PRODUCTS} element={<ProductRegistry />} />
+        <Route path={CONFIG.PRODUCT_DETAIL} element={<ProductDetail />} />
+        <Route path={CONFIG.TEMPLATES} element={<LegalTemplates />} />
+        <Route path={CONFIG.AUDIT} element={<ConfigAudit />} />
       </Route>
       <Route path="*" element={<Navigate to={AUTH.LOGIN} />} />
     </Routes>

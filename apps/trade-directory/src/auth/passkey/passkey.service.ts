@@ -562,13 +562,17 @@ export class PasskeyService {
     targetEmail: string,
     userAgent: string | null,
     ipAddress: string | null,
+    // true only for internal composition where the caller has already been
+    // authorized under a covering key (RBAC createUser: first link inherits
+    // under admin_users_create) — never wire this to a request parameter.
+    preauthorized = false,
   ): Promise<{ enrollmentToken: string; enrollmentUrl: string; expiresAt: Date }> {
     const requester = await this.personRepository.findOne({
       where: { id: requesterPersonId },
     });
     if (!requester) throw new UnauthorizedException('Unknown requester');
 
-    let authorized = requester.systemRole === 'SQFSYS';
+    let authorized = preauthorized || requester.systemRole === 'SQFSYS';
     if (!authorized) {
       authorized = await this.rbacService.hasPermission(
         requesterPersonId,

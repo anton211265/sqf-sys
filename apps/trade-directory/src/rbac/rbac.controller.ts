@@ -19,6 +19,7 @@ import { Throttle } from '@nestjs/throttler';
 import {
   ArrayUnique,
   IsArray,
+  IsEmail,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -26,6 +27,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { Request } from 'express';
+import { PasskeyService } from '../auth/passkey/passkey.service';
 import { PermissionGuard, RequirePermission } from './permission.guard';
 import { RbacRequestContext, RbacService } from './rbac.service';
 
@@ -65,6 +67,24 @@ class SetRolePermissionsDto {
   permissionKeys: string[];
 }
 
+class CreateUserDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(100)
+  name: string;
+
+  @ApiProperty()
+  @IsEmail()
+  email: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  designation?: string;
+}
+
 class AssignRoleDto {
   // The @IsInt matters beyond validation: the global ValidationPipe runs
   // whitelist:true, which strips any property without a decorator.
@@ -82,7 +102,10 @@ class AssignRoleDto {
 @UseGuards(PermissionGuard)
 @Controller('api/rbac')
 export class RbacController {
-  constructor(private readonly rbacService: RbacService) {}
+  constructor(
+    private readonly rbacService: RbacService,
+    private readonly passkeyService: PasskeyService,
+  ) {}
 
   // ---- Manifest (any authenticated user) ----
 
@@ -160,6 +183,34 @@ export class RbacController {
   @Get('users')
   async listUsers(@UserContext() user: IUserContext, @Req() req: Request) {
     return this.rbacService.listUsers(this.ctx(user, req));
+  }
+
+  @RequirePermission('admin_users_create')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
+  @Post('users')
+  async createUser(
+    @UserContext() user: IUserContext,
+    @Body() dto: CreateUserDto,
+    @Req() req: Request,
+  ) {
+    const ctx = this.ctx(user, req);
+    const created = await this.rbacService.createUser(ctx, dto);
+    // First enrollment link inherits under admin_users_create (annotation
+    // ruling) — issued pre-authorized; re-issues go through the passkey
+    // endpoint's own admin_enrollment_tokens_issue check.
+    const enrollment = await this.passkeyService.issueEnrollmentToken(
+      user.id,
+      user.orgId,
+      created.email,
+      ctx.userAgent,
+      ctx.ipAddress,
+      true,
+    );
+    return {
+      ...created,
+      enrollmentUrl: enrollment.enrollmentUrl,
+      enrollmentExpiresAt: enrollment.expiresAt,
+    };
   }
 
   @RequirePermission('admin_users_assign_roles')
