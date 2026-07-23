@@ -10,3 +10,11 @@ export const AUTH = {
 };
 
 export const HOME = '/';
+
+// Funder Administration Portal — RBAC trio (gate keys in PortalLayout's
+// NAV_ITEMS; a route renders only if the manifest holds its key).
+export const ADMIN = {
+  ROLES: '/admin/roles',
+  USERS: '/admin/users',
+  AUDIT: '/admin/audit',
+};

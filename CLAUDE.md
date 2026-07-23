@@ -1057,8 +1057,7 @@ hardcoded role checks anywhere.
   property needs a decorator, and repository lookups by client-supplied ids
   should reject non-integers (see `getOwnOrgRole`).
 
-**Not done yet (deliberate):** the three portal screens (await Tony's
-frontend design; build in web-next); rolling `@RequirePermission` onto
+**Not done yet (deliberate):** rolling `@RequirePermission` onto
 existing feature endpoints (they keep JwtAuthGuard + funderPersonaId scoping
 until their screens go manifest-driven — do the swap per-domain, not
 big-bang); retiring CASL + the enum `organization_person_role` path (legacy,
@@ -1146,7 +1145,47 @@ mapping — the open "design the nav part of the manifest" item). Renaming a
 screen in the inventory is free; renaming a shipped KEY is not
 (add + migrate, never rename).
 
-### Portal screens — design spec from "Dynanic RBAC.pdf" (not built)
+### Portal screens — RBAC trio BUILT in web-next (2026-07-24)
+
+The three screens below are implemented in `apps/web-next` per this spec and
+the phase-3 wireframes, verified live in the browser against the real stack
+(role created + permission set saved through the UI → role_permission rows +
+ROLE_CREATED/ROLE_PERMISSIONS_CHANGED audit rows confirmed in Postgres; JSON
+before/after vault rendering real metadataPayload):
+- Routes `/admin/roles|users|audit` inside `PortalLayout`
+  (`src/components/layout/PortalLayout.tsx`) — manifest-driven sidebar: nav
+  items render only when their gate key is held (route↔key map lives in
+  NAV_ITEMS until the manifest carries navigation); deep links to unheld
+  routes silently land Home. Dirty-state guard via `dirty-guard.tsx` context
+  (nav interception + beforeunload; react-router useBlocker needs a data
+  router — revisit at migration).
+- `screens/Admin/RoleBuilder.tsx` — 30/70 master-detail, category accordions
+  from GET permissions, Select All with indeterminate state, inline
+  descriptions, whole-set-replace save, immutable-role lockout + banner.
+- `screens/Admin/UserDirectory.tsx` — member grid, 40% assignment drawer
+  (chip removal queue, add-role select, live inherited-permissions preview
+  computed client-side; preview shows "ALL" for immutable-role holders),
+  apply = sequential POST/DELETE role assignments, enrollment-link re-issue
+  (shows the one-time URL + copy), session kill switch. Action controls are
+  ABSENT (not disabled) without their key.
+- `screens/Admin/AuditLedger.tsx` — read-only feed, risk badges derived
+  from event type (shared Badge component, label + color), JSON
+  historical/transformed context drawer, Load more paging, client-side CSV
+  export gated by admin_audit_export. Auth events + per-session rows await
+  their endpoints (kill switch lives in the User Directory drawer meanwhile).
+- UI primitives are dependency-free shadcn-idiom components
+  (`components/ui/{badge,table,checkbox,dialog,sheet}.tsx`) — swap for the
+  Radix-based shadcn set when the ui-ux-pro-max token pass lands. MASTER.md
+  accent #0369A1 applied to --primary/--ring in index.css meanwhile.
+- Known nits: the "Permission set saved" notice is cleared instantly by the
+  post-save query re-sync; Create User (admin_users_create) needs its
+  backend endpoint before the button ships.
+- Org-2 dev DB now has a real mutable role: "Risk Operations Manager"
+  (risk_profiles_view/approve, config_risk_filters_assign,
+  config_credit_ranges_manage) — created during verification, kept
+  deliberately (the blueprint names this role).
+
+### Portal screens — design spec from "Dynanic RBAC.pdf" (baseline)
 
 Source: `SQF ARCHITECTURE/Dynanic RBAC.pdf` §3 (UI Component Blueprint & UX
 Interaction Rules). Tony's Funder Administration Portal frontend design will
