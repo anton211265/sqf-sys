@@ -21,6 +21,7 @@ const ORG_A = 2; // Synlian — existing dev org
 const ADMIN_EMAIL = 'e2e-rbac-admin@test.local';
 const USER_EMAIL = 'e2e-rbac-user@test.local';
 const ORGB_EMAIL = 'e2e-rbac-orgb@test.local';
+const ORGB_USER_EMAIL = 'e2e-rbac-orgb-user@test.local';
 const ORG_B_NAME = 'E2E RBAC Org B';
 const TEST_ROLE = 'E2E Risk Officer';
 
@@ -118,13 +119,17 @@ function setup() {
      JOIN person p ON p.id = op."personId" WHERE p.email = '${ADMIN_EMAIL}'`,
   );
 
-  // Org B with its own Super Admin, for isolation tests
+  // Org B with its own Super Admin, for isolation + last-admin tests.
+  // Last-admin enforcement MUST run here, not in the shared dev org: org 2's
+  // immutable role can have real holders (e.g. admin@sqf.local), so only the
+  // script-owned org has a deterministic holder set.
   psql(`INSERT INTO organization ("organizationName", country) VALUES ('${ORG_B_NAME}', 'MY')`);
   psql(`INSERT INTO person (name, email) VALUES ('orgb-admin', '${ORGB_EMAIL}')`);
+  psql(`INSERT INTO person (name, email) VALUES ('orgb-user', '${ORGB_USER_EMAIL}')`);
   psql(
     `INSERT INTO organization_person ("organizationId", "personId", designation)
      SELECT o.id, p.id, 'E2E' FROM organization o, person p
-     WHERE o."organizationName" = '${ORG_B_NAME}' AND p.email = '${ORGB_EMAIL}'`,
+     WHERE o."organizationName" = '${ORG_B_NAME}' AND p.email IN ('${ORGB_EMAIL}', '${ORGB_USER_EMAIL}')`,
   );
   psql(
     `INSERT INTO organization_role (name, "isImmutable", "organizationId")
@@ -139,7 +144,7 @@ function setup() {
 }
 
 function teardown() {
-  const emails = `'${ADMIN_EMAIL}','${USER_EMAIL}','${ORGB_EMAIL}'`;
+  const emails = `'${ADMIN_EMAIL}','${USER_EMAIL}','${ORGB_EMAIL}','${ORGB_USER_EMAIL}'`;
   psql(`DELETE FROM enrollment_token WHERE "personId" IN (SELECT id FROM person WHERE email IN (${emails}))`);
   psql(`DELETE FROM webauthn_credential WHERE "personId" IN (SELECT id FROM person WHERE email IN (${emails}))`);
   psql(`DELETE FROM auth_audit_log WHERE email IN (${emails})`);
@@ -197,7 +202,14 @@ async function main() {
   console.log('\n[2] Permissions manifest');
   const adminManifest = await get('/api/rbac/manifest', admin.accessToken);
   check('admin manifest: isSuperAdmin', adminManifest.data?.user?.isSuperAdmin === true, JSON.stringify(adminManifest.data?.user));
-  check('admin manifest: all 40 permissions implicit', adminManifest.data?.permissions?.length === 40, String(adminManifest.data?.permissions?.length));
+  // Dictionary size is read live so add-only permission migrations don't
+  // break this assertion — the invariant is "Super Admin holds every key".
+  const dictSize = parseInt(psql('SELECT COUNT(*) FROM permission'), 10);
+  check(
+    `admin manifest: all ${dictSize} dictionary permissions implicit`,
+    dictSize > 0 && adminManifest.data?.permissions?.length === dictSize,
+    String(adminManifest.data?.permissions?.length),
+  );
   check('manifest exposes categories', Object.keys(adminManifest.data?.categories ?? {}).length >= 7);
 
   const userManifest = await get('/api/rbac/manifest', user.accessToken);
@@ -269,21 +281,28 @@ async function main() {
   const editPerms = await put(`/api/rbac/roles/${superAdminRole.id}/permissions`, { permissionKeys: [] }, admin.accessToken);
   check('immutable role permission edit blocked (403)', editPerms.status === 403);
 
-  // ── [7] Last-admin enforcement ──
+  // ── [7] Last-admin enforcement (Org B — script-owned holder set; the
+  //        shared dev org may have real Super Admin holders, which would
+  //        make "last holder" nondeterministic) ──
   console.log('\n[7] Last-admin enforcement');
   const adminPersonId = adminManifest.data.user.personId;
-  const lastAdmin = await del(`/api/rbac/users/${adminPersonId}/roles/${superAdminRole.id}`, admin.accessToken);
+  const orgBId = parseInt(psql(`SELECT id FROM organization WHERE "organizationName" = '${ORG_B_NAME}'`), 10);
+  const orgB = await createLogin(ORGB_EMAIL, orgBId);
+  const orgBManifest = await get('/api/rbac/manifest', orgB.accessToken);
+  const orgBRolesForAdmin = await get('/api/rbac/roles', orgB.accessToken);
+  const orgBSuperRole = (orgBRolesForAdmin.data ?? []).find((r) => r.isImmutable);
+  const orgbUserPersonId = parseInt(psql(`SELECT id FROM person WHERE email = '${ORGB_USER_EMAIL}'`), 10);
+
+  const lastAdmin = await del(`/api/rbac/users/${orgBManifest.data.user.personId}/roles/${orgBSuperRole.id}`, orgB.accessToken);
   check('removing last Super Admin holder blocked (400)', lastAdmin.status === 400, JSON.stringify(lastAdmin.data));
 
-  const secondAdmin = await post(`/api/rbac/users/${userManifest.data.user.personId}/roles`, { roleId: superAdminRole.id }, admin.accessToken);
-  check('second Super Admin assigned', secondAdmin.status === 201);
-  const removeSecond = await del(`/api/rbac/users/${userManifest.data.user.personId}/roles/${superAdminRole.id}`, admin.accessToken);
+  const secondAdmin = await post(`/api/rbac/users/${orgbUserPersonId}/roles`, { roleId: orgBSuperRole.id }, orgB.accessToken);
+  check('second Super Admin assigned', secondAdmin.status === 201, JSON.stringify(secondAdmin.data));
+  const removeSecond = await del(`/api/rbac/users/${orgbUserPersonId}/roles/${orgBSuperRole.id}`, orgB.accessToken);
   check('removal allowed when not the last holder (200)', removeSecond.status === 200);
 
   // ── [8] Org isolation ──
   console.log('\n[8] Tenant isolation');
-  const orgBId = parseInt(psql(`SELECT id FROM organization WHERE "organizationName" = '${ORG_B_NAME}'`), 10);
-  const orgB = await createLogin(ORGB_EMAIL, orgBId);
   const orgBRoles = await get('/api/rbac/roles', orgB.accessToken);
   check(
     'org B admin sees only org B roles',
@@ -299,6 +318,10 @@ async function main() {
   console.log('\n[9] Rename and delete');
   const renamed = await patch(`/api/rbac/roles/${roleId}`, { name: `${TEST_ROLE}`, description: 'renamed desc' }, admin.accessToken);
   check('mutable role update works', renamed.status === 200);
+  // Explicit unassign (org A) — also keeps a USER_ROLE_REMOVED event in this
+  // org's audit ledger now that last-admin enforcement runs in Org B.
+  const unassigned = await del(`/api/rbac/users/${userManifest.data.user.personId}/roles/${roleId}`, admin.accessToken);
+  check('role unassigned from user (200)', unassigned.status === 200, JSON.stringify(unassigned.data));
   const deleted = await del(`/api/rbac/roles/${roleId}`, admin.accessToken);
   check('mutable role delete works', deleted.status === 200);
   const userManifest3 = await get('/api/rbac/manifest', user.accessToken);

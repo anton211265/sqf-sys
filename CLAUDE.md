@@ -939,9 +939,12 @@ hardcoded role checks anywhere.
 - **Tables** (migration `1784700000000-DynamicRbac.ts`): `organization_role`
   extended in place (`organizationId` FK = tenant scope, `isImmutable`, unique
   org+name — the previously-empty table CLAUDE.md earmarked for this);
-  `permission` (code-owned dictionary, 40 keys across 9 categories seeded by
-  the migration — never rename a key in place, add + migrate; naming
-  convention below);
+  `permission` (code-owned dictionary — never rename a key in place, add +
+  migrate; naming convention below. 40 keys across 9 categories seeded by the
+  RBAC migration; +19 keys / 3 new categories for the Funder Administration
+  Portal in `1784800000000-FunderAdminPortalPermissions.ts` per the approved
+  annotation `docs/design/funder-admin-portal-sitemap-annotation.md` — 59
+  keys / 12 categories total);
   `role_permission`, `person_role` (junctions, cascade deletes);
   `rbac_audit_log` (append-only, jsonb `metadataPayload` with
   historical_state/transformed_state snapshots, written **in the same
@@ -974,10 +977,14 @@ hardcoded role checks anywhere.
   no legacy enum role). Passkey enrollment-token issuance now also accepts
   `admin_enrollment_tokens_issue` holders.
 - **E2E regression guard:** `node apps/trade-directory/src/scripts/e2e-rbac.mjs`
-  (host, Node ≥22) — 45 checks: backfill path, manifest, guard deny/allow
+  (host, Node ≥22) — 46 checks: backfill path, manifest, guard deny/allow
   flips on live permission edits, role lifecycle, immutable/last-admin
   safeguards, tenant isolation across two orgs, session revocation, audit
-  snapshot assertions. Shares `scripts/lib/soft-authenticator.mjs` with
+  snapshot assertions. The manifest check reads the dictionary size live (an
+  add-only permission migration doesn't break it), and last-admin enforcement
+  runs in the script-owned Org B — org 2's immutable role has real holders
+  (admin@sqf.local), so "last holder" is only deterministic in a
+  script-created org (fixed 2026-07-24 after both assumptions broke). Shares `scripts/lib/soft-authenticator.mjs` with
   e2e-passkey.mjs (both must stay green).
 - **Gotcha that cost a debugging round:** the global
   `ValidationPipe({ whitelist: true })` STRIPS any DTO property that has no
