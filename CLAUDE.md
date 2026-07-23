@@ -810,6 +810,31 @@ design input before real screens get built — the chassis below is
 infrastructure only (auth, routing skeleton, base components), not a
 green light to build domain screens without that spec in hand.
 
+### Agreed screen-build pipeline (2026-07-22) — four phases per domain
+
+This is HOW the storyboard input above turns into built screens; it makes
+the Dynamic RBAC permission model part of the design input so authorization
+is never retrofitted:
+
+1. **Sitemap inventory** — Tony completes the domain's sitemap + supporting
+   notes (business logic, process definitions, work-queue rules).
+2. **Joint permission-key annotation** — Tony + Claude annotate it together
+   using the standard notation (`[gate:]`/`[action:]`/`[inherit:]` + queue
+   rules; notation and CRUD-plus verb rules in the Dynamic RBAC section).
+   Claude proposes the annotated version + new dictionary keys for Tony's
+   sign-off; reused keys are marked so no near-duplicates get minted. A CRM
+   worked example was produced 2026-07-22 (in the conversation record /
+   project memory) — CRM's phase 2 is effectively drafted.
+3. **Skeleton wireframes** from the annotated inventory.
+4. **Final build in web-next** — screens + dictionary migration +
+   `@RequirePermission` guards + manifest nav extension land together.
+
+Sequencing: **domain-by-domain, not big-bang** — one domain can be at
+phase 4 while others are at phase 1. The **Funder Administration Portal can
+jump straight to phase 3** whenever Tony chooses: its interaction spec
+(Dynamic RBAC section), APIs, and `admin_*` keys already exist — it only
+needs the visual design pass.
+
 ### Dashboard visualization standard (agreed 2026-07-21)
 
 Tony's upcoming design includes many dashboards (line graphs, donut/pie
