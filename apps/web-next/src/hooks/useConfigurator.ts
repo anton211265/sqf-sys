@@ -114,3 +114,44 @@ export const useCreateAssignment = () => {
     onSuccess: () => invalidate('assignments', 'audit'),
   });
 };
+
+// ---- Billing / Calendar / Policies ----
+
+export const useBilling = () =>
+  useQuery({ queryKey: ['config', 'billing'], queryFn: api.getBilling });
+
+export const useCalendar = () =>
+  useQuery({ queryKey: ['config', 'calendar'], queryFn: api.getCalendar });
+
+export const usePolicies = () =>
+  useQuery({ queryKey: ['config', 'policies'], queryFn: api.getPolicies });
+
+const configMutation = <TInput,>(
+  fn: (input: TInput) => Promise<unknown>,
+  key: 'billing' | 'calendar' | 'policies',
+) =>
+  function useConfigMutation() {
+    const invalidate = useInvalidate();
+    return useMutation({
+      mutationFn: fn,
+      onSuccess: () => invalidate(key, 'audit'),
+    });
+  };
+
+export const useUpsertRateIndex = configMutation(api.upsertRateIndex, 'billing');
+export const useDeleteRateIndex = configMutation(api.deleteRateIndex, 'billing');
+export const useUpsertFee = configMutation(api.upsertFee, 'billing');
+export const useDeleteFee = configMutation(api.deleteFee, 'billing');
+export const usePatchBillingSettings = configMutation(api.patchBillingSettings, 'billing');
+
+export const useUpsertCalendarDay = configMutation(api.upsertCalendarDay, 'calendar');
+export const useDeleteCalendarDay = configMutation(api.deleteCalendarDay, 'calendar');
+export const usePatchCalendarSettings = configMutation(api.patchCalendarSettings, 'calendar');
+
+export const useUpsertSla = configMutation(api.upsertSla, 'policies');
+export const useDeleteSla = configMutation(api.deleteSla, 'policies');
+export const useUpsertApprovalRule = configMutation(api.upsertApprovalRule, 'policies');
+export const useDeleteApprovalRule = configMutation(api.deleteApprovalRule, 'policies');
+export const useUpsertCreditRange = configMutation(api.upsertCreditRange, 'policies');
+export const useDeleteCreditRange = configMutation(api.deleteCreditRange, 'policies');
+export const usePatchPolicySettings = configMutation(api.patchPolicySettings, 'policies');

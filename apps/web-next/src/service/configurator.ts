@@ -107,3 +107,97 @@ export const getConfigAudit = async (
   limit = 100,
 ): Promise<{ total: number; rows: ConfigAuditRow[] }> =>
   (await axiosClient().get(`${BASE}/audit`, { params: { limit } })).data;
+
+// ---- Billing & Fee Execution Engine ----
+
+export const getBilling = async (): Promise<import('types/ConfiguratorTypes').BillingOverview> =>
+  (await axiosClient().get(`${BASE}/billing`)).data;
+
+export const upsertRateIndex = async (input: {
+  indexCode: string;
+  ratePct: number;
+  updateMode?: 'MANUAL' | 'API';
+}) => (await axiosClient().put(`${BASE}/billing/indices`, input)).data;
+
+export const deleteRateIndex = async (id: number) =>
+  (await axiosClient().delete(`${BASE}/billing/indices/${id}`)).data;
+
+export const upsertFee = async (input: {
+  feeCode: string;
+  feeName: string;
+  amount: number;
+  chargeBasis?: string;
+  deductionRule?: string;
+  isActive?: boolean;
+}) => (await axiosClient().put(`${BASE}/billing/fees`, input)).data;
+
+export const deleteFee = async (id: number) =>
+  (await axiosClient().delete(`${BASE}/billing/fees/${id}`)).data;
+
+export const patchBillingSettings = async (input: {
+  dayCountConvention?: string;
+  penaltyMarginPct?: number;
+}) => (await axiosClient().patch(`${BASE}/billing/settings`, input)).data;
+
+// ---- Global Clearing Calendar ----
+
+export const getCalendar = async (): Promise<import('types/ConfiguratorTypes').CalendarOverview> =>
+  (await axiosClient().get(`${BASE}/calendar`)).data;
+
+export const upsertCalendarDay = async (input: {
+  region: string;
+  dayDate: string;
+  dayType?: string;
+  description?: string;
+  cutoffTime?: string;
+}) => (await axiosClient().post(`${BASE}/calendar/days`, input)).data;
+
+export const deleteCalendarDay = async (id: number) =>
+  (await axiosClient().delete(`${BASE}/calendar/days/${id}`)).data;
+
+export const patchCalendarSettings = async (input: { rolloverRule: string }) =>
+  (await axiosClient().patch(`${BASE}/calendar/settings`, input)).data;
+
+// ---- Governance Policies ----
+
+export const getPolicies = async (): Promise<import('types/ConfiguratorTypes').PoliciesOverview> =>
+  (await axiosClient().get(`${BASE}/policies`)).data;
+
+export const upsertSla = async (input: {
+  slaCode: string;
+  slaName: string;
+  windowValue: number;
+  windowUnit?: string;
+  breachAction: string;
+  isActive?: boolean;
+}) => (await axiosClient().put(`${BASE}/policies/slas`, input)).data;
+
+export const deleteSla = async (id: number) =>
+  (await axiosClient().delete(`${BASE}/policies/slas/${id}`)).data;
+
+export const upsertApprovalRule = async (input: {
+  id?: number;
+  scope: string;
+  thresholdAmount?: number;
+  requiredApprovals: number;
+  mode?: string;
+  description?: string;
+}) => (await axiosClient().put(`${BASE}/policies/approval-rules`, input)).data;
+
+export const deleteApprovalRule = async (id: number) =>
+  (await axiosClient().delete(`${BASE}/policies/approval-rules/${id}`)).data;
+
+export const upsertCreditRange = async (input: {
+  productCode: string;
+  riskBand: string;
+  minLimit: number;
+  maxLimit: number;
+}) => (await axiosClient().put(`${BASE}/policies/credit-ranges`, input)).data;
+
+export const deleteCreditRange = async (id: number) =>
+  (await axiosClient().delete(`${BASE}/policies/credit-ranges/${id}`)).data;
+
+export const patchPolicySettings = async (input: {
+  bankCountryMatchMode?: string;
+  corporateEmailMode?: string;
+}) => (await axiosClient().patch(`${BASE}/policies/settings`, input)).data;

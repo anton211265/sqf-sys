@@ -2,10 +2,13 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
+  CalendarDays,
   FileText,
+  Gavel,
   History,
   Home as HomeIcon,
   Package,
+  Receipt,
   ScrollText,
   ShieldCheck,
   Users,
@@ -53,6 +56,19 @@ const NAV_SECTIONS: { title: string | null; items: NavItem[] }[] = [
       { label: 'Products', route: CONFIG.PRODUCTS, gateKey: 'config_products_view', icon: Package },
       { label: 'Legal Templates', route: CONFIG.TEMPLATES, gateKey: 'config_products_view', icon: FileText },
       { label: 'Config Audit', route: CONFIG.AUDIT, gateKey: 'config_products_view', icon: History },
+    ],
+  },
+  {
+    title: 'Billing & Calendar',
+    items: [
+      { label: 'Billing & Fees', route: CONFIG.BILLING, gateKey: 'config_billing_view', icon: Receipt },
+      { label: 'Clearing Calendar', route: CONFIG.CALENDAR, gateKey: 'config_calendar_view', icon: CalendarDays },
+    ],
+  },
+  {
+    title: 'Governance',
+    items: [
+      { label: 'Governance Policies', route: CONFIG.POLICIES, gateKey: 'config_policies_view', icon: Gavel },
     ],
   },
 ];

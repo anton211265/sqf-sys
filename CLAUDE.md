@@ -828,6 +828,32 @@ files (a later phase); the renderer is a dependency-free mini-engine
   `PasskeyAuth`/`DynamicRbac` migrations had been applied without rows in
   the `migrations` table (blocking `migration:run`); their rows are now
   recorded, so `npm run migration:run --project=<app>` works normally again.
+- **Billing & Calendar + Governance Policies (BUILT 2026-07-24, same
+  service):** migration `1785100000000-BillingCalendarPolicies.ts` — tables
+  `base_rate_index`, `fee_schedule`, `calendar_day`, `sla_template`,
+  `approval_matrix_rule`, `credit_limit_range`, plus the per-funder
+  singleton `funder_config_settings` (auto-created on first read; its
+  slices are guarded by DIFFERENT keys: day-count/penalty =
+  config_billing_manage, roll-over rule = config_calendar_manage,
+  bank-country-match/corporate-email modes = config_policies_manage). APIs:
+  `/api/billing` (+ indices/fees upsert-by-code, settings),
+  `/api/calendar` (+ days upsert-by-region+date, settings), `/api/policies`
+  (+ slas / approval-rules / credit-ranges / settings, each family behind
+  its own key per the annotation). Rates are fractions like everywhere
+  else; nothing is seeded (narrow-initialization ruling). All writes
+  audited same-transaction incl. DELETE actions. e2e now **61 checks**.
+  Screens: `screens/Config/{BillingFees,ClearingCalendar,GovernancePolicies}.tsx`
+  under `/config/billing|calendar|policies`; sidebar sections mirror the
+  Role Builder categories (Billing & Calendar / Governance). SLA rows are
+  CONFIG ONLY — the engine that fires them (DB-driven timers → outbox →
+  notification) is still to build; the approval matrix is read by the
+  future Product Fulfillment executive gate; credit ranges by CRC limit
+  assignment; policy modes by Customer Portal onboarding validation.
+  Org-2 dev seed created via the screens: SOFR 5.31% (MANUAL), KYC_CHECK
+  fee 75/txn, ACT_360 + 3% penalty margin, MY Christmas Eve half-day
+  (12:00) + Christmas Day, the blueprint's five Section-1 SLA timers, the
+  two-tier OFFER_LETTER approval matrix (1 approver default, 2-of-N
+  parallel ≥ 500k), IF credit ranges (LOW 100k–2M, MEDIUM 50k–500k).
 
 ## Document Conversion (Markitdown)
 

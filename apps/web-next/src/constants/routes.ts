@@ -26,4 +26,7 @@ export const CONFIG = {
   PRODUCT_DETAIL: '/config/products/:id',
   TEMPLATES: '/config/legal-templates',
   AUDIT: '/config/audit',
+  BILLING: '/config/billing',
+  CALENDAR: '/config/calendar',
+  POLICIES: '/config/policies',
 };

@@ -70,6 +70,7 @@ const get = (path, token) => req(PC_BASE, 'GET', path, undefined, token);
 const post = (path, body, token) => req(PC_BASE, 'POST', path, body, token);
 const put = (path, body, token) => req(PC_BASE, 'PUT', path, body, token);
 const patch = (path, body, token) => req(PC_BASE, 'PATCH', path, body, token);
+const del = (path, token) => req(PC_BASE, 'DELETE', path, undefined, token);
 
 async function createLogin(email, orgId) {
   const authenticator = new SoftAuthenticator();
@@ -171,6 +172,17 @@ function teardown() {
     pc(`DELETE FROM product WHERE "funderOrganizationId" = ${orgCId}`);
     pc(`DELETE FROM legal_document_template WHERE "funderOrganizationId" = ${orgCId}`);
     pc(`DELETE FROM outbox_event WHERE (payload->>'funderOrganizationId')::int = ${orgCId}`);
+    for (const table of [
+      'base_rate_index',
+      'fee_schedule',
+      'calendar_day',
+      'sla_template',
+      'approval_matrix_rule',
+      'credit_limit_range',
+      'funder_config_settings',
+    ]) {
+      pc(`DELETE FROM ${table} WHERE "funderOrganizationId" = ${orgCId}`);
+    }
   }
   const emails = `'${ADMIN_EMAIL}','${VIEWER_EMAIL}','${ORG2_EMAIL}'`;
   td(`DELETE FROM enrollment_token WHERE "personId" IN (SELECT id FROM person WHERE email IN (${emails}))`);
@@ -319,6 +331,85 @@ async function main() {
   const outboxRows = pc(`SELECT topic || ':' || status FROM outbox_event WHERE (payload->>'funderOrganizationId')::int = ${orgCId}`).split('\n').filter(Boolean);
   check('outbox rows written for publishes + assignments', outboxRows.filter((r) => r.startsWith('rate_card_published')).length >= 3 && outboxRows.filter((r) => r.startsWith('product_assignment_created')).length >= 2, outboxRows.join(','));
   check('outbox relay marked events sent', outboxRows.some((r) => r.endsWith(':sent')), outboxRows.join(','));
+
+  // ── [8b] Billing & Fee Execution Engine ──
+  console.log('\n[8b] Billing & fees');
+  const billingDenied = await get('/api/billing', viewer.accessToken);
+  check('billing view denied without config_billing_view (403)', billingDenied.status === 403);
+  const sofr1 = await put('/api/billing/indices', { indexCode: 'SOFR', ratePct: 0.0531 }, admin.accessToken);
+  check('base rate index created', sofr1.status === 200 && parseFloat(sofr1.data.ratePct) === 0.0531, JSON.stringify(sofr1.data));
+  const sofr2 = await put('/api/billing/indices', { indexCode: 'SOFR', ratePct: 0.055, updateMode: 'API' }, admin.accessToken);
+  check('base rate index upserted in place', sofr2.status === 200 && sofr2.data.id === sofr1.data.id && parseFloat(sofr2.data.ratePct) === 0.055);
+  const fee = await put('/api/billing/fees', { feeCode: 'KYC_CHECK', feeName: 'KYC fee', amount: 75, chargeBasis: 'CHECK' }, admin.accessToken);
+  check('fee schedule row created', fee.status === 200 && parseFloat(fee.data.amount) === 75);
+  const billSettings = await patch('/api/billing/settings', { dayCountConvention: 'ACT_360', penaltyMarginPct: 0.03 }, admin.accessToken);
+  check('billing settings patched', billSettings.status === 200 && billSettings.data.dayCountConvention === 'ACT_360');
+  const billing = await get('/api/billing', admin.accessToken);
+  check(
+    'billing overview reflects writes',
+    billing.status === 200 &&
+      billing.data.indices.some((i) => i.indexCode === 'SOFR' && i.updateMode === 'API') &&
+      billing.data.fees.length === 1 &&
+      billing.data.settings.dayCountConvention === 'ACT_360' &&
+      parseFloat(billing.data.settings.penaltyMarginPct) === 0.03,
+    JSON.stringify(billing.data),
+  );
+
+  // ── [8c] Global Clearing Calendar ──
+  console.log('\n[8c] Clearing calendar');
+  const day1 = await post('/api/calendar/days', { region: 'MY', dayDate: '2026-12-24', dayType: 'HALF_DAY', cutoffTime: '12:00', description: 'Christmas Eve' }, admin.accessToken);
+  check('calendar day created', day1.status === 201 && day1.data.dayType === 'HALF_DAY', JSON.stringify(day1.data));
+  const day2 = await post('/api/calendar/days', { region: 'MY', dayDate: '2026-12-24', dayType: 'SHUTDOWN' }, admin.accessToken);
+  check('same region+date upserts (no duplicate)', day2.status === 201 && day2.data.id === day1.data.id && day2.data.dayType === 'SHUTDOWN');
+  const badDay = await post('/api/calendar/days', { region: 'MY', dayDate: '24/12/2026' }, admin.accessToken);
+  check('bad date format rejected (400)', badDay.status === 400);
+  const calSettings = await patch('/api/calendar/settings', { rolloverRule: 'PRECEDING' }, admin.accessToken);
+  check('roll-over rule patched', calSettings.status === 200 && calSettings.data.rolloverRule === 'PRECEDING');
+  const calendar = await get('/api/calendar', admin.accessToken);
+  check('calendar overview reflects writes', calendar.status === 200 && calendar.data.days.length === 1 && calendar.data.settings.rolloverRule === 'PRECEDING');
+  const viewerCal = await get('/api/calendar', viewer.accessToken);
+  check('calendar view denied without config_calendar_view (403)', viewerCal.status === 403);
+
+  // ── [8d] Governance Policies ──
+  console.log('\n[8d] Governance policies');
+  const sla = await put('/api/policies/slas', { slaCode: 'PROVISIONAL_OFFER', slaName: 'Provisional offer stage', windowValue: 2, windowUnit: 'WORKING_DAYS', breachAction: 'NOTIFY_CRC_MANAGER' }, admin.accessToken);
+  check('SLA template created', sla.status === 200 && sla.data.windowValue === 2, JSON.stringify(sla.data));
+  const viewerSla = await put('/api/policies/slas', { slaCode: 'X', slaName: 'x', windowValue: 1, breachAction: 'y' }, viewer.accessToken);
+  check('SLA upsert denied without config_sla_manage (403)', viewerSla.status === 403);
+  const rule = await put('/api/policies/approval-rules', { scope: 'OFFER_LETTER', thresholdAmount: 500000, requiredApprovals: 2, mode: 'PARALLEL', description: 'Committee 2-of-N above 500k' }, admin.accessToken);
+  check('approval matrix rule created', rule.status === 200 && rule.data.requiredApprovals === 2);
+  const range = await put('/api/policies/credit-ranges', { productCode: 'IF', riskBand: 'LOW', minLimit: 100000, maxLimit: 2000000 }, admin.accessToken);
+  check('credit range created', range.status === 200 && parseFloat(range.data.maxLimit) === 2000000);
+  const badRange = await put('/api/policies/credit-ranges', { productCode: 'IF', riskBand: 'HIGH', minLimit: 500, maxLimit: 100 }, admin.accessToken);
+  check('min > max credit range rejected (400)', badRange.status === 400);
+  const polSettings = await patch('/api/policies/settings', { bankCountryMatchMode: 'FLAG_ONLY' }, admin.accessToken);
+  check('policy settings patched', polSettings.status === 200 && polSettings.data.bankCountryMatchMode === 'FLAG_ONLY');
+  const policies = await get('/api/policies', admin.accessToken);
+  check(
+    'policies overview reflects writes',
+    policies.status === 200 &&
+      policies.data.slas.length === 1 &&
+      policies.data.approvalRules.length === 1 &&
+      policies.data.creditRanges.length === 1 &&
+      policies.data.settings.bankCountryMatchMode === 'FLAG_ONLY',
+    JSON.stringify(policies.data),
+  );
+  const singletonCount = pc(`SELECT COUNT(*) FROM funder_config_settings WHERE "funderOrganizationId" = ${orgCId}`);
+  check('funder settings singleton (billing+calendar+policies share one row)', singletonCount === '1', singletonCount);
+  const org2Policies = await get('/api/policies', org2Admin.accessToken);
+  check(
+    'org 2 admin sees none of Org C policies (tenant isolation)',
+    org2Policies.status === 200 && org2Policies.data.slas.every((s) => s.funderOrganizationId !== orgCId),
+  );
+  const rangeDeleted = await del(`/api/policies/credit-ranges/${range.data.id}`, admin.accessToken);
+  check('credit range delete works', rangeDeleted.status === 200);
+  const auditAfter = await get('/api/audit', admin.accessToken);
+  const auditTables = new Set((auditAfter.data?.rows ?? []).map((r) => r.targetTable));
+  check(
+    'audit covers new config tables incl. DELETE',
+    ['base_rate_index', 'fee_schedule', 'calendar_day', 'sla_template', 'approval_matrix_rule', 'credit_limit_range', 'funder_config_settings'].every((t) => auditTables.has(t)),
+    [...auditTables].join(','),
+  );
 
   // ── [9] Live permission revocation ──
   // Revoke through the real Role Builder endpoint (not raw SQL): the API

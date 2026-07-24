@@ -20,6 +20,9 @@ import ProductRegistry from 'screens/Config/ProductRegistry';
 import ProductDetail from 'screens/Config/ProductDetail';
 import LegalTemplates from 'screens/Config/LegalTemplates';
 import ConfigAudit from 'screens/Config/ConfigAudit';
+import BillingFees from 'screens/Config/BillingFees';
+import ClearingCalendar from 'screens/Config/ClearingCalendar';
+import GovernancePolicies from 'screens/Config/GovernancePolicies';
 
 const client = new QueryClient();
 
@@ -94,6 +97,9 @@ function Pages() {
         <Route path={CONFIG.PRODUCT_DETAIL} element={<ProductDetail />} />
         <Route path={CONFIG.TEMPLATES} element={<LegalTemplates />} />
         <Route path={CONFIG.AUDIT} element={<ConfigAudit />} />
+        <Route path={CONFIG.BILLING} element={<BillingFees />} />
+        <Route path={CONFIG.CALENDAR} element={<ClearingCalendar />} />
+        <Route path={CONFIG.POLICIES} element={<GovernancePolicies />} />
       </Route>
       <Route path="*" element={<Navigate to={AUTH.LOGIN} />} />
     </Routes>

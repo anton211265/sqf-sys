@@ -13,16 +13,30 @@ import { z } from 'zod';
 import { AssignmentsController } from './assignments/assignments.controller';
 import { AssignmentsService } from './assignments/assignments.service';
 import { ConfigAuditService } from './audit/config-audit.service';
+import { BillingController } from './billing/billing.controller';
+import { BillingService } from './billing/billing.service';
+import { CalendarController } from './calendar/calendar.controller';
+import { CalendarService } from './calendar/calendar.service';
 import { LegalTemplatesController } from './legal-templates/legal-templates.controller';
 import { LegalTemplatesService } from './legal-templates/legal-templates.service';
 import {
+  ApprovalMatrixRule,
+  BaseRateIndex,
+  CalendarDay,
   ClientProductAssignment,
+  CreditLimitRange,
+  FeeSchedule,
+  FunderConfigSettings,
   LegalDocumentTemplate,
   MasterRateCard,
   Product,
   ProductConfigAuditLog,
   ProductDocumentMapping,
+  SlaTemplate,
 } from './models';
+import { PoliciesController } from './policies/policies.controller';
+import { PoliciesService } from './policies/policies.service';
+import { ConfigSettingsService } from './settings/config-settings.service';
 import { OutboxRelayService } from './outbox/outbox-relay.service';
 import { ProductsController } from './products/products.controller';
 import { ProductsService } from './products/products.service';
@@ -43,6 +57,13 @@ import { OutboxEventRepository } from './repositories/outbox-event.repository';
       ProductDocumentMapping,
       ClientProductAssignment,
       ProductConfigAuditLog,
+      BaseRateIndex,
+      FeeSchedule,
+      CalendarDay,
+      SlaTemplate,
+      ApprovalMatrixRule,
+      CreditLimitRange,
+      FunderConfigSettings,
       OutboxEvent,
     ]),
     ConfigModule.forRoot({
@@ -90,15 +111,22 @@ import { OutboxEventRepository } from './repositories/outbox-event.repository';
     RateCardsController,
     LegalTemplatesController,
     AssignmentsController,
+    BillingController,
+    CalendarController,
+    PoliciesController,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     RemotePermissionGuard,
     ConfigAuditService,
+    ConfigSettingsService,
     ProductsService,
     RateCardsService,
     LegalTemplatesService,
     AssignmentsService,
+    BillingService,
+    CalendarService,
+    PoliciesService,
     OutboxEventRepository,
     OutboxRelayService,
   ],

@@ -17,7 +17,8 @@ export interface AuditEntry {
     | 'OVERRIDE'
     | 'PUBLISH'
     | 'ARCHIVE'
-    | 'BIND';
+    | 'BIND'
+    | 'DELETE';
   oldValues?: Record<string, unknown> | null;
   newValues: Record<string, unknown>;
   changeReason?: string | null;
