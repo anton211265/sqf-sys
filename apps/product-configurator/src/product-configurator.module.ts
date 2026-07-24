@@ -1,5 +1,6 @@
 import { DependencyInjectionTokenEnum } from '@app/common/constants/dependency-injection-token.enum';
 import { OutboxEvent } from '@app/common/database/outbox-event.entity';
+import { ProcessedEvent } from '@app/common/database/processed-event.entity';
 import { DatabaseModule } from '@app/common/database/database.module';
 import { LoggerModule } from '@app/common/logger/logger.module';
 import { Module } from '@nestjs/common';
@@ -33,10 +34,16 @@ import {
   ProductConfigAuditLog,
   ProductDocumentMapping,
   SlaTemplate,
+  SlaTimer,
 } from './models';
 import { PoliciesController } from './policies/policies.controller';
 import { PoliciesService } from './policies/policies.service';
 import { ConfigSettingsService } from './settings/config-settings.service';
+import { ProcessedEventRepository } from './repositories/processed-event.repository';
+import { SlaBreachService } from './sla/sla-breach.service';
+import { SlaConsumer } from './sla/sla.consumer';
+import { SlaController } from './sla/sla.controller';
+import { SlaTimerService } from './sla/sla-timer.service';
 import { OutboxRelayService } from './outbox/outbox-relay.service';
 import { ProductsController } from './products/products.controller';
 import { ProductsService } from './products/products.service';
@@ -64,7 +71,9 @@ import { OutboxEventRepository } from './repositories/outbox-event.repository';
       ApprovalMatrixRule,
       CreditLimitRange,
       FunderConfigSettings,
+      SlaTimer,
       OutboxEvent,
+      ProcessedEvent,
     ]),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -114,6 +123,8 @@ import { OutboxEventRepository } from './repositories/outbox-event.repository';
     BillingController,
     CalendarController,
     PoliciesController,
+    SlaController,
+    SlaConsumer,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
@@ -127,7 +138,10 @@ import { OutboxEventRepository } from './repositories/outbox-event.repository';
     BillingService,
     CalendarService,
     PoliciesService,
+    SlaTimerService,
+    SlaBreachService,
     OutboxEventRepository,
+    ProcessedEventRepository,
     OutboxRelayService,
   ],
 })

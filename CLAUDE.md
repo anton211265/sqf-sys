@@ -854,6 +854,37 @@ files (a later phase); the renderer is a dependency-free mini-engine
   (12:00) + Christmas Day, the blueprint's five Section-1 SLA timers, the
   two-tier OFFER_LETTER approval matrix (1 approver default, 2-of-N
   parallel ≥ 500k), IF credit ranges (LOW 100k–2M, MEDIUM 50k–500k).
+- **SLA firing engine (BUILT 2026-07-24, same service):** migration
+  `1785200000000-SlaTimers.ts` — `sla_timer` runtime instances (partial
+  unique index: one RUNNING timer per funder+slaCode+subject) +
+  `processed_event` (first Kafka consumers in this service; main.ts now
+  connects a Kafka microservice, groupId `product-configurator`).
+  **Kafka face** (how business flows use it): emit `SLA_TIMER_START` /
+  `SLA_TIMER_CANCEL` through your own outbox — payload
+  `{eventId, funderOrganizationId, slaCode, subjectType, subjectId,
+  region?, startedAt?, notifyEmail?, context?}`; consumer is idempotent
+  via processed_event AND start is idempotent by subject, so at-least-once
+  is safe; malformed/unknown-template messages are logged and dropped
+  (poison messages never wedge the group). **REST face**: GET
+  `/api/sla/timers` (config_policies_view — the portal monitor on the
+  Governance Policies screen, 15s poll, Resolve button), POST
+  `/api/sla/timers` + `/:id/resolve` (config_sla_manage — dev/backfill/
+  admin intervention). **Deadline math**: HOURS/DAYS absolute;
+  WORKING_DAYS skips weekends + the funder's clearing-calendar
+  HOLIDAY/SHUTDOWN days for the timer's region (HALF_DAY counts as
+  working). **Firing**: 30s cron marks overdue RUNNING timers BREACHED and
+  emits `SLA_BREACHED` via outbox in the same transaction, plus a real
+  `SEND_EMAIL` (raw emailBody, no template needed) when the start carried
+  notifyEmail — the notification service handles it from there. Mapping
+  the symbolic breachAction (NOTIFY_RM_SUPERVISOR…) to actual role holders
+  belongs to the business flows when they're built. The SlaConsumer
+  pre-creates this service's topics on boot (avoids the UNKNOWN_TOPIC
+  flake). e2e now **73 checks** incl. a full Kafka loopback (own outbox →
+  relay → real Kafka → own consumer), replayed-eventId idempotency and
+  live breach firing. Entity-file gotcha discovered here: the typeorm CLI
+  config only globs `src/models/**/*.entity.ts` — entity files MUST end in
+  `.entity.ts` or migrations fail with "Entity metadata not found" (the
+  grouped `*.entities.ts` files were renamed to comply).
 
 ## Document Conversion (Markitdown)
 

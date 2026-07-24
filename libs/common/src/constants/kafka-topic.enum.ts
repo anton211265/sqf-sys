@@ -44,6 +44,14 @@ export enum KafkaTopicEnum {
   RATE_CARD_PUBLISHED = 'rate_card_published',
   PRODUCT_ASSIGNMENT_CREATED = 'product_assignment_created',
 
+  // SLA firing engine (product-configurator). Business flows START/CANCEL
+  // timers through their own outbox; the engine emits SLA_BREACHED when a
+  // RUNNING timer passes its deadline (plus SEND_EMAIL when the start
+  // payload carried notifyEmail). Every message needs a top-level eventId.
+  SLA_TIMER_START = 'sla_timer_start',
+  SLA_TIMER_CANCEL = 'sla_timer_cancel',
+  SLA_BREACHED = 'sla_breached',
+
   REQUEST_KYC_REPORT = 'request_kyc_report',
   RECEIVE_KYC_REPORT = 'receive_kyc_report',
   SEND_EMAIL = 'send_email',

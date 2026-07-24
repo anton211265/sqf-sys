@@ -20,6 +20,8 @@ import {
   useDeleteSla,
   usePatchPolicySettings,
   usePolicies,
+  useResolveSlaTimer,
+  useSlaTimers,
   useUpsertApprovalRule,
   useUpsertCreditRange,
   useUpsertSla,
@@ -46,6 +48,8 @@ const GovernancePolicies: React.FC = () => {
 
   const upsertSla = useUpsertSla();
   const deleteSla = useDeleteSla();
+  const { data: timers = [] } = useSlaTimers();
+  const resolveTimer = useResolveSlaTimer();
   const upsertRule = useUpsertApprovalRule();
   const deleteRule = useDeleteApprovalRule();
   const upsertRange = useUpsertCreditRange();
@@ -174,6 +178,74 @@ const GovernancePolicies: React.FC = () => {
                     <button type="button" aria-label={`Delete ${row.slaCode}`} onClick={() => deleteSla.mutate(row.id)} className="text-muted-foreground hover:text-destructive">
                       <Trash2 className="h-4 w-4" />
                     </button>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </section>
+
+      {/* SLA timer monitor (runtime state, refreshes every 15s) */}
+      <section className="rounded-lg border bg-background p-4">
+        <h2 className="mb-3 font-medium">SLA Timer Monitor</h2>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>SLA</TableHead>
+              <TableHead>Subject</TableHead>
+              <TableHead>Deadline</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Notify</TableHead>
+              <TableHead />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {timers.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-muted-foreground">
+                  No timers yet — business flows start them via Kafka
+                  (SLA_TIMER_START); breaches fire every 30 seconds.
+                </TableCell>
+              </TableRow>
+            )}
+            {timers.map((timer) => (
+              <TableRow key={timer.id}>
+                <TableCell className="font-mono text-xs">{timer.slaCode}</TableCell>
+                <TableCell>
+                  {timer.subjectType} #{timer.subjectId}
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-muted-foreground">
+                  {new Date(timer.deadlineAt).toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={
+                      timer.status === 'BREACHED'
+                        ? 'red'
+                        : timer.status === 'RUNNING'
+                          ? 'blue'
+                          : 'green'
+                    }
+                  >
+                    {timer.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {timer.notifyEmail ?? '—'}
+                </TableCell>
+                <TableCell className="text-right">
+                  {canSla && timer.status === 'RUNNING' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={resolveTimer.isPending}
+                      onClick={() =>
+                        resolveTimer.mutate({ id: timer.id, reason: 'resolved from portal' })
+                      }
+                    >
+                      Resolve
+                    </Button>
                   )}
                 </TableCell>
               </TableRow>

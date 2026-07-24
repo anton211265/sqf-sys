@@ -201,3 +201,17 @@ export const patchPolicySettings = async (input: {
   bankCountryMatchMode?: string;
   corporateEmailMode?: string;
 }) => (await axiosClient().patch(`${BASE}/policies/settings`, input)).data;
+
+// ---- SLA firing engine ----
+
+export const getSlaTimers = async (
+  status?: string,
+): Promise<import('types/ConfiguratorTypes').SlaTimerRow[]> =>
+  (
+    await axiosClient().get(`${BASE}/sla/timers`, {
+      params: status ? { status } : {},
+    })
+  ).data;
+
+export const resolveSlaTimer = async (id: number, reason?: string) =>
+  (await axiosClient().post(`${BASE}/sla/timers/${id}/resolve`, { reason })).data;

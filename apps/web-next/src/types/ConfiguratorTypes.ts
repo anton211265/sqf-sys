@@ -186,3 +186,22 @@ export interface PoliciesOverview {
     corporateEmailMode: 'BLOCK' | 'FLAG_ONLY';
   } | null;
 }
+
+// ---- SLA firing engine ----
+
+export interface SlaTimerRow {
+  id: number;
+  funderOrganizationId: number;
+  slaCode: string;
+  subjectType: string;
+  subjectId: string;
+  region: string | null;
+  startedAt: string;
+  deadlineAt: string;
+  status: 'RUNNING' | 'RESOLVED' | 'BREACHED';
+  breachedAt: string | null;
+  resolvedAt: string | null;
+  resolveReason: string | null;
+  notifyEmail: string | null;
+  context: Record<string, unknown> | null;
+}

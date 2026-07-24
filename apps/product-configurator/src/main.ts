@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { KafkaOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
@@ -39,6 +40,20 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('product-configurator/api-docs', app, document);
+
+  // Kafka consumer side of the SLA engine (SLA_TIMER_START/CANCEL)
+  app.connectMicroservice<KafkaOptions>({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: configService.getOrThrow<string>('KAFKA_BROKERS').split(','),
+      },
+      consumer: {
+        groupId: 'product-configurator',
+      },
+    },
+  });
+  await app.startAllMicroservices();
 
   await app.listen(configService.getOrThrow('PORT'));
   process.on('SIGTERM', async () => await app.close());

@@ -2,9 +2,12 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsBoolean,
+  IsEmail,
   IsIn,
   IsInt,
+  IsISO8601,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   Matches,
@@ -16,8 +19,8 @@ import {
   ChargeBasisEnum,
   DeductionRuleEnum,
   RateUpdateModeEnum,
-} from '../models/billing.entities';
-import { CalendarDayTypeEnum } from '../models/calendar.entities';
+} from '../models/billing-config.entity';
+import { CalendarDayTypeEnum } from '../models/calendar-day.entity';
 import {
   BankCountryMatchModeEnum,
   CorporateEmailModeEnum,
@@ -28,7 +31,7 @@ import {
   ApprovalModeEnum,
   RiskBandEnum,
   SlaWindowUnitEnum,
-} from '../models/governance.entities';
+} from '../models/governance-config.entity';
 import { FormulaTypeEnum } from '../models/master-rate-card.entity';
 
 // Reminder (see CLAUDE.md, Dynamic RBAC gotcha): the global
@@ -343,6 +346,48 @@ export class UpsertCreditRangeDto {
   @IsNumber()
   @Min(0)
   maxLimit: number;
+}
+
+// ---- SLA firing engine ----
+
+export class StartTimerDto {
+  @Matches(/^[A-Z0-9_]{2,60}$/, {
+    message: 'slaCode must be 2-60 uppercase alphanumerics/underscores',
+  })
+  slaCode: string;
+
+  @Matches(/^[A-Z0-9_]{2,40}$/, {
+    message: 'subjectType must be 2-40 uppercase alphanumerics/underscores',
+  })
+  subjectType: string;
+
+  @IsString()
+  @MaxLength(60)
+  subjectId: string;
+
+  @IsOptional()
+  @Matches(/^[A-Z]{2,30}$/)
+  region?: string;
+
+  /** Backfill/testing override — omitted means "now". */
+  @IsOptional()
+  @IsISO8601()
+  startedAt?: string;
+
+  @IsOptional()
+  @IsEmail()
+  notifyEmail?: string;
+
+  @IsOptional()
+  @IsObject()
+  context?: Record<string, unknown>;
+}
+
+export class ResolveTimerDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  reason?: string;
 }
 
 export class PolicySettingsDto {

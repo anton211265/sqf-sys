@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { ConfigAuditService } from '../audit/config-audit.service';
 import { CalendarSettingsDto, UpsertCalendarDayDto } from '../dtos';
-import { CalendarDay } from '../models/calendar.entities';
+import { CalendarDay } from '../models/calendar-day.entity';
 import { funderScope, UserContext } from '../products/products.service';
 import { ConfigSettingsService } from '../settings/config-settings.service';
 

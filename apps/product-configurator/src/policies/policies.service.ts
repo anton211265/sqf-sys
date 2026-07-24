@@ -16,7 +16,7 @@ import {
   ApprovalMatrixRule,
   CreditLimitRange,
   SlaTemplate,
-} from '../models/governance.entities';
+} from '../models/governance-config.entity';
 import { funderScope, UserContext } from '../products/products.service';
 import { ConfigSettingsService } from '../settings/config-settings.service';
 

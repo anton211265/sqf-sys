@@ -155,3 +155,21 @@ export const useDeleteApprovalRule = configMutation(api.deleteApprovalRule, 'pol
 export const useUpsertCreditRange = configMutation(api.upsertCreditRange, 'policies');
 export const useDeleteCreditRange = configMutation(api.deleteCreditRange, 'policies');
 export const usePatchPolicySettings = configMutation(api.patchPolicySettings, 'policies');
+
+// ---- SLA firing engine ----
+
+export const useSlaTimers = () =>
+  useQuery({
+    queryKey: ['config', 'sla-timers'],
+    queryFn: () => api.getSlaTimers(),
+    refetchInterval: 15_000, // live monitor — the breach cron runs every 30s
+  });
+
+export const useResolveSlaTimer = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: number; reason?: string }) =>
+      api.resolveSlaTimer(id, reason),
+    onSuccess: () => invalidate('sla-timers'),
+  });
+};

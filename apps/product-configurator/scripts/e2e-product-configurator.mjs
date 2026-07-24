@@ -173,6 +173,7 @@ function teardown() {
     pc(`DELETE FROM legal_document_template WHERE "funderOrganizationId" = ${orgCId}`);
     pc(`DELETE FROM outbox_event WHERE (payload->>'funderOrganizationId')::int = ${orgCId}`);
     for (const table of [
+      'sla_timer', // before sla_template (RESTRICT FK)
       'base_rate_index',
       'fee_schedule',
       'calendar_day',
@@ -183,6 +184,7 @@ function teardown() {
     ]) {
       pc(`DELETE FROM ${table} WHERE "funderOrganizationId" = ${orgCId}`);
     }
+    pc(`DELETE FROM outbox_event WHERE topic = 'send_email' AND payload->>'emailSubject' LIKE '%SLA breached%'`);
   }
   const emails = `'${ADMIN_EMAIL}','${VIEWER_EMAIL}','${ORG2_EMAIL}'`;
   td(`DELETE FROM enrollment_token WHERE "personId" IN (SELECT id FROM person WHERE email IN (${emails}))`);
@@ -409,6 +411,88 @@ async function main() {
     'audit covers new config tables incl. DELETE',
     ['base_rate_index', 'fee_schedule', 'calendar_day', 'sla_template', 'approval_matrix_rule', 'credit_limit_range', 'funder_config_settings'].every((t) => auditTables.has(t)),
     [...auditTables].join(','),
+  );
+
+  // ── [8e] SLA firing engine ──
+  console.log('\n[8e] SLA firing engine');
+  const poll = async (fn, timeoutMs, intervalMs = 2000) => {
+    const until = Date.now() + timeoutMs;
+    for (;;) {
+      const result = await fn();
+      if (result) return result;
+      if (Date.now() > until) return null;
+      await new Promise((r) => setTimeout(r, intervalMs));
+    }
+  };
+  await put('/api/policies/slas', { slaCode: 'E2E_BREACH_1H', slaName: 'E2E breach test', windowValue: 1, windowUnit: 'HOURS', breachAction: 'NOTIFY_TEST' }, admin.accessToken);
+  await put('/api/policies/slas', { slaCode: 'E2E_WD_2D', slaName: 'E2E working days', windowValue: 2, windowUnit: 'WORKING_DAYS', breachAction: 'NOTIFY_TEST' }, admin.accessToken);
+  await post('/api/calendar/days', { region: 'MY', dayDate: '2026-01-06', dayType: 'HOLIDAY', description: 'e2e holiday' }, admin.accessToken);
+
+  const viewerStart = await post('/api/sla/timers', { slaCode: 'E2E_BREACH_1H', subjectType: 'APPLICATION', subjectId: 'X' }, viewer.accessToken);
+  check('timer start denied without config_sla_manage (403)', viewerStart.status === 403);
+  const viewerTimerList = await get('/api/sla/timers', viewer.accessToken);
+  check('timer list denied without config_policies_view (403)', viewerTimerList.status === 403);
+
+  const twoHoursAgo = new Date(Date.now() - 2 * 3600_000).toISOString();
+  const overdue = await post('/api/sla/timers', { slaCode: 'E2E_BREACH_1H', subjectType: 'APPLICATION', subjectId: 'OVERDUE_1', startedAt: twoHoursAgo, notifyEmail: 'sla-test@test.local' }, admin.accessToken);
+  check('overdue timer started (RUNNING, deadline in past)', overdue.status === 201 && overdue.data.status === 'RUNNING' && new Date(overdue.data.deadlineAt) < new Date(), JSON.stringify(overdue.data));
+  const dupStart = await post('/api/sla/timers', { slaCode: 'E2E_BREACH_1H', subjectType: 'APPLICATION', subjectId: 'OVERDUE_1' }, admin.accessToken);
+  check('duplicate start is idempotent (same timer)', dupStart.status === 201 && dupStart.data.id === overdue.data.id);
+  const unknownSla = await post('/api/sla/timers', { slaCode: 'NO_SUCH_SLA', subjectType: 'APPLICATION', subjectId: 'X' }, admin.accessToken);
+  check('unknown SLA code rejected (404)', unknownSla.status === 404);
+
+  const wdTimer = await post('/api/sla/timers', { slaCode: 'E2E_WD_2D', subjectType: 'APPLICATION', subjectId: 'WD_1', startedAt: '2026-01-05T09:00:00.000Z', region: 'MY' }, admin.accessToken);
+  check(
+    'WORKING_DAYS deadline skips weekend-adjacent holiday (Mon start + holiday Tue → Thu)',
+    wdTimer.status === 201 && String(wdTimer.data.deadlineAt).startsWith('2026-01-08'),
+    JSON.stringify(wdTimer.data.deadlineAt),
+  );
+
+  const resolvable = await post('/api/sla/timers', { slaCode: 'E2E_BREACH_1H', subjectType: 'APPLICATION', subjectId: 'RESOLVE_ME' }, admin.accessToken);
+  const resolved = await post(`/api/sla/timers/${resolvable.data.id}/resolve`, { reason: 'work completed' }, admin.accessToken);
+  check('running timer resolves (RESOLVED)', resolved.status === 201 && resolved.data.status === 'RESOLVED');
+
+  // Kafka face: write SLA_TIMER_START to this service's own outbox — the
+  // relay publishes to real Kafka and the service's own consumer picks it
+  // up (loopback through the full at-least-once path).
+  const kafkaEventId = randomBytes(16).toString('hex').replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5');
+  const startPayload = JSON.stringify({ eventId: kafkaEventId, funderOrganizationId: orgCId, slaCode: 'E2E_BREACH_1H', subjectType: 'APPLICATION', subjectId: 'KAFKA_1' });
+  pc(`INSERT INTO outbox_event (id, topic, payload) VALUES (gen_random_uuid(), 'sla_timer_start', '${startPayload}'::jsonb)`);
+  const kafkaTimer = await poll(async () => {
+    const timers = await get('/api/sla/timers', admin.accessToken);
+    return (timers.data ?? []).find((t) => t.subjectId === 'KAFKA_1') ?? null;
+  }, 30_000);
+  check('SLA_TIMER_START consumed from real Kafka', !!kafkaTimer, JSON.stringify(kafkaTimer));
+
+  pc(`INSERT INTO outbox_event (id, topic, payload) VALUES (gen_random_uuid(), 'sla_timer_start', '${startPayload}'::jsonb)`);
+  await new Promise((r) => setTimeout(r, 12_000));
+  const kafkaCount = pc(`SELECT COUNT(*) FROM sla_timer WHERE "funderOrganizationId" = ${orgCId} AND "subjectId" = 'KAFKA_1'`);
+  check('replayed eventId ignored (processed_event idempotency)', kafkaCount === '1', kafkaCount);
+
+  const cancelEventId = randomBytes(16).toString('hex').replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5');
+  const cancelPayload = JSON.stringify({ eventId: cancelEventId, funderOrganizationId: orgCId, slaCode: 'E2E_BREACH_1H', subjectType: 'APPLICATION', subjectId: 'KAFKA_1', reason: 'flow completed' });
+  pc(`INSERT INTO outbox_event (id, topic, payload) VALUES (gen_random_uuid(), 'sla_timer_cancel', '${cancelPayload}'::jsonb)`);
+  const cancelledTimer = await poll(async () => {
+    const timers = await get('/api/sla/timers?status=RESOLVED', admin.accessToken);
+    return (timers.data ?? []).find((t) => t.subjectId === 'KAFKA_1') ?? null;
+  }, 30_000);
+  check('SLA_TIMER_CANCEL consumed (timer RESOLVED)', !!cancelledTimer, JSON.stringify(cancelledTimer));
+
+  // Breach cron: the overdue + working-day timers pass their deadlines
+  const breached = await poll(async () => {
+    const timers = await get('/api/sla/timers?status=BREACHED', admin.accessToken);
+    const rows = timers.data ?? [];
+    return rows.some((t) => t.subjectId === 'OVERDUE_1') && rows.some((t) => t.subjectId === 'WD_1')
+      ? rows
+      : null;
+  }, 45_000, 3000);
+  check('breach cron fired overdue timers (BREACHED)', !!breached, JSON.stringify(breached?.map((t) => t.subjectId)));
+  await new Promise((r) => setTimeout(r, 7_000)); // let the relay flush
+  const breachOutbox = pc(`SELECT topic || ':' || status FROM outbox_event WHERE topic IN ('sla_breached','send_email') AND (payload->>'funderOrganizationId')::int = ${orgCId} OR (topic='send_email' AND payload->>'emailSubject' LIKE '%SLA breached%')`).split('\n').filter(Boolean);
+  check(
+    'breach emitted SLA_BREACHED + SEND_EMAIL via outbox (sent)',
+    breachOutbox.filter((r) => r.startsWith('sla_breached')).length >= 2 && breachOutbox.some((r) => r.startsWith('send_email')),
+    breachOutbox.join(','),
   );
 
   // ── [9] Live permission revocation ──

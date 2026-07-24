@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { ConfigAuditService } from '../audit/config-audit.service';
 import { BillingSettingsDto, UpsertFeeDto, UpsertRateIndexDto } from '../dtos';
-import { BaseRateIndex, FeeSchedule } from '../models/billing.entities';
+import { BaseRateIndex, FeeSchedule } from '../models/billing-config.entity';
 import { funderScope, UserContext } from '../products/products.service';
 import { ConfigSettingsService } from '../settings/config-settings.service';
 
