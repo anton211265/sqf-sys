@@ -7,6 +7,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { Application } from '../../models/application.entity';
 import { ProvisionalOffer, RateCardMirror } from '../../models/provisional-offer.entity';
+import { OfferAcceptance } from '../../models/offer-acceptance.entity';
+import { PortalJwtGuard } from '../portal-application/portal-jwt.guard';
+import { PortalOfferController } from './portal-offer.controller';
 import { RiskAuditLog } from '../../models/risk-governance.entity';
 import { OutboxEventRepository } from '../../repositories/outbox-event.repository';
 import { ProcessedEventRepository } from '../../repositories/processed-event.repository';
@@ -17,7 +20,7 @@ import { OffersService } from './offers.service';
 @Module({
   imports: [
     DatabaseModule.forFeature([
-      ProvisionalOffer, RateCardMirror, Application, RiskAuditLog,
+      ProvisionalOffer, RateCardMirror, OfferAcceptance, Application, RiskAuditLog,
       OutboxEvent, ProcessedEvent,
     ]),
     JwtModule.registerAsync({
@@ -27,8 +30,8 @@ import { OffersService } from './offers.service';
       inject: [ConfigService],
     }),
   ],
-  controllers: [OffersController, RateCardMirrorConsumer],
-  providers: [OffersService, RemotePermissionGuard, OutboxEventRepository, ProcessedEventRepository],
+  controllers: [OffersController, PortalOfferController, RateCardMirrorConsumer],
+  providers: [OffersService, RemotePermissionGuard, PortalJwtGuard, OutboxEventRepository, ProcessedEventRepository],
   exports: [OffersService],
 })
 export class OffersModule {}

@@ -5,6 +5,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  Length,
   MaxLength,
 } from 'class-validator';
 import type {
@@ -107,4 +108,18 @@ export class QrCompleteDto {
   @IsNotEmpty()
   @IsString()
   authCode: string;
+}
+
+/** Passkey e-signature (Customer Portal pass 2): a fresh assertion bound
+ * to the exact document hash being signed. */
+export class EsignVerifyDto {
+  @IsString()
+  reauthSessionId: string;
+
+  @IsObject()
+  response: Record<string, unknown>;
+
+  @IsString()
+  @Length(64, 64)
+  docSha256: string;
 }

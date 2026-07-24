@@ -39,6 +39,8 @@ export class ProvisionalOffer {
   @Column({ name: 'sent_at', type: 'timestamp', nullable: true }) sentAt: Date | null;
   @Column({ name: 'resolved_at', type: 'timestamp', nullable: true }) resolvedAt: Date | null;
   @Column({ name: 'resolution_note', type: 'varchar', length: 300, nullable: true }) resolutionNote: string | null;
+  @Column({ name: 'registration_fee_confirmed_at', type: 'timestamp', nullable: true }) registrationFeeConfirmedAt: Date | null;
+  @Column({ name: 'registration_fee_confirmed_by', type: 'integer', nullable: true }) registrationFeeConfirmedBy: number | null;
   @CreateDateColumn({ name: 'created_at', type: 'timestamp without time zone', default: () => 'LOCALTIMESTAMP' }) createdAt: Date;
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp without time zone', default: () => 'LOCALTIMESTAMP', onUpdate: 'LOCALTIMESTAMP' }) updatedAt: Date;
 }

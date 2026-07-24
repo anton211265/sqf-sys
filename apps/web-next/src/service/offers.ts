@@ -27,6 +27,7 @@ export interface OfferRow {
   checkerPersonId: number | null;
   approverPersonId: number | null;
   resolutionNote: string | null;
+  registrationFeeConfirmedAt: string | null;
   sentAt: string | null;
   updatedAt: string;
 }
@@ -46,6 +47,9 @@ export const offerAction = async (
   action: 'submit' | 'check' | 'return' | 'approve' | 'reject',
   note?: string,
 ): Promise<OfferRow> => (await axiosClient().post(`${BASE}/${id}/${action}`, note ? { note } : {})).data;
+export const confirmOfferFee = async (id: number): Promise<{ ok: boolean }> =>
+  (await axiosClient().post(`${BASE}/${id}/confirm-fee`, {})).data;
+
 export const resolveOffer = async (
   id: number,
   action: 'accept' | 'decline' | 'refresh' | 'close',

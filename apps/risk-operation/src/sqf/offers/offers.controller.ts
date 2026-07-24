@@ -72,6 +72,11 @@ export class OffersController {
     return this.offersService.reject(this.ctx(req), id, dto.note);
   }
 
+  @Post(':id/confirm-fee') @RequirePermission('risk_offers_resolve')
+  confirmFee(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    return this.offersService.confirmRegistrationFee(this.ctx(req), id);
+  }
+
   @Post(':id/resolve') @RequirePermission('risk_offers_resolve')
   resolve(@Req() req: any, @Param('id', ParseIntPipe) id: number, @Body() dto: ResolveDto) {
     return this.offersService.resolve(this.ctx(req), id, dto.action, dto.note);

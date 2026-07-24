@@ -39,6 +39,16 @@ export class WebIntakeController {
     return this.webIntakeService.list(req.userContext.orgId);
   }
 
+  /** My Clients (blueprint: RM sees own; supervisors see the team). */
+  @Get('/clients')
+  @RequirePermission('onboarding_clients_view')
+  listClients(@Req() req: any) {
+    const supervisor =
+      req.userContext.isSuperAdmin === true ||
+      req.userContext.permissions?.has?.('crm_supervisor_view') === true;
+    return this.webIntakeService.listClients(req.userContext.orgId, req.userContext.id, supervisor);
+  }
+
   @Post(':id/assign')
   @RequirePermission('crm_assignees_manage')
   assign(@Req() req: any, @Param('id', ParseIntPipe) id: number, @Body() dto: AssignIntakeDto) {
@@ -56,6 +66,24 @@ export class WebIntakeConsumerController {
     private readonly processedEventRepository: ProcessedEventRepository,
     @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
+
+  @EventPattern(KafkaTopicEnum.CLIENT_ONBOARDED)
+  async handleClientOnboarded(@Payload() event: any): Promise<void> {
+    try {
+      if (!event?.eventId || !Number.isInteger(event?.applicationId)) return;
+      if (await this.processedEventRepository.exists(event.eventId)) return;
+      await this.webIntakeService.markClientOnboarded(event.applicationId);
+      await this.entityManager.transaction(async (manager) => {
+        await this.processedEventRepository.record(manager, {
+          id: event.eventId,
+          topic: KafkaTopicEnum.CLIENT_ONBOARDED,
+        });
+      });
+      this.logger.log(`Client onboarded: application ${event.applicationId} (${event.companyName ?? ''})`);
+    } catch (error) {
+      this.logger.error(`CLIENT_ONBOARDED handling failed (dropped): ${(error as Error).message}`);
+    }
+  }
 
   @EventPattern(KafkaTopicEnum.APPLICATION_SCORED)
   async handleApplicationScored(@Payload() event: any): Promise<void> {

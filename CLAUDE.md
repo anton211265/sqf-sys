@@ -1230,6 +1230,50 @@ rulings recorded there). Keys `risk_offers_view/manage/check/approve/resolve`
   registration fee (Customer Portal pass 2 — next in sequence with the
   OL/Product Fulfillment chain).
 
+## Customer Portal — pass 2: offer acceptance + registration fee (BUILT 2026-07-24)
+
+Completes the ILO loop the Provisional Offer workspace ends at.
+
+- **Passkey e-signature ceremony** (the blueprint's acceptance-evidence
+  remedy): `POST /auth/passkey/esign-verify` (trade-directory, Bearer) —
+  fresh assertion via the existing reauth machinery (verifyReauth now
+  returns the credential too; QR call site updated) exchanged for a
+  5-minute JWT `{purpose:'esign', personId, credentialId, docSha256}`.
+  risk-operation verifies it locally (shared JWT_SECRET) and only accepts
+  when personId AND docSha256 match the caller and the offer's CURRENT
+  terms hash.
+- **Client ILO surface** (`/api/portal/offer`, PortalJwtGuard): sanitized
+  terms only (key commercial terms from offer inputs — NEVER internal
+  exposure/profit outputs); `termsSha256` = sha256 of the exact rendered
+  terms. `POST /api/portal/offer/respond` accept (needs esign token) /
+  decline (reason). Append-only `offer_acceptance` rows: hash, timestamp,
+  IP, credential id, decision (migration `2026-07-24-offer-acceptance.sql`).
+  Acceptance/decline cancels the OFFER_ACCEPTANCE SLA + audits via
+  CUSTOMER_PORTAL-tagged risk_audit_log rows.
+- **Registration fee → Applicant becomes Client**:
+  `POST /api/offers/:id/confirm-fee` (risk_offers_resolve — pass-2 stub
+  until Finance raises real invoices) emits **CLIENT_ONBOARDED** (new
+  topic); trade-directory consumer stamps `organization.fullyOnboardedAt`
+  (non-active client), CRM consumer flags the applicant_intake projection
+  → **My Clients is now a real screen** (`/api/crm/applicants-web/clients`,
+  onboarding_clients_view; RM own-scope, supervisors team). OfferWorkspace
+  shows the confirm-fee button on ACCEPTED and a CLIENT ONBOARDED badge.
+- **Portal screens**: `/offer` (ILO terms card with the doc hash reference,
+  "Accept & sign with passkey" → reauth → esign → respond; decline with
+  reason; fee-pending and welcome states) + home card.
+- **E2E:** `node apps/customer-portal/scripts/e2e-portal-pass2.mjs` — **17
+  checks**: sanitized view, accept-without-signature and tampered-hash
+  denies, esign bound to a different document rejected, signed acceptance
+  + evidence row + SLA cancel, double-response deny, fee key gate +
+  double-confirm deny, CLIENT_ONBOARDED over real Kafka into BOTH
+  consumers, My Clients listing, client-side fee status.
+- **Seed:** Sunrise's offer (id 5) driven to SENT via the real 3-role
+  chain (admin submit → co.officer check → cm.manager approve); the
+  Compliance Officer/Manager seed roles now also hold the offers keys.
+  Sign it in the portal as finance@sunrisecomponents.example.
+- **Still deferred**: real Finance invoice for the fee (Finance Hub),
+  offer PDF rendering, product workspaces/dashboards (portal pass 3).
+
 ## Document Conversion (Markitdown)
 
 [Microsoft Markitdown](https://github.com/microsoft/markitdown) converts Word/Excel/PowerPoint documents to Markdown before LLM extraction. Markdown is far cheaper in tokens than raw OOXML-derived text and preserves structure (tables, headings) better than naive extraction.

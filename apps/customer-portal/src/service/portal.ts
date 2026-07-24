@@ -45,3 +45,31 @@ export const uploadDocument = async (
   });
   return { uuid: data.uuid ?? data.documentUuid ?? data.id, fileName: file.name };
 };
+
+// ---- Customer Portal pass 2: provisional offer (ILO) ----
+
+export interface ClientOffer {
+  status: 'SENT' | 'ACCEPTED' | 'DECLINED' | 'LAPSED';
+  sentAt: string | null;
+  resolvedAt: string | null;
+  registrationFeeConfirmedAt: string | null;
+  companyName: string | null;
+  terms: {
+    offerId: number;
+    productCode: string;
+    scenario: string;
+    keyTerms: Record<string, number | null>;
+  };
+  termsSha256: string;
+}
+
+export const getOffer = async (): Promise<ClientOffer> =>
+  (await axiosClient().get('/risk-operation/api/portal/offer')).data;
+
+export const respondOffer = async (input: {
+  decision: 'accept' | 'decline';
+  termsSha256: string;
+  esignToken?: string;
+  reason?: string;
+}): Promise<{ status: string; nextStep: string | null }> =>
+  (await axiosClient().post('/risk-operation/api/portal/offer/respond', input)).data;

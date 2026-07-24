@@ -192,3 +192,24 @@ export const approveQrLogin = async (
     throw new Error(getApiResponseErrorMsg(e));
   }
 };
+
+/**
+ * Passkey e-signature ceremony (offer acceptance): fresh assertion ->
+ * short-lived esign JWT bound to the exact terms hash.
+ */
+export const esignDocument = async (docSha256: string): Promise<string> => {
+  const optionsRes = await axiosClient().post(
+    '/trade-directory/auth/passkey/reauth-options',
+    {},
+  );
+  const assertion = await startAuthentication(optionsRes.data.options);
+  const verifyRes = await axiosClient().post(
+    '/trade-directory/auth/passkey/esign-verify',
+    {
+      reauthSessionId: optionsRes.data.reauthSessionId,
+      response: assertion,
+      docSha256,
+    },
+  );
+  return verifyRes.data.esignToken as string;
+};

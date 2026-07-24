@@ -62,6 +62,15 @@ const PortalHome: React.FC = () => {
             </>
           )}
         </Card>
+        <Card className="p-6">
+          <h2 className="font-medium">Indicative Letter of Offer</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            When the funder approves an offer, review and sign it here with your passkey.
+          </p>
+          <Button className="mt-3" variant="outline" onClick={() => navigate(PORTAL.OFFER)}>
+            View offer
+          </Button>
+        </Card>
         <Card className="border-dashed p-4 text-sm text-muted-foreground">
           Once a facility is in force, your product workspaces (invoice uploads, drawdowns,
           settlement calendars) will appear here.

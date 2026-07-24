@@ -41,6 +41,11 @@ export const useOfferAction = () => {
   });
 };
 
+export const useConfirmOfferFee = () => {
+  const invalidate = useInvalidateOffers();
+  return useMutation({ mutationFn: api.confirmOfferFee, onSuccess: invalidate });
+};
+
 export const useSimulate = () =>
   useMutation({
     mutationFn: ({ scenario, inputs }: { scenario: string; inputs: Record<string, any> }) =>

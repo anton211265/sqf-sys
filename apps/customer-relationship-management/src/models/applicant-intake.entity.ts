@@ -53,6 +53,11 @@ export class ApplicantIntake {
   @Column({ type: 'timestamp without time zone', nullable: true })
   submittedAt: Date | null;
 
+  /** Set by the CLIENT_ONBOARDED consumer — the row now represents a
+   * non-active Client (My Clients list). */
+  @Column({ type: 'timestamp without time zone', nullable: true })
+  clientOnboardedAt: Date | null;
+
   @CreateDateColumn({
     type: 'timestamp without time zone',
     default: () => 'LOCALTIMESTAMP',

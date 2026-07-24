@@ -21,6 +21,7 @@ import { COOKIE_OPTIONS, REFRESH_COOKIE } from '../auth.controller';
 import { BearerContextGuard } from '../guards/bearer-context.guard';
 import { TokenPayload } from '../interface/token.interface';
 import {
+  EsignVerifyDto,
   IssueEnrollmentTokenDto,
   PasskeyLoginOptionsDto,
   PasskeyLoginVerifyDto,
@@ -117,6 +118,40 @@ export class PasskeyController {
   @Post('reauth-options')
   async reauthOptions(@UserContext() user: IUserContext) {
     return this.passkeyService.reauthOptions(user.id, user.orgId);
+  }
+
+  /**
+   * Passkey e-signature ceremony (Customer Portal pass 2): a fresh
+   * assertion (verifyReauth) exchanged for a 5-minute JWT bound to the
+   * exact document hash — risk-operation verifies it locally (shared
+   * JWT_SECRET) before recording the offer acceptance.
+   */
+  @UseGuards(BearerContextGuard)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Post('esign-verify')
+  async esignVerify(
+    @UserContext() user: IUserContext,
+    @Body() dto: EsignVerifyDto,
+    @Req() req: Request,
+  ) {
+    const { ipAddress, userAgent } = requestMeta(req);
+    const { credential } = await this.passkeyService.verifyReauth(
+      dto.reauthSessionId,
+      dto.response as never,
+      user.id,
+      userAgent,
+      ipAddress,
+    );
+    const esignToken = this.jwtService.sign(
+      {
+        purpose: 'esign',
+        personId: user.id,
+        credentialId: credential.credentialId,
+        docSha256: dto.docSha256,
+      },
+      { expiresIn: '5m' },
+    );
+    return { esignToken, credentialId: credential.credentialId };
   }
 
   @UseGuards(BearerContextGuard)

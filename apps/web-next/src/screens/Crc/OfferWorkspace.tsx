@@ -12,7 +12,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from 'components/ui/table';
 import { CRC } from 'constants/routes';
-import { useOffer, useOfferAction, useSaveOffer, useSimulate } from 'hooks/useOffers';
+import { useConfirmOfferFee, useOffer, useOfferAction, useSaveOffer, useSimulate } from 'hooks/useOffers';
 import { useHasPermission } from 'hooks/useRbac';
 import { SimulationResult } from 'service/offers';
 import { getApiResponseErrorMsg } from 'utils/apiHelper';
@@ -69,6 +69,7 @@ const OfferWorkspace: React.FC = () => {
   const saveOffer = useSaveOffer();
   const action = useOfferAction();
   const simulate = useSimulate();
+  const confirmFee = useConfirmOfferFee();
 
   const [inputs, setInputs] = React.useState<Record<string, any>>({});
   const [preview, setPreview] = React.useState<SimulationResult | null>(null);
@@ -155,6 +156,23 @@ const OfferWorkspace: React.FC = () => {
               <Button onClick={() => run('accept')}>Mark accepted (dev stub)</Button>
               <Button variant="outline" onClick={() => run('decline')}>Mark declined</Button>
             </>
+          )}
+          {offer.status === 'ACCEPTED' && !offer.registrationFeeConfirmedAt && hasPermission('risk_offers_resolve') && (
+            <Button
+              onClick={async () => {
+                setMsg(null); setErrs([]);
+                try {
+                  await confirmFee.mutateAsync(offer.id);
+                  setMsg('Registration fee confirmed — the applicant is now a non-active client.');
+                } catch (e) { setErrs([getApiResponseErrorMsg(e)]); }
+              }}
+              disabled={confirmFee.isPending}
+            >
+              Confirm registration fee received
+            </Button>
+          )}
+          {offer.status === 'ACCEPTED' && offer.registrationFeeConfirmedAt && (
+            <Badge variant="green">CLIENT ONBOARDED</Badge>
           )}
           {offer.status === 'LAPSED' && hasPermission('risk_offers_resolve') && (
             <>

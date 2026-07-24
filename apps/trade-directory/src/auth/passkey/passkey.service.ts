@@ -395,7 +395,7 @@ export class PasskeyService {
     expectedPersonId: number,
     userAgent: string | null,
     ipAddress: string | null,
-  ): Promise<Person> {
+  ): Promise<{ person: Person; credential: WebauthnCredential }> {
     const entry = this.assertionChallenges.take(reauthSessionId);
     if (!entry || entry.purpose !== 'reauth') {
       throw new UnauthorizedException('Re-authentication session expired');
@@ -408,7 +408,7 @@ export class PasskeyService {
       userAgent,
       ipAddress,
     });
-    return credential.person;
+    return { person: credential.person, credential };
   }
 
   private async verifyAssertion(

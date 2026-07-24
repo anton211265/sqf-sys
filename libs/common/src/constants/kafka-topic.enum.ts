@@ -60,6 +60,11 @@ export enum KafkaTopicEnum {
   // again on an RM fail->pass override). Consumed by CRM for the
   // supervisor "new applicants (web)" queue projection.
   APPLICATION_SCORED = 'application_scored',
+  // Customer Portal pass 2 (2026-07-24): emitted by risk-operation when the
+  // registration fee is confirmed after ILO acceptance — the Applicant
+  // becomes a non-active Client. Consumed by trade-directory
+  // (organization.fullyOnboardedAt) and CRM (My Clients projection).
+  CLIENT_ONBOARDED = 'client_onboarded',
   CREATE_CLIENT_ASSIGNEE = 'create_client_assignee',
 
   // ---------------------- SQF ----------------------

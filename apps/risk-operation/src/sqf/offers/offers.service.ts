@@ -255,6 +255,39 @@ export class OffersService {
     });
   }
 
+  /** Registration fee received (pass-2 stub for the future Finance flow):
+   * ACCEPTED offer -> Applicant becomes a non-active Client via
+   * CLIENT_ONBOARDED (trade-directory sets fullyOnboardedAt; CRM projects
+   * the My Clients list). */
+  async confirmRegistrationFee(ctx: Ctx, id: number) {
+    const offer = await this.get(ctx, id);
+    if (offer.status !== OfferStatusEnum.ACCEPTED) {
+      throw new BadRequestException('The registration fee applies after the offer is accepted');
+    }
+    if (offer.registrationFeeConfirmedAt) {
+      throw new BadRequestException('Registration fee already confirmed');
+    }
+    return this.dataSource.transaction(async (manager) => {
+      offer.registrationFeeConfirmedAt = new Date();
+      offer.registrationFeeConfirmedBy = ctx.personId;
+      await manager.save(ProvisionalOffer, offer);
+      await this.outboxEventRepository.record(manager, {
+        id: uuid(), topic: KafkaTopicEnum.CLIENT_ONBOARDED,
+        payload: {
+          eventId: uuid(),
+          organizationId: offer.organizationId,
+          funderOrganizationId: offer.funderOrganizationId,
+          applicationId: offer.applicationId,
+          offerId: offer.id,
+          companyName: offer.companyName,
+          productCode: offer.productCode,
+        } as Record<string, unknown>,
+      });
+      await this.audit(manager, 'REGISTRATION_FEE_CONFIRMED', offer, ctx, null);
+      return { ok: true, clientStatus: 'NON_ACTIVE_CLIENT' };
+    });
+  }
+
   /** SLA_BREACHED consumer path: acceptance window lapsed. */
   async onAcceptanceBreach(offerId: number): Promise<void> {
     const offer = await this.offerRepository.findOne({ where: { id: offerId } });

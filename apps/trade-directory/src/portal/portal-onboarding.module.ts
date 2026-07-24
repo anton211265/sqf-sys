@@ -9,6 +9,9 @@ import { OrganizationPerson } from '../models/organization-person.entity';
 import { Person } from '../models/person.entity';
 import { AuthAuditLogRepository } from '../repositories/auth-audit-log.repository';
 import { OutboxEventRepository } from '../repositories/outbox-event.repository';
+import { ProcessedEvent } from '@app/common/database/processed-event.entity';
+import { ProcessedEventRepository } from '../repositories/processed-event.repository';
+import { ClientOnboardedConsumer } from './client-onboarded.consumer';
 import { PortalOnboardingController } from './portal-onboarding.controller';
 import { PortalOnboardingService } from './portal-onboarding.service';
 
@@ -23,13 +26,15 @@ import { PortalOnboardingService } from './portal-onboarding.service';
       EnrollmentToken,
       AuthAuditLog,
       OutboxEvent,
+      ProcessedEvent,
     ]),
   ],
-  controllers: [PortalOnboardingController],
+  controllers: [PortalOnboardingController, ClientOnboardedConsumer],
   providers: [
     PortalOnboardingService,
     AuthAuditLogRepository,
     OutboxEventRepository,
+    ProcessedEventRepository,
   ],
 })
 export class PortalOnboardingModule {}

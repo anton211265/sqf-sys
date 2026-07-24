@@ -16,6 +16,7 @@ import CheckEmail from 'screens/Apply/CheckEmail';
 import PortalHome from 'screens/Portal/PortalHome';
 import ApplicationWizard from 'screens/Portal/ApplicationWizard';
 import ApplicationStatus from 'screens/Portal/ApplicationStatus';
+import OfferView from 'screens/Portal/OfferView';
 
 const client = new QueryClient();
 
@@ -79,6 +80,14 @@ function Pages() {
         element={
           <PrivateRoute>
             <ApplicationWizard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={PORTAL.OFFER}
+        element={
+          <PrivateRoute>
+            <OfferView />
           </PrivateRoute>
         }
       />

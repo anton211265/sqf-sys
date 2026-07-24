@@ -65,6 +65,29 @@ export class WebIntakeService {
     }));
   }
 
+  async markClientOnboarded(applicationId: number): Promise<void> {
+    const row = await this.applicantIntakeRepository.findOne({ where: { applicationId } });
+    if (row && !row.clientOnboardedAt) {
+      row.clientOnboardedAt = new Date();
+      await this.applicantIntakeRepository.save(row);
+    }
+  }
+
+  async listClients(funderOrganizationId: number, rmPersonId: number, supervisor: boolean) {
+    const qb = this.applicantIntakeRepository
+      .createQueryBuilder('a')
+      .where('a."clientOnboardedAt" IS NOT NULL')
+      .orderBy('a."clientOnboardedAt"', 'DESC')
+      .take(200);
+    if (funderOrganizationId !== 0) {
+      qb.andWhere('a."funderOrganizationId" = :funderOrganizationId', { funderOrganizationId });
+    }
+    if (!supervisor) {
+      qb.andWhere('a."assignedRmPersonId" = :rmPersonId', { rmPersonId });
+    }
+    return qb.getMany();
+  }
+
   async assign(funderOrganizationId: number, id: number, rmPersonId: number) {
     const row = await this.applicantIntakeRepository.findOne({ where: { id } });
     if (!row || (funderOrganizationId !== 0 && row.funderOrganizationId !== funderOrganizationId)) {

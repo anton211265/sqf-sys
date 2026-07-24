@@ -199,7 +199,7 @@ export class QrLoginService {
     }
 
     // Fresh biometric proof — a stolen phone with an open session is not enough
-    const person = await this.passkeyService.verifyReauth(
+    const { person } = await this.passkeyService.verifyReauth(
       dto.reauthSessionId,
       dto.response,
       mobilePersonId,
