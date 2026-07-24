@@ -7,7 +7,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { store, persistor, RootState } from 'redux/store';
 import { setData } from 'redux/user';
 import axiosClient, { getAccessToken, setAccessToken } from 'api/axiosClient';
-import { ADMIN, AUTH, CONFIG, CRC, CRM, HOME } from 'constants/routes';
+import { ADMIN, AUTH, CONFIG, CRC, CRM, HOME, OPS } from 'constants/routes';
 import PortalLayout from 'components/layout/PortalLayout';
 import Login from 'screens/Auth/Login';
 import Enroll from 'screens/Auth/Enroll';
@@ -30,6 +30,7 @@ import RiskModelBuilder from 'screens/Crc/RiskModelBuilder';
 import RunAssessment from 'screens/Crc/RunAssessment';
 import OfferQueue from 'screens/Crc/OfferQueue';
 import OfferWorkspace from 'screens/Crc/OfferWorkspace';
+import OperationsDashboard from 'screens/Ops/OperationsDashboard';
 import Pipeline from 'screens/Crm/Pipeline';
 import SupervisorDashboard from 'screens/Crm/SupervisorDashboard';
 import SiteVisits from 'screens/Crm/SiteVisits';
@@ -118,6 +119,7 @@ function Pages() {
         <Route path={CRC.ASSESSMENTS} element={<RunAssessment />} />
         <Route path={CRC.OFFERS} element={<OfferQueue />} />
         <Route path={CRC.OFFER_DETAIL} element={<OfferWorkspace />} />
+        <Route path={OPS.DASHBOARD} element={<OperationsDashboard />} />
         <Route path={CRM.SUPERVISOR} element={<SupervisorDashboard />} />
         <Route path={CRM.PIPELINE} element={<Pipeline />} />
         <Route path={CRM.SITE_VISITS} element={<SiteVisits />} />

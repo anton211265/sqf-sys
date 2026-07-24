@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { AuthModule } from './auth/auth.module';
 import { RbacModule } from './rbac/rbac.module';
 import { PortalOnboardingModule } from './portal/portal-onboarding.module';
+import { OperationsModule } from './operations/operations.module';
 import { KycAgencyModule } from './kyc-agency/kyc-agency.module';
 import {
   ClientPersona,
@@ -57,6 +58,7 @@ import { PersonaSubscribersModule } from './models/subscribers/persona-subscribe
     AuthModule,
     RbacModule,
     PortalOnboardingModule,
+    OperationsModule,
     DatabaseModule,
     DatabaseModule.forFeature([
       Person,

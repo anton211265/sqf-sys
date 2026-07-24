@@ -25,7 +25,7 @@ import {
 
 import { setAccessToken } from 'api/axiosClient';
 import { Button } from 'components/ui/button';
-import { ADMIN, AUTH, CONFIG, CRC, CRM, HOME } from 'constants/routes';
+import { ADMIN, AUTH, CONFIG, CRC, CRM, HOME, OPS } from 'constants/routes';
 import { useManifest } from 'hooks/useRbac';
 import { cn } from 'lib/utils';
 import { RootState } from 'redux/store';
@@ -75,6 +75,12 @@ const NAV_SECTIONS: { title: string | null; items: NavItem[] }[] = [
       { label: 'Risk Models (Filter 2)', route: CRC.MODELS, gateKey: 'risk_models_view', icon: SlidersHorizontal },
       { label: 'Run Assessment', route: CRC.ASSESSMENTS, gateKey: 'risk_assessments_view', icon: ClipboardCheck },
       { label: 'Provisional Offers', route: CRC.OFFERS, gateKey: 'risk_offers_view', icon: Handshake },
+    ],
+  },
+  {
+    title: 'Operations Hub',
+    items: [
+      { label: 'Operations Dashboard', route: OPS.DASHBOARD, gateKey: 'ops_queue_view', icon: ClipboardList },
     ],
   },
   {

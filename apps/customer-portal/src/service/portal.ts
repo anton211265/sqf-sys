@@ -73,3 +73,21 @@ export const respondOffer = async (input: {
   reason?: string;
 }): Promise<{ status: string; nextStep: string | null }> =>
   (await axiosClient().post('/risk-operation/api/portal/offer/respond', input)).data;
+
+// ---- Operations Hub: facility agreement signature ----
+
+export interface ClientAgreement {
+  status: 'PENDING_SIGNATURE' | 'EXECUTED';
+  productCode: string;
+  companyName: string | null;
+  agreementText: string | null;
+  agreementSha256: string | null;
+  signedAt: string | null;
+  contractId: number | null;
+}
+
+export const getAgreement = async (): Promise<ClientAgreement> =>
+  (await axiosClient().get('/trade-directory/portal/agreement')).data;
+
+export const signAgreement = async (esignToken: string): Promise<{ status: string; contractId: number }> =>
+  (await axiosClient().post('/trade-directory/portal/agreement/sign', { esignToken })).data;

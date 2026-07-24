@@ -5,6 +5,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { KafkaTopicEnum } from '@app/common/constants/kafka-topic.enum';
 import { Organization } from '../models/organization.entity';
 import { ProcessedEventRepository } from '../repositories/processed-event.repository';
+import { OperationsService } from '../operations/operations.service';
 
 /**
  * Customer Portal pass 2: CLIENT_ONBOARDED (registration fee confirmed
@@ -20,6 +21,7 @@ export class ClientOnboardedConsumer {
     @InjectRepository(Organization)
     private readonly organizationRepository: Repository<Organization>,
     private readonly processedEventRepository: ProcessedEventRepository,
+    private readonly operationsService: OperationsService,
     @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
 
@@ -41,6 +43,9 @@ export class ClientOnboardedConsumer {
           `Organization ${organization.id} (${organization.organizationName}) is now a non-active client`,
         );
       }
+      // Operations Hub: the onboarded client queues for the Product
+      // Approval stage (agreement pack -> client signature -> facility).
+      await this.operationsService.createCaseFromOnboarding(event);
       await this.entityManager.transaction(async (manager) => {
         await this.processedEventRepository.record(manager, {
           id: event.eventId,

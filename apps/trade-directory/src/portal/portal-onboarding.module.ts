@@ -11,6 +11,7 @@ import { AuthAuditLogRepository } from '../repositories/auth-audit-log.repositor
 import { OutboxEventRepository } from '../repositories/outbox-event.repository';
 import { ProcessedEvent } from '@app/common/database/processed-event.entity';
 import { ProcessedEventRepository } from '../repositories/processed-event.repository';
+import { OperationsModule } from '../operations/operations.module';
 import { ClientOnboardedConsumer } from './client-onboarded.consumer';
 import { PortalOnboardingController } from './portal-onboarding.controller';
 import { PortalOnboardingService } from './portal-onboarding.service';
@@ -28,6 +29,7 @@ import { PortalOnboardingService } from './portal-onboarding.service';
       OutboxEvent,
       ProcessedEvent,
     ]),
+    OperationsModule,
   ],
   controllers: [PortalOnboardingController, ClientOnboardedConsumer],
   providers: [

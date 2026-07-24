@@ -18,6 +18,7 @@ export const PORTAL = {
   APPLICATION: '/application',
   STATUS: '/application/status',
   OFFER: '/offer',
+  AGREEMENT: '/agreement',
 };
 
 // Alias kept so the shared Login screen (ported from web-next) lands Home

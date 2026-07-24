@@ -43,6 +43,11 @@ export const CRC = {
   OFFER_DETAIL: '/crc/offers/:id',
 };
 
+// Operations Hub — trade-directory /api/operations (Product Approval).
+export const OPS = {
+  DASHBOARD: '/ops/dashboard',
+};
+
 // CRM domain — customer-relationship-management service.
 export const CRM = {
   SUPERVISOR: '/crm/supervisor',

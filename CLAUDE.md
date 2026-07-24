@@ -1274,6 +1274,53 @@ Completes the ILO loop the Provisional Offer workspace ends at.
 - **Still deferred**: real Finance invoice for the fee (Finance Hub),
   offer PDF rendering, product workspaces/dashboards (portal pass 3).
 
+## Operations Hub — pass 1: Product Approval (BUILT 2026-07-24)
+
+Blueprint §1 "Product Approval - Post Approval": the onboarded (fee-paid)
+client queues for an Operator who owns the lifecycle; agreement pack under
+operator-maker → second-operator check → Operations Manager approval; the
+client signatory executes with a passkey; the facility goes live.
+
+- **Keys** (migration 1786000000000, dictionary **77**, new category
+  "Operations"): ops_queue_view / ops_agreements_manage /
+  ops_agreements_check / ops_agreements_approve.
+- **`operations_case`** (trade-directory `src/operations/` — trade-directory
+  owns organizations + contracts, so the facility workflow lives here;
+  guarded by the NATIVE PermissionGuard, not the remote one): NEW →
+  IN_PREPARATION → PENDING_CHECK → CHECKED → PENDING_SIGNATURE → EXECUTED;
+  one live case per client org (partial unique index); maker≠checker≠OM
+  code-side. Cases are created by the CLIENT_ONBOARDED consumer —
+  risk-operation's emit now carries `keyTerms` (the accepted offer inputs)
+  so Operations renders the pack without a sync read.
+- **Agreement pack**: deterministic text render of the accepted terms +
+  sha256 (the configurator Handlebars template-pack integration is a
+  recorded follow-up — product_document_mapping bindings exist, they need
+  template mirroring or a service-scoped endpoint). OM approval →
+  PENDING_SIGNATURE + SLA `CLIENT_AGREEMENT_SIGNATURE` + notify email.
+- **Client execution** (`/portal/agreement` view + `/portal/agreement/sign`,
+  BearerContextGuard own-org): same esign ceremony as the ILO — the JWT
+  must be bound to the PACK's sha256 (an ILO-bound token is rejected).
+  Signing creates the **FACILITY_AGREEMENT `contract` row** (funder persona
+  resolved from the funder org, lendingProduct mapped from productCode) +
+  CONTRACT_UPSERTED outbox (knowledge graph projects it), stamps the
+  signature evidence (credential/IP/time/hash) immutably on the case, and
+  cancels the signature SLA. Facility "active" = contract in force.
+- **Screens**: web-next "Operations Hub" nav section → OperationsDashboard
+  (`/ops/dashboard`, 6-column kanban + case drawer with the pack text,
+  hash, chain buttons per status+key); portal `/agreement` (pack + "Execute
+  agreement — sign with passkey") + home card.
+- **E2E:** `node apps/trade-directory/src/scripts/e2e-operations.mjs` —
+  **31 checks**: the ENTIRE client journey in one script (registration →
+  offer chain → e-sign ILO acceptance → fee → CLIENT_ONBOARDED → case
+  queued with terms → operator chain with segregation negatives → client
+  signs pack → contract row asserted FACILITY_AGREEMENT/AR_FINANCE +
+  CONTRACT_UPSERTED queued + evidence recorded + no re-signing).
+- **Seed**: org-2 roles "Operator" (3 keys) + "Operations Manager" (2 keys).
+- **Deferred**: configurator template-pack rendering, registries screens
+  (client/supplier/buyer listings — projections of existing directory
+  data), invoice management workspace, facility suspension state machine,
+  subscription-row sync (needs client persona wiring).
+
 ## Document Conversion (Markitdown)
 
 [Microsoft Markitdown](https://github.com/microsoft/markitdown) converts Word/Excel/PowerPoint documents to Markdown before LLM extraction. Markdown is far cheaper in tokens than raw OOXML-derived text and preserves structure (tables, headings) better than naive extraction.

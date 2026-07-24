@@ -17,6 +17,7 @@ import PortalHome from 'screens/Portal/PortalHome';
 import ApplicationWizard from 'screens/Portal/ApplicationWizard';
 import ApplicationStatus from 'screens/Portal/ApplicationStatus';
 import OfferView from 'screens/Portal/OfferView';
+import AgreementView from 'screens/Portal/AgreementView';
 
 const client = new QueryClient();
 
@@ -88,6 +89,14 @@ function Pages() {
         element={
           <PrivateRoute>
             <OfferView />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={PORTAL.AGREEMENT}
+        element={
+          <PrivateRoute>
+            <AgreementView />
           </PrivateRoute>
         }
       />

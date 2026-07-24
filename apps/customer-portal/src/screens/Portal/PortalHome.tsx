@@ -71,6 +71,15 @@ const PortalHome: React.FC = () => {
             View offer
           </Button>
         </Card>
+        <Card className="p-6">
+          <h2 className="font-medium">Facility Agreement</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            After the registration fee, execute your facility agreement here with your passkey.
+          </p>
+          <Button className="mt-3" variant="outline" onClick={() => navigate(PORTAL.AGREEMENT)}>
+            View agreement
+          </Button>
+        </Card>
         <Card className="border-dashed p-4 text-sm text-muted-foreground">
           Once a facility is in force, your product workspaces (invoice uploads, drawdowns,
           settlement calendars) will appear here.

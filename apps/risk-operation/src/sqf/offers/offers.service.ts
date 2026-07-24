@@ -281,6 +281,9 @@ export class OffersService {
           offerId: offer.id,
           companyName: offer.companyName,
           productCode: offer.productCode,
+          // Accepted commercial terms (add-only, 2026-07-24): Operations
+          // renders the facility-agreement pack from these.
+          keyTerms: offer.inputs ?? {},
         } as Record<string, unknown>,
       });
       await this.audit(manager, 'REGISTRATION_FEE_CONFIRMED', offer, ctx, null);
