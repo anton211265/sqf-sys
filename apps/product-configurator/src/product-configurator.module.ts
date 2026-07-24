@@ -33,6 +33,7 @@ import {
   Product,
   ProductConfigAuditLog,
   ProductDocumentMapping,
+  ProductRiskFilterAssignment,
   SlaTemplate,
   SlaTimer,
 } from './models';
@@ -49,7 +50,7 @@ import { ProductsController } from './products/products.controller';
 import { ProductsService } from './products/products.service';
 import { RateCardsController } from './rate-cards/rate-cards.controller';
 import { RateCardsService } from './rate-cards/rate-cards.service';
-import { RemotePermissionGuard } from './rbac/remote-permission.guard';
+import { RemotePermissionGuard } from '@app/common/rbac/remote-permission.guard';
 import { OutboxEventRepository } from './repositories/outbox-event.repository';
 
 @Module({
@@ -72,6 +73,7 @@ import { OutboxEventRepository } from './repositories/outbox-event.repository';
       CreditLimitRange,
       FunderConfigSettings,
       SlaTimer,
+      ProductRiskFilterAssignment,
       OutboxEvent,
       ProcessedEvent,
     ]),

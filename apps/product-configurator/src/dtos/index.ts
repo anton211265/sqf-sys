@@ -348,6 +348,15 @@ export class UpsertCreditRangeDto {
   maxLimit: number;
 }
 
+export class AssignRiskFilterDto {
+  /** Omit or null to clear the assignment. */
+  @IsOptional()
+  @Matches(/^[A-Z0-9_-]{2,80}$/, {
+    message: 'riskProfileCode must be 2-80 uppercase alphanumerics/underscores/dashes',
+  })
+  riskProfileCode?: string | null;
+}
+
 // ---- SLA firing engine ----
 
 export class StartTimerDto {

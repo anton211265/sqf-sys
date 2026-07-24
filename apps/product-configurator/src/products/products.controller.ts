@@ -6,14 +6,16 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import {
   RemotePermissionGuard,
   RequirePermission,
-} from '../rbac/remote-permission.guard';
+} from '@app/common/rbac/remote-permission.guard';
 import {
+  AssignRiskFilterDto,
   CreateBespokeProductDto,
   CreateProductDto,
   UpdateProductDto,
@@ -51,5 +53,25 @@ export class ProductsController {
     @Body() dto: UpdateProductDto,
   ) {
     return this.productsService.update(req.userContext, id, dto);
+  }
+
+  @Get(':id/risk-filter')
+  @RequirePermission('config_products_view')
+  getRiskFilter(@Req() req, @Param('id', ParseIntPipe) id: number) {
+    return this.productsService.getRiskFilter(req.userContext, id);
+  }
+
+  @Put(':id/risk-filter')
+  @RequirePermission('config_risk_filters_assign')
+  assignRiskFilter(
+    @Req() req,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: AssignRiskFilterDto,
+  ) {
+    return this.productsService.assignRiskFilter(
+      req.userContext,
+      id,
+      dto.riskProfileCode ?? null,
+    );
   }
 }

@@ -12,7 +12,7 @@ import {
 import {
   RemotePermissionGuard,
   RequirePermission,
-} from '../rbac/remote-permission.guard';
+} from '@app/common/rbac/remote-permission.guard';
 import { RateCardFieldsDto } from '../dtos';
 import { RateCardsService } from './rate-cards.service';
 

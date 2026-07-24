@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
+  Gauge,
   FileText,
   Gavel,
   History,
@@ -56,6 +57,7 @@ const NAV_SECTIONS: { title: string | null; items: NavItem[] }[] = [
       { label: 'Products', route: CONFIG.PRODUCTS, gateKey: 'config_products_view', icon: Package },
       { label: 'Legal Templates', route: CONFIG.TEMPLATES, gateKey: 'config_products_view', icon: FileText },
       { label: 'Config Audit', route: CONFIG.AUDIT, gateKey: 'config_products_view', icon: History },
+      { label: 'Risk Profiles', route: CONFIG.RISK_PROFILES, gateKey: 'risk_profiles_view', icon: Gauge },
     ],
   },
   {

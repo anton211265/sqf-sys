@@ -23,6 +23,7 @@ import ConfigAudit from 'screens/Config/ConfigAudit';
 import BillingFees from 'screens/Config/BillingFees';
 import ClearingCalendar from 'screens/Config/ClearingCalendar';
 import GovernancePolicies from 'screens/Config/GovernancePolicies';
+import RiskProfiles from 'screens/Config/RiskProfiles';
 
 const client = new QueryClient();
 
@@ -100,6 +101,7 @@ function Pages() {
         <Route path={CONFIG.BILLING} element={<BillingFees />} />
         <Route path={CONFIG.CALENDAR} element={<ClearingCalendar />} />
         <Route path={CONFIG.POLICIES} element={<GovernancePolicies />} />
+        <Route path={CONFIG.RISK_PROFILES} element={<RiskProfiles />} />
       </Route>
       <Route path="*" element={<Navigate to={AUTH.LOGIN} />} />
     </Routes>

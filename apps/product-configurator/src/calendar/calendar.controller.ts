@@ -13,7 +13,7 @@ import {
 import {
   RemotePermissionGuard,
   RequirePermission,
-} from '../rbac/remote-permission.guard';
+} from '@app/common/rbac/remote-permission.guard';
 import { CalendarSettingsDto, UpsertCalendarDayDto } from '../dtos';
 import { CalendarService } from './calendar.service';
 

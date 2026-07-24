@@ -9,3 +9,4 @@ export * from './legal-document-template.entity';
 export * from './product-document-mapping.entity';
 export * from './client-product-assignment.entity';
 export * from './product-config-audit-log.entity';
+export * from './product-risk-filter-assignment.entity';

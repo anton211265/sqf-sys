@@ -12,7 +12,7 @@ import {
 import {
   RemotePermissionGuard,
   RequirePermission,
-} from '../rbac/remote-permission.guard';
+} from '@app/common/rbac/remote-permission.guard';
 import { ResolveTimerDto, StartTimerDto } from '../dtos';
 import { SlaTimerService } from './sla-timer.service';
 

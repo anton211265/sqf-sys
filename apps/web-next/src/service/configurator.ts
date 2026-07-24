@@ -215,3 +215,20 @@ export const getSlaTimers = async (
 
 export const resolveSlaTimer = async (id: number, reason?: string) =>
   (await axiosClient().post(`${BASE}/sla/timers/${id}/resolve`, { reason })).data;
+
+// ---- Filter-2 risk profile assignment ----
+
+export const getProductRiskFilter = async (
+  productId: number,
+): Promise<{ riskProfileCode: string | null }> =>
+  (await axiosClient().get(`${BASE}/products/${productId}/risk-filter`)).data;
+
+export const assignProductRiskFilter = async (
+  productId: number,
+  riskProfileCode: string | null,
+): Promise<{ riskProfileCode: string | null }> =>
+  (
+    await axiosClient().put(`${BASE}/products/${productId}/risk-filter`, {
+      riskProfileCode,
+    })
+  ).data;

@@ -13,7 +13,7 @@ import {
 import {
   RemotePermissionGuard,
   RequirePermission,
-} from '../rbac/remote-permission.guard';
+} from '@app/common/rbac/remote-permission.guard';
 import { BillingSettingsDto, UpsertFeeDto, UpsertRateIndexDto } from '../dtos';
 import { BillingService } from './billing.service';
 

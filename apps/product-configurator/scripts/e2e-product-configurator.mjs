@@ -20,6 +20,7 @@ import {
 
 const TD_BASE = 'http://localhost/trade-directory';
 const PC_BASE = 'http://localhost/product-configurator';
+const RO_BASE = 'http://localhost/risk-operation';
 const ORIGIN = 'http://localhost:3001';
 const ORG2 = 2;
 const ORG_C_NAME = 'E2E CFG Org C';
@@ -49,6 +50,7 @@ const psql = (db, sql) =>
   ).trim();
 const td = (sql) => psql('trade-directory', sql);
 const pc = (sql) => psql('product-configurator', sql);
+const ro = (sql) => psql('risk-operation', sql);
 
 async function req(base, method, path, body, token) {
   const headers = { 'Content-Type': 'application/json', Origin: ORIGIN };
@@ -185,6 +187,10 @@ function teardown() {
       pc(`DELETE FROM ${table} WHERE "funderOrganizationId" = ${orgCId}`);
     }
     pc(`DELETE FROM outbox_event WHERE topic = 'send_email' AND payload->>'emailSubject' LIKE '%SLA breached%'`);
+    // risk-governance artifacts (change requests + audit rows carry the
+    // e2e marker; DEFAULT profile weights are reverted through the API)
+    psql('risk-operation', `DELETE FROM risk_profile_change_request WHERE request_reason = 'e2e-governance'`);
+    psql('risk-operation', `DELETE FROM risk_audit_log WHERE payload->>'reason' = 'e2e-governance'`);
   }
   const emails = `'${ADMIN_EMAIL}','${VIEWER_EMAIL}','${ORG2_EMAIL}'`;
   td(`DELETE FROM enrollment_token WHERE "personId" IN (SELECT id FROM person WHERE email IN (${emails}))`);
@@ -494,6 +500,105 @@ async function main() {
     breachOutbox.filter((r) => r.startsWith('sla_breached')).length >= 2 && breachOutbox.some((r) => r.startsWith('send_email')),
     breachOutbox.join(','),
   );
+
+  // ── [8f] Risk profile governance (risk-operation, maker-checker) ──
+  console.log('\n[8f] Risk profile governance');
+  const roGet = (path, token) => req(RO_BASE, 'GET', path, undefined, token);
+  const roPost = (path, body, token) => req(RO_BASE, 'POST', path, body, token);
+
+  const profilesDenied = await roGet('/api/risk-governance/profiles', viewer.accessToken);
+  check('profiles denied without risk_profiles_view (403)', profilesDenied.status === 403);
+  const profilesRes = await roGet('/api/risk-governance/profiles', admin.accessToken);
+  const defaultProfile = (profilesRes.data ?? []).find((p) => p.isDefault);
+  const weightSum = (defaultProfile?.weights ?? []).reduce((s, w) => s + w.weight, 0);
+  check(
+    'default profile listed with 5 parameter weights totalling 100',
+    profilesRes.status === 200 && defaultProfile && defaultProfile.weights.length === 5 && Math.abs(weightSum - 100) < 0.01,
+    JSON.stringify(defaultProfile?.weights),
+  );
+
+  const wByName = (name) => defaultProfile.weights.find((w) => w.parameterName === name);
+  const liquidity = wByName('Liquidity');
+  const coverage = wByName('Coverage');
+
+  const badSum = await roPost('/api/risk-governance/change-requests', {
+    riskProfileCode: 'DEFAULT',
+    weights: [{ weightId: liquidity.weightId, newWeight: 99 }],
+    reason: 'e2e-governance',
+  }, admin.accessToken);
+  check('proposal breaking the 100 total rejected (400)', badSum.status === 400);
+
+  const request1 = await roPost('/api/risk-governance/change-requests', {
+    riskProfileCode: 'DEFAULT',
+    weights: [
+      { weightId: liquidity.weightId, newWeight: liquidity.weight - 2 },
+      { weightId: coverage.weightId, newWeight: coverage.weight + 2 },
+    ],
+    reason: 'e2e-governance',
+  }, admin.accessToken);
+  check('change request created (PENDING)', request1.status === 201 && request1.data.status === 'PENDING', JSON.stringify(request1.data));
+  const duplicateRequest = await roPost('/api/risk-governance/change-requests', {
+    riskProfileCode: 'DEFAULT',
+    weights: [{ weightId: liquidity.weightId, newWeight: liquidity.weight }],
+    reason: 'e2e-governance',
+  }, admin.accessToken);
+  check('second pending request for same profile rejected (409)', duplicateRequest.status === 409);
+
+  const selfApprove = await roPost(`/api/risk-governance/change-requests/${request1.data.id}/approve`, {}, admin.accessToken);
+  check('maker cannot approve own change (400)', selfApprove.status === 400, JSON.stringify(selfApprove.data));
+  const viewerApprove = await roPost(`/api/risk-governance/change-requests/${request1.data.id}/approve`, {}, viewer.accessToken);
+  check('approve denied without risk_profiles_approve (403)', viewerApprove.status === 403);
+
+  const approved = await roPost(`/api/risk-governance/change-requests/${request1.data.id}/approve`, {}, org2Admin.accessToken);
+  check('different approver applies the change', approved.status === 201 && approved.data.status === 'APPROVED');
+  const profilesAfter = await roGet('/api/risk-governance/profiles', admin.accessToken);
+  const liquidityAfter = (profilesAfter.data ?? []).find((p) => p.isDefault)?.weights.find((w) => w.parameterName === 'Liquidity');
+  check('approved weights applied to the live profile', liquidityAfter?.weight === liquidity.weight - 2, JSON.stringify(liquidityAfter));
+
+  // Revert to the seeded weights (the scoring regression guard depends on
+  // them), exercising the flow a second time.
+  const revert = await roPost('/api/risk-governance/change-requests', {
+    riskProfileCode: 'DEFAULT',
+    weights: [
+      { weightId: liquidity.weightId, newWeight: liquidity.weight },
+      { weightId: coverage.weightId, newWeight: coverage.weight },
+    ],
+    reason: 'e2e-governance',
+  }, admin.accessToken);
+  await roPost(`/api/risk-governance/change-requests/${revert.data.id}/approve`, {}, org2Admin.accessToken);
+  const profilesReverted = await roGet('/api/risk-governance/profiles', admin.accessToken);
+  const liquidityReverted = (profilesReverted.data ?? []).find((p) => p.isDefault)?.weights.find((w) => w.parameterName === 'Liquidity');
+  check('weights reverted to seeded values', liquidityReverted?.weight === liquidity.weight);
+
+  const request3 = await roPost('/api/risk-governance/change-requests', {
+    riskProfileCode: 'DEFAULT',
+    weights: [
+      { weightId: liquidity.weightId, newWeight: liquidity.weight - 1 },
+      { weightId: coverage.weightId, newWeight: coverage.weight + 1 },
+    ],
+    reason: 'e2e-governance',
+  }, admin.accessToken);
+  const rejected = await roPost(`/api/risk-governance/change-requests/${request3.data.id}/reject`, { note: 'e2e reject' }, org2Admin.accessToken);
+  const liquidityAfterReject = ((await roGet('/api/risk-governance/profiles', admin.accessToken)).data ?? [])
+    .find((p) => p.isDefault)?.weights.find((w) => w.parameterName === 'Liquidity');
+  check('rejected request leaves weights untouched', rejected.status === 201 && rejected.data.status === 'REJECTED' && liquidityAfterReject?.weight === liquidity.weight);
+
+  const riskAudit = ro(`SELECT event FROM risk_audit_log WHERE payload->>'reason' = 'e2e-governance' ORDER BY id`).split('\n').filter(Boolean);
+  check(
+    'risk audit log captured request/approve/reject',
+    riskAudit.includes('CHANGE_REQUESTED') && riskAudit.includes('CHANGE_APPROVED') && riskAudit.includes('CHANGE_REJECTED'),
+    riskAudit.join(','),
+  );
+
+  // Filter-2 profile → product assignment (product-configurator side)
+  const viewerAssignFilter = await put(`/api/products/${ifp.data.id}/risk-filter`, { riskProfileCode: 'INFORMATION_TECHNOLOGY-USD-100K' }, viewer.accessToken);
+  check('filter assignment denied without config_risk_filters_assign (403)', viewerAssignFilter.status === 403);
+  const assignedFilter = await put(`/api/products/${ifp.data.id}/risk-filter`, { riskProfileCode: 'INFORMATION_TECHNOLOGY-USD-100K' }, admin.accessToken);
+  check('filter-2 profile assigned to product', assignedFilter.status === 200 && assignedFilter.data.riskProfileCode === 'INFORMATION_TECHNOLOGY-USD-100K');
+  const readFilter = await get(`/api/products/${ifp.data.id}/risk-filter`, admin.accessToken);
+  check('assignment readable', readFilter.status === 200 && readFilter.data.riskProfileCode === 'INFORMATION_TECHNOLOGY-USD-100K');
+  const clearedFilter = await put(`/api/products/${ifp.data.id}/risk-filter`, {}, admin.accessToken);
+  check('assignment cleared with empty body', clearedFilter.status === 200 && clearedFilter.data.riskProfileCode === null);
 
   // ── [9] Live permission revocation ──
   // Revoke through the real Role Builder endpoint (not raw SQL): the API

@@ -12,7 +12,7 @@ import {
 import {
   RemotePermissionGuard,
   RequirePermission,
-} from '../rbac/remote-permission.guard';
+} from '@app/common/rbac/remote-permission.guard';
 import { CreateAssignmentDto } from '../dtos';
 import { AssignmentsService } from './assignments.service';
 import { ConfigAuditService } from '../audit/config-audit.service';

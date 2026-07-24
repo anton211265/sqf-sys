@@ -16,6 +16,7 @@ import {
   RateCardStatusEnum,
 } from '../models/master-rate-card.entity';
 import { Product } from '../models/product.entity';
+import { ProductRiskFilterAssignment } from '../models/product-risk-filter-assignment.entity';
 import { validateRateCardRules } from '../rate-cards/rate-card-rules';
 
 export interface UserContext {
@@ -131,6 +132,57 @@ export class ProductsService {
         funderOrganizationId: product.funderOrganizationId,
       });
       return saved;
+    });
+  }
+
+  /** Filter-2 risk profile assignment for a product (null = unassigned). */
+  async getRiskFilter(user: UserContext, productId: number) {
+    await this.getOwn(user, productId);
+    const assignment = await this.dataSource
+      .getRepository(ProductRiskFilterAssignment)
+      .findOne({ where: { productId } });
+    return { riskProfileCode: assignment?.riskProfileCode ?? null };
+  }
+
+  /**
+   * Assign/replace/clear the product's second-filter risk profile
+   * (annotation action config_risk_filters_assign). riskProfileCode is a
+   * bare risk-operation reference; audited with old/new like every other
+   * config change.
+   */
+  async assignRiskFilter(
+    user: UserContext,
+    productId: number,
+    riskProfileCode: string | null,
+  ) {
+    const product = await this.getOwn(user, productId);
+    return this.dataSource.transaction(async (manager) => {
+      const existing = await manager.findOne(ProductRiskFilterAssignment, {
+        where: { productId },
+      });
+      if (riskProfileCode === null || riskProfileCode === undefined) {
+        if (existing) await manager.delete(ProductRiskFilterAssignment, { productId });
+      } else if (existing) {
+        existing.riskProfileCode = riskProfileCode;
+        await manager.save(ProductRiskFilterAssignment, existing);
+      } else {
+        await manager.save(ProductRiskFilterAssignment, {
+          funderOrganizationId: product.funderOrganizationId,
+          productId,
+          riskProfileCode,
+        });
+      }
+      await this.auditService.record(manager, {
+        targetTable: 'product_risk_filter_assignment',
+        entityId: productId,
+        productId,
+        actorPersonId: user.id,
+        actionPerformed: 'BIND',
+        oldValues: { riskProfileCode: existing?.riskProfileCode ?? null },
+        newValues: { riskProfileCode: riskProfileCode ?? null },
+        funderOrganizationId: product.funderOrganizationId,
+      });
+      return { riskProfileCode: riskProfileCode ?? null };
     });
   }
 

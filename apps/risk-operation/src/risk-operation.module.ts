@@ -42,6 +42,7 @@ import { RiskManualReviewAlert } from './models/risk-manual-review-alert.entity'
 import { FinancialCreditReportModule } from './sqf/financial-credit-report/financial-credit-report.module';
 import { RiskQuantitativeProfileScoringModule } from './sqf/risk-quantitative-profile-scoring/risk-quantitative-profile-scoring.module';
 import { RiskProfileModule } from './sqf/risk-profile/risk-profile.module';
+import { RiskGovernanceModule } from './sqf/risk-governance/risk-governance.module';
 import { RiskQuantitativeProfileWeightModule } from './sqf/risk-quantitative-profile-weight/risk-quantitative-profile-weight.module';
 import { RiskQuantitativeParameterModule } from './sqf/risk-quantitative-parameter/risk-quantitative-parameter.module';
 import { RiskQuantitativeThresholdRuleModule } from './sqf/risk-quantitative-threshold-rule/risk-quantitative-threshold-rule.module';
@@ -107,6 +108,7 @@ import { FinancialReportIntakeModule } from './sqf/financial-report-intake/finan
     FinancialCreditReportModule,
     RiskQuantitativeProfileScoringModule,
     RiskProfileModule,
+    RiskGovernanceModule,
     RiskQuantitativeProfileWeightModule,
     RiskQuantitativeParameterModule,
     RiskQuantitativeThresholdRuleModule,

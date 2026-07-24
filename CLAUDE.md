@@ -801,18 +801,24 @@ files (a later phase); the renderer is a dependency-free mini-engine
   (SQFSYS orgId 0 sees all); the automated "client status → active"
   assignment trigger is NOT built yet — arrives with the Product Approval
   flow as a Kafka consumer on the same `AssignmentsService.create` path.
-- **Cross-service Dynamic RBAC — first adopter.**
-  `src/rbac/remote-permission.guard.ts`: verifies the JWT locally (shared
-  `JWT_SECRET`), then resolves the caller's permission set by calling
-  trade-directory's existing `GET /api/rbac/manifest` with the forwarded
-  bearer token (env `RBAC_MANIFEST_URL`), cached in-process for 30s per
-  token, **fail closed** on manifest errors. trade-directory stays the single
-  RBAC authority; no new endpoint was needed. Gotcha: trade-directory's own
-  manifest cache busts only on RBAC **API** writes — permission changes made
-  via raw SQL stay visible for up to 30s (the e2e revokes via the real Role
-  Builder endpoint for exactly this reason). Future services adopt this same
-  guard pattern; production replaces both 30s caches with Redis (Terraform
-  phase).
+- **Cross-service Dynamic RBAC — now in libs/common (2026-07-24).**
+  `libs/common/src/rbac/remote-permission.guard.ts` (lifted from
+  product-configurator when risk-operation became the second adopter):
+  verifies the JWT locally (shared `JWT_SECRET`), then resolves the caller's
+  permission set by calling trade-directory's existing
+  `GET /api/rbac/manifest` with the forwarded bearer token (env
+  `RBAC_MANIFEST_URL`), cached in-process for 30s per token, **fail closed**
+  on manifest errors. trade-directory stays the single RBAC authority; no
+  new endpoint was needed. Adopting service needs: JwtModule.registerAsync
+  (JWT_SECRET) in the feature module + both env vars. Gotchas:
+  trade-directory's own manifest cache busts only on RBAC **API** writes —
+  permission changes made via raw SQL stay visible for up to 30s (the e2e
+  revokes via the real Role Builder endpoint for exactly this reason); and
+  **appending env vars to a `.env` without a trailing newline glues them
+  onto the previous value** (silently corrupted JWT_SECRET in risk-operation
+  → guard fail-closed 403s for everyone — check `printenv` inside the
+  container when a guard 403s universally). Production replaces both 30s
+  caches with Redis (Terraform phase).
 - **Kafka**: standard outbox (`outbox_event` + 5s relay). Emits
   `RATE_CARD_PUBLISHED` and `PRODUCT_ASSIGNMENT_CREATED` — no consumers yet
   (future: trade-directory subscription sync, knowledge-graph projection).
@@ -885,6 +891,43 @@ files (a later phase); the renderer is a dependency-free mini-engine
   config only globs `src/models/**/*.entity.ts` — entity files MUST end in
   `.entity.ts` or migrations fail with "Entity metadata not found" (the
   grouped `*.entities.ts` files were renamed to comply).
+
+## Risk profile governance (BUILT 2026-07-24)
+
+The Funder Admin Portal's risk-profile weighting screens and their
+maker-checker backend, per the annotation ("Risk Profile by Product") and
+the SQFSYS ruling (default-profile changes need Risk Operations Manager
+approval + a risk audit log).
+
+- **risk-operation** — `sqf/risk-governance/` module (second cross-service
+  RBAC adopter): `GET /api/risk-governance/profiles` (risk_profiles_view —
+  lean read of every profile's parameter-level weights + bands),
+  `POST /api/risk-governance/change-requests` (risk_profiles_edit — weights
+  must still total 100; one PENDING per profile, enforced by partial unique
+  index), `POST .../:id/approve|reject` (risk_profiles_approve; **the
+  proposer can never approve their own request** — flat keys allow holding
+  both edit+approve, the same-person check is the code-side enforcement).
+  Approval applies the weights + audit rows in one transaction. Tables via
+  raw SQL migration `migrations/2026-07-24-risk-governance.sql`
+  (risk_profile_change_request + append-only risk_audit_log). The legacy
+  unguarded `/api/risk-profile` CRUD is deliberately untouched (per-domain
+  swap rule) — the governed path is the portal's only write path.
+  **After ANY weight change, rerun verify-default-profile-scoring.ts.**
+- **product-configurator** — `product_risk_filter_assignment` (migration
+  1785300000000): one Filter-2 profile per product, `riskProfileCode` is a
+  bare risk-operation reference. `GET/PUT /api/products/:id/risk-filter`
+  (view / config_risk_filters_assign), PUT with empty body clears, audited.
+- **Screen** — `screens/Config/RiskProfiles.tsx` (`/config/risk-profiles`,
+  gate risk_profiles_view, nav under Product Configuration): weights editor
+  with live 100-total check + "was N" diffs, band badges labelled per the
+  ruling (HIGH score = LOW risk), pending-approval cards with old→new diff
+  and (you) attribution, weights locked while a request is pending, and the
+  Filter-2 → product assignment dropdowns fed by risk-operation profiles
+  (is_default=0). e2e-product-configurator now **89 checks** (section 8f).
+  Dev seed kept: org 2's IF product assigned INFORMATION_TECHNOLOGY-USD-100K;
+  the demo change-request/audit history rows in risk-operation stay
+  (append-only philosophy — they record real approved changes that were
+  reverted through the same governed flow).
 
 ## Document Conversion (Markitdown)
 

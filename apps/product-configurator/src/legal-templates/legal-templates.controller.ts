@@ -12,7 +12,7 @@ import {
 import {
   RemotePermissionGuard,
   RequirePermission,
-} from '../rbac/remote-permission.guard';
+} from '@app/common/rbac/remote-permission.guard';
 import { BindTemplatesDto, CreateTemplateDto } from '../dtos';
 import { LegalTemplatesService } from './legal-templates.service';
 

@@ -29,4 +29,5 @@ export const CONFIG = {
   BILLING: '/config/billing',
   CALENDAR: '/config/calendar',
   POLICIES: '/config/policies',
+  RISK_PROFILES: '/config/risk-profiles',
 };
