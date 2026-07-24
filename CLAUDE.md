@@ -1268,11 +1268,19 @@ before/after vault rendering real metadataPayload):
   apply = sequential POST/DELETE role assignments, enrollment-link re-issue
   (shows the one-time URL + copy), session kill switch. Action controls are
   ABSENT (not disabled) without their key.
-- `screens/Admin/AuditLedger.tsx` — read-only feed, risk badges derived
-  from event type (shared Badge component, label + color), JSON
-  historical/transformed context drawer, Load more paging, client-side CSV
-  export gated by admin_audit_export. Auth events + per-session rows await
-  their endpoints (kill switch lives in the User Directory drawer meanwhile).
+- `screens/Admin/AuditLedger.tsx` — three feeds behind a tab switcher
+  (2026-07-24): **Configuration** (rbac_audit_log — risk badges, JSON
+  historical/transformed drawer, Load more, CSV export gated by
+  admin_audit_export), **Authentication** (`GET /api/rbac/auth-events`,
+  admin_audit_view — append-only read of auth_audit_log, org-scoped via
+  membership subquery; personId-less unknown-email failures visible only to
+  the unscoped SQFSYS view; REFRESH_THEFT/QR_LOGIN_REJECTED/LOGIN_LOCKED
+  badge HIGH), and **Active Sessions** (`GET /api/rbac/sessions`,
+  admin_audit_view — unrevoked+unexpired token rows joined to person, never
+  exposes hashes, 30s poll) with a per-row Force Terminate mapped to the
+  existing revoke-sessions(personId) endpoint per the PDF spec. e2e-rbac 58
+  checks (section 11b: org isolation for both feeds, revoked-user absence,
+  no-hash assertion).
 - UI primitives are dependency-free shadcn-idiom components
   (`components/ui/{badge,table,checkbox,dialog,sheet}.tsx`) — swap for the
   Radix-based shadcn set when the ui-ux-pro-max token pass lands. MASTER.md

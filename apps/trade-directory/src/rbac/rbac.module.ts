@@ -11,6 +11,8 @@ import {
   Token,
 } from '../models';
 import { RbacAuditLog } from '../models/rbac-audit-log.entity';
+import { AuthAuditLog } from '../models/auth-audit-log.entity';
+import { AuthAuditLogRepository } from '../repositories/auth-audit-log.repository';
 import {
   OrganizationPersonRepository,
   OrganizationRoleRepository,
@@ -39,6 +41,7 @@ import { RbacService } from './rbac.service';
       PersonRole,
       RolePermission,
       RbacAuditLog,
+      AuthAuditLog,
       Token,
     ]),
   ],
@@ -52,6 +55,7 @@ import { RbacService } from './rbac.service';
     PersonRepository,
     PersonRoleRepository,
     RbacAuditLogRepository,
+    AuthAuditLogRepository,
     RolePermissionRepository,
     TokenRepository,
   ],

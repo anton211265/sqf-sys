@@ -103,9 +103,22 @@ export const useRevokeSessions = () => {
   const invalidate = useInvalidate();
   return useMutation({
     mutationFn: rbac.revokeSessions,
-    onSuccess: () => invalidate('audit'),
+    onSuccess: () => invalidate('audit', 'sessions', 'auth-events'),
   });
 };
 
 export const useIssueEnrollmentToken = () =>
   useMutation({ mutationFn: rbac.issueEnrollmentToken });
+
+export const useAuthEvents = (limit: number, offset: number) =>
+  useQuery({
+    queryKey: ['rbac', 'auth-events', limit, offset],
+    queryFn: () => rbac.getAuthEvents(limit, offset),
+  });
+
+export const useSessions = () =>
+  useQuery({
+    queryKey: ['rbac', 'sessions'],
+    queryFn: rbac.getSessions,
+    refetchInterval: 30_000, // live session ledger
+  });

@@ -384,6 +384,45 @@ async function main() {
   const auditDenied = await get('/api/rbac/audit', user.accessToken);
   check('audit requires admin_audit_view (403)', auditDenied.status === 403);
 
+  // ── [11b] Auth events + active sessions (Audit Ledger feeds) ──
+  console.log('\n[11b] Auth events + active sessions');
+  const authEvents = await get('/api/rbac/auth-events?limit=100', admin.accessToken);
+  check('auth events readable', authEvents.status === 200 && authEvents.data?.total > 0);
+  check(
+    "auth events include this run's passkey logins",
+    (authEvents.data?.rows ?? []).some((r) => r.email === ADMIN_EMAIL && r.event === 'PASSKEY_LOGIN_SUCCESS'),
+  );
+  const authDenied = await get('/api/rbac/auth-events', user.accessToken);
+  check('auth events require admin_audit_view (403)', authDenied.status === 403);
+
+  const sessions = await get('/api/rbac/sessions', admin.accessToken);
+  check(
+    'active sessions listed (admin present, revoked user absent)',
+    sessions.status === 200 &&
+      (sessions.data ?? []).some((s) => s.email === ADMIN_EMAIL) &&
+      !(sessions.data ?? []).some((s) => s.email === USER_EMAIL),
+    JSON.stringify(sessions.data?.map((s) => s.email)),
+  );
+  check(
+    'session rows never expose token hashes',
+    (sessions.data ?? []).every((s) => !('refreshTokenHash' in s)),
+  );
+  const orgBSessions = await get('/api/rbac/sessions', orgB.accessToken);
+  check(
+    'org isolation: org B sees only its own sessions',
+    orgBSessions.status === 200 &&
+      (orgBSessions.data ?? []).some((s) => s.email === ORGB_EMAIL) &&
+      !(orgBSessions.data ?? []).some((s) => s.email === ADMIN_EMAIL),
+    JSON.stringify(orgBSessions.data?.map((s) => s.email)),
+  );
+  const orgBAuth = await get('/api/rbac/auth-events?limit=100', orgB.accessToken);
+  check(
+    'org isolation: org B auth events only cover org B members',
+    orgBAuth.status === 200 &&
+      (orgBAuth.data?.rows ?? []).every((r) => [ORGB_EMAIL, ORGB_USER_EMAIL].includes(r.email)),
+    JSON.stringify([...new Set((orgBAuth.data?.rows ?? []).map((r) => r.email))]),
+  );
+
   console.log(`\nDone: ${passed} passed, ${failed} failed`);
   console.log('Cleaning up test identities…');
   teardown();

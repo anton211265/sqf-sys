@@ -26,7 +26,9 @@ import {
   RbacAuditLogRepository,
   RolePermissionRepository,
 } from '../repositories';
+import { AuthAuditLogRepository } from '../repositories/auth-audit-log.repository';
 import { TokenRepository } from '../repositories/token.repository';
+import { Token } from '../models/token.entity';
 
 export interface RbacRequestContext {
   personId: number;
@@ -67,6 +69,7 @@ export class RbacService {
     private readonly rolePermissionRepository: RolePermissionRepository,
     private readonly personRoleRepository: PersonRoleRepository,
     private readonly rbacAuditLogRepository: RbacAuditLogRepository,
+    private readonly authAuditLogRepository: AuthAuditLogRepository,
     private readonly tokenRepository: TokenRepository,
     @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
@@ -588,6 +591,55 @@ export class RbacService {
       offset,
     );
     return { total, rows };
+  }
+
+  /**
+   * Authentication events for the Audit Ledger (auth_audit_log is written
+   * by AuthService/PasskeyService; this is the read side). Org-scoped via
+   * membership; SQFSYS (orgId 0) sees the unscoped feed including
+   * unknown-email failures.
+   */
+  async listAuthEvents(ctx: RbacRequestContext, limit = 50, offset = 0) {
+    const [rows, total] = await this.authAuditLogRepository.findForOrganization(
+      ctx.orgId === 0 ? null : ctx.orgId,
+      Math.min(limit, 200),
+      offset,
+    );
+    return { total, rows };
+  }
+
+  /**
+   * Active sessions (unrevoked, unexpired refresh tokens) for the Audit
+   * Ledger's session rows — the per-row kill switch maps to the existing
+   * revokeSessions(personId). Never exposes token hashes.
+   */
+  async listSessions(ctx: RbacRequestContext) {
+    const qb = this.entityManager
+      .createQueryBuilder(Token, 'token')
+      .innerJoinAndSelect('token.person', 'person')
+      .where('token.revokedAt IS NULL')
+      .andWhere('token.expiresAt > :now', { now: new Date() })
+      .orderBy('token.issuedAt', 'DESC')
+      .take(500);
+    if (ctx.orgId !== 0) {
+      qb.andWhere(
+        'person.id IN (SELECT op."personId" FROM organization_person op WHERE op."organizationId" = :orgId)',
+        { orgId: ctx.orgId },
+      );
+    }
+    const tokens = await qb.getMany();
+    return tokens.map((token) => ({
+      tokenId: token.id,
+      tokenFamilyId: token.tokenFamilyId,
+      personId: token.person.id,
+      name: token.person.name,
+      email: token.person.email,
+      issuedAt: token.issuedAt,
+      lastUsedAt: token.lastUsedAt,
+      expiresAt: token.expiresAt,
+      ipAddress: token.ipAddress,
+      userAgent: token.userAgent,
+    }));
   }
 
   /** Session kill switch: revokes every active refresh token the target

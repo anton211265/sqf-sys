@@ -56,3 +56,33 @@ export interface AuditPage {
   total: number;
   rows: AuditRow[];
 }
+
+export interface AuthEventRow {
+  id: string;
+  event: string;
+  personId: number | null;
+  email: string;
+  ipAddress: string | null;
+  userAgent: string | null;
+  outcome: 'SUCCESS' | 'FAILURE';
+  detail: string | null;
+  createdAt: string;
+}
+
+export interface AuthEventPage {
+  total: number;
+  rows: AuthEventRow[];
+}
+
+export interface SessionRow {
+  tokenId: number;
+  tokenFamilyId: string;
+  personId: number;
+  name: string | null;
+  email: string;
+  issuedAt: string;
+  lastUsedAt: string;
+  expiresAt: string;
+  ipAddress: string | null;
+  userAgent: string | null;
+}

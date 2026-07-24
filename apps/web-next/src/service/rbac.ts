@@ -71,3 +71,13 @@ export const issueEnrollmentToken = async (
       email,
     })
   ).data;
+
+export const getAuthEvents = async (
+  limit: number,
+  offset: number,
+): Promise<import('types/RbacTypes').AuthEventPage> =>
+  (await axiosClient().get(`${BASE}/auth-events`, { params: { limit, offset } }))
+    .data;
+
+export const getSessions = async (): Promise<import('types/RbacTypes').SessionRow[]> =>
+  (await axiosClient().get(`${BASE}/sessions`)).data;

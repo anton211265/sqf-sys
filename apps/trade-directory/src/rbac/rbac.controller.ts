@@ -252,6 +252,27 @@ export class RbacController {
     );
   }
 
+  @RequirePermission('admin_audit_view')
+  @Get('auth-events')
+  async authEvents(
+    @UserContext() user: IUserContext,
+    @Req() req: Request,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ) {
+    return this.rbacService.listAuthEvents(
+      this.ctx(user, req),
+      limit ? parseInt(limit, 10) : 50,
+      offset ? parseInt(offset, 10) : 0,
+    );
+  }
+
+  @RequirePermission('admin_audit_view')
+  @Get('sessions')
+  async sessions(@UserContext() user: IUserContext, @Req() req: Request) {
+    return this.rbacService.listSessions(this.ctx(user, req));
+  }
+
   @RequirePermission('admin_sessions_terminate')
   @Post('users/:personId/revoke-sessions')
   async revokeSessions(

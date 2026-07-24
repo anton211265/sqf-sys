@@ -12,10 +12,28 @@ import {
   TableHeader,
   TableRow,
 } from 'components/ui/table';
-import { useAudit, useHasPermission, useUsers } from 'hooks/useRbac';
+import {
+  useAudit,
+  useAuthEvents,
+  useHasPermission,
+  useRevokeSessions,
+  useSessions,
+  useUsers,
+} from 'hooks/useRbac';
 import { AuditRow } from 'types/RbacTypes';
 
 const PAGE_SIZE = 50;
+
+type Feed = 'config' | 'auth' | 'sessions';
+
+// Auth-event risk mapping (same traffic-light rules as the RBAC feed)
+const authRiskOf = (event: string, outcome: string): { label: string; variant: 'red' | 'amber' | 'default' } => {
+  if (['REFRESH_THEFT', 'QR_LOGIN_REJECTED', 'LOGIN_LOCKED', 'LOGIN_BLOCKED'].includes(event)) {
+    return { label: 'HIGH', variant: 'red' };
+  }
+  if (outcome === 'FAILURE') return { label: 'MED', variant: 'amber' };
+  return { label: 'LOW', variant: 'default' };
+};
 
 // Traffic-light risk levels derived from event type — always paired with a
 // text label per the dashboard standard.
@@ -40,14 +58,33 @@ const riskOf = (event: string): { label: string; variant: 'red' | 'amber' | 'def
  * per-user kill switch lives in the User Directory drawer meanwhile.
  */
 const AuditLedger: React.FC = () => {
+  const [feed, setFeed] = React.useState<Feed>('config');
   const [pages, setPages] = React.useState(1);
+  const [authPages, setAuthPages] = React.useState(1);
   const { data, isLoading } = useAudit(PAGE_SIZE * pages, 0);
+  const { data: authData, isLoading: authLoading } = useAuthEvents(PAGE_SIZE * authPages, 0);
+  const { data: sessionRows = [], isLoading: sessionsLoading } = useSessions();
+  const revokeSessions = useRevokeSessions();
   const hasPermission = useHasPermission();
   // Name resolution needs the user directory — only fetch when permitted.
   const { data: users = [] } = useUsers(hasPermission('admin_users_view'));
   const canExport = hasPermission('admin_audit_export');
+  const canTerminate = hasPermission('admin_sessions_terminate');
 
   const [selected, setSelected] = React.useState<AuditRow | null>(null);
+  const [terminateMessage, setTerminateMessage] = React.useState<string | null>(null);
+
+  const handleTerminate = async (personId: number, email: string) => {
+    // eslint-disable-next-line no-alert
+    if (!window.confirm(`Force terminate all active sessions for ${email}?`)) return;
+    setTerminateMessage(null);
+    try {
+      const result = await revokeSessions.mutateAsync(personId);
+      setTerminateMessage(`Terminated ${result.revokedSessions} session(s) for ${email}.`);
+    } catch {
+      setTerminateMessage(`Failed to terminate sessions for ${email}.`);
+    }
+  };
 
   const personLabel = (personId: number | null): string => {
     if (personId === null) return 'system';
@@ -88,16 +125,173 @@ const AuditLedger: React.FC = () => {
         <div>
           <h1 className="text-xl font-semibold">Security Audit Ledger</h1>
           <p className="text-sm text-muted-foreground">
-            Append-only record of access-control changes ({data?.total ?? '…'} events)
+            Append-only access-control changes, authentication events and live
+            sessions
           </p>
         </div>
-        {canExport && (
+        {canExport && feed === 'config' && (
           <Button variant="outline" onClick={exportCsv} disabled={rows.length === 0}>
             <Download className="mr-2 h-4 w-4" /> Regulatory Export (CSV)
           </Button>
         )}
       </div>
 
+      <div className="mb-3 flex gap-1 rounded-lg border bg-background p-1 text-sm w-fit">
+        {(
+          [
+            ['config', `Configuration (${data?.total ?? '…'})`],
+            ['auth', `Authentication (${authData?.total ?? '…'})`],
+            ['sessions', `Active Sessions (${sessionRows.length})`],
+          ] as [Feed, string][]
+        ).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setFeed(key)}
+            className={`rounded-md px-3 py-1.5 transition-colors ${
+              feed === key ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {terminateMessage && (
+        <p className="mb-2 text-sm text-emerald-700">{terminateMessage}</p>
+      )}
+
+      {feed === 'auth' && (
+        <>
+          <div className="rounded-lg border bg-background">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Timestamp</TableHead>
+                  <TableHead>Event</TableHead>
+                  <TableHead>Account</TableHead>
+                  <TableHead>Outcome</TableHead>
+                  <TableHead>Detail</TableHead>
+                  <TableHead>IP</TableHead>
+                  <TableHead>Risk</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {authLoading && (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-muted-foreground">
+                      Loading authentication events…
+                    </TableCell>
+                  </TableRow>
+                )}
+                {(authData?.rows ?? []).map((row) => {
+                  const risk = authRiskOf(row.event, row.outcome);
+                  return (
+                    <TableRow key={row.id}>
+                      <TableCell className="whitespace-nowrap text-muted-foreground">
+                        {new Date(row.createdAt).toLocaleString()}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">{row.event}</TableCell>
+                      <TableCell>{row.email}</TableCell>
+                      <TableCell>
+                        <Badge variant={row.outcome === 'SUCCESS' ? 'green' : 'red'}>
+                          {row.outcome}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="max-w-xs truncate text-muted-foreground">
+                        {row.detail ?? '—'}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {row.ipAddress ?? '—'}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={risk.variant}>{risk.label}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+          {authData && (authData.rows?.length ?? 0) < authData.total && (
+            <div className="mt-3 flex justify-center">
+              <Button variant="outline" onClick={() => setAuthPages((p) => p + 1)}>
+                Load more ({authData.rows.length} of {authData.total})
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+
+      {feed === 'sessions' && (
+        <div className="rounded-lg border bg-background">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>User</TableHead>
+                <TableHead>Signed in</TableHead>
+                <TableHead>Last used</TableHead>
+                <TableHead>Expires</TableHead>
+                <TableHead>IP</TableHead>
+                <TableHead>Device</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sessionsLoading && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-muted-foreground">
+                    Loading sessions…
+                  </TableCell>
+                </TableRow>
+              )}
+              {!sessionsLoading && sessionRows.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-muted-foreground">
+                    No active sessions.
+                  </TableCell>
+                </TableRow>
+              )}
+              {sessionRows.map((session) => (
+                <TableRow key={session.tokenId}>
+                  <TableCell>
+                    <div className="font-medium">{session.name ?? '—'}</div>
+                    <div className="text-xs text-muted-foreground">{session.email}</div>
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap text-muted-foreground">
+                    {new Date(session.issuedAt).toLocaleString()}
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap text-muted-foreground">
+                    {new Date(session.lastUsedAt).toLocaleString()}
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap text-muted-foreground">
+                    {new Date(session.expiresAt).toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {session.ipAddress ?? '—'}
+                  </TableCell>
+                  <TableCell className="max-w-[16rem] truncate text-xs text-muted-foreground">
+                    {session.userAgent ?? '—'}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {canTerminate && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={revokeSessions.isPending}
+                        onClick={() => handleTerminate(session.personId, session.email)}
+                      >
+                        Force Terminate
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      {feed === 'config' && (
       <div className="rounded-lg border bg-background">
         <Table>
           <TableHeader>
@@ -146,8 +340,9 @@ const AuditLedger: React.FC = () => {
           </TableBody>
         </Table>
       </div>
+      )}
 
-      {data && rows.length < data.total && (
+      {feed === 'config' && data && rows.length < data.total && (
         <div className="mt-3 flex justify-center">
           <Button variant="outline" onClick={() => setPages((p) => p + 1)}>
             Load more ({rows.length} of {data.total})
