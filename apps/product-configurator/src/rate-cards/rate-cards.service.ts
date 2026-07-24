@@ -217,6 +217,18 @@ export class RateCardsService {
           productCode: rateCard.product.productCode,
           versionNumber: saved.versionNumber,
           funderOrganizationId: rateCard.product.funderOrganizationId,
+          // Card parameters (2026-07-24, add-only): consumed by
+          // risk-operation's rate_card_mirror for provisional-offer
+          // simulator defaults. Fractions, as stored.
+          params: {
+            interestRateApr: saved.interestRateApr,
+            advanceRatePct: saved.advanceRatePct,
+            discountFeePct: saved.discountFeePct,
+            oneTimeAdminFee: saved.oneTimeAdminFee,
+            reserveRetainPct: saved.reserveRetainPct,
+            minTenureDays: saved.minTenureDays,
+            maxTenureDays: saved.maxTenureDays,
+          },
         },
       });
       return saved;

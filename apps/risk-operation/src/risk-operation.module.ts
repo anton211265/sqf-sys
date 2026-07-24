@@ -32,6 +32,7 @@ import { RiskHighClassificationScoring } from './models/risk-high-classification
 // RiskApplicationScoring et al.
 import { CrcModule } from './sqf/crc/crc.module';
 import { PortalApplicationModule } from './sqf/portal-application/portal-application.module';
+import { OffersModule } from './sqf/offers/offers.module';
 import { FinancialCreditReport } from './models/financial-credit-report.entity';
 import { RiskProfile } from './models/risk-profile.entity';
 import { RiskQuantitativeProfileWeight } from './models/risk-quantitative-profile-weight.entity';
@@ -102,6 +103,7 @@ import { FinancialReportIntakeModule } from './sqf/financial-report-intake/finan
     ApplicationPersonModule,
     CrcModule,
     PortalApplicationModule,
+    OffersModule,
     FinancialCreditReportModule,
     RiskQuantitativeProfileScoringModule,
     RiskProfileModule,

@@ -3,7 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { KafkaTopicEnum } from '@app/common/constants/kafka-topic.enum';
+import { OutboxEventRepository } from '../repositories/outbox-event.repository';
 import { DataSource, Repository } from 'typeorm';
 import { ConfigAuditService } from '../audit/config-audit.service';
 import {
@@ -34,6 +37,7 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     private readonly auditService: ConfigAuditService,
+    private readonly outboxEventRepository: OutboxEventRepository,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -255,6 +259,31 @@ export class ProductsService {
         },
         changeReason: dto.changeReason,
         funderOrganizationId: user.orgId,
+      });
+      // A bespoke creation IS a publish (v1 goes live in this transaction) —
+      // emit RATE_CARD_PUBLISHED like the governed publish path so the
+      // risk-operation rate-card mirror sees bespoke cards too (2026-07-24,
+      // Provisional Offer workspace).
+      await this.outboxEventRepository.record(manager, {
+        id: randomUUID(),
+        topic: KafkaTopicEnum.RATE_CARD_PUBLISHED,
+        payload: {
+          eventId: randomUUID(),
+          rateCardId: rateCard.id,
+          productId: product.id,
+          productCode,
+          versionNumber: 1,
+          funderOrganizationId: user.orgId,
+          params: {
+            interestRateApr: rateCard.interestRateApr,
+            advanceRatePct: rateCard.advanceRatePct,
+            discountFeePct: rateCard.discountFeePct,
+            oneTimeAdminFee: rateCard.oneTimeAdminFee,
+            reserveRetainPct: rateCard.reserveRetainPct,
+            minTenureDays: rateCard.minTenureDays,
+            maxTenureDays: rateCard.maxTenureDays,
+          },
+        },
       });
       return { product, rateCard };
     });

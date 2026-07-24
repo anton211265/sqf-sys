@@ -39,6 +39,8 @@ export const CRC = {
   MODELS: '/crc/risk-models',
   MODEL_DETAIL: '/crc/risk-models/:id',
   ASSESSMENTS: '/crc/assessments',
+  OFFERS: '/crc/offers',
+  OFFER_DETAIL: '/crc/offers/:id',
 };
 
 // CRM domain — customer-relationship-management service.

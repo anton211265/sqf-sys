@@ -1,9 +1,10 @@
 # Provisional Offer Workspace + Cashflow Simulator — Design (CRC pass 2)
 
-Status: **DESIGN AGREED 2026-07-24 — build DEFERRED until the Customer
-Portal exists (Tony's ruling on Q3: "Let's build the customer portal
-first"). Rulings recorded below; resume this doc when application intake
-is live.**
+Status: **BUILT 2026-07-24 (pass 1)** — keys migrated (dictionary 73),
+rate-card mirror + 4-scenario simulator + maker-checker-approver chain +
+SLA lapse loop live; e2e-offers.mjs 17 checks green; OfferQueue +
+OfferWorkspace screens in web-next. Applicant acceptance stays a stub
+until Customer Portal pass 2.
 
 ## Tony's rulings (2026-07-24)
 

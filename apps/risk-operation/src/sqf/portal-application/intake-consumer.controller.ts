@@ -8,6 +8,7 @@ import {
   PortalApplicationService,
   RM_ENGAGEMENT_SLA_CODE,
 } from './portal-application.service';
+import { OFFER_ACCEPTANCE_SLA_CODE, OffersService } from '../offers/offers.service';
 
 interface SlaBreachedEvent {
   eventId: string;
@@ -30,6 +31,7 @@ export class IntakeConsumerController {
 
   constructor(
     private readonly portalApplicationService: PortalApplicationService,
+    private readonly offersService: OffersService,
     private readonly processedEventRepository: ProcessedEventRepository,
     @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
@@ -40,7 +42,12 @@ export class IntakeConsumerController {
     // group (same rule as the SLA engine's own consumers). processed_event
     // ids are uuids, so a malformed eventId is also a drop.
     try {
-      if (event?.slaCode !== RM_ENGAGEMENT_SLA_CODE || event?.subjectType !== 'APPLICATION') {
+      // Single SLA_BREACHED handler per app (Nest allows one EventPattern
+      // per topic) — dispatch by slaCode: the RM engagement window closes
+      // failed applications; the acceptance window lapses SENT offers.
+      const isEngagement = event?.slaCode === RM_ENGAGEMENT_SLA_CODE && event?.subjectType === 'APPLICATION';
+      const isAcceptance = event?.slaCode === OFFER_ACCEPTANCE_SLA_CODE && event?.subjectType === 'OFFER';
+      if (!isEngagement && !isAcceptance) {
         return;
       }
       if (!/^[0-9a-f-]{36}$/i.test(event?.eventId ?? '')) {
@@ -48,9 +55,10 @@ export class IntakeConsumerController {
         return;
       }
       if (await this.processedEventRepository.exists(event.eventId)) return;
-      const applicationId = parseInt(event.subjectId, 10);
-      if (Number.isInteger(applicationId)) {
-        await this.portalApplicationService.closeOnEngagementBreach(applicationId);
+      const subjectId = parseInt(event.subjectId, 10);
+      if (Number.isInteger(subjectId)) {
+        if (isEngagement) await this.portalApplicationService.closeOnEngagementBreach(subjectId);
+        else await this.offersService.onAcceptanceBreach(subjectId);
       }
       await this.entityManager.transaction(async (manager) => {
         await this.processedEventRepository.record(manager, {

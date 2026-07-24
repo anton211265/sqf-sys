@@ -12,6 +12,7 @@ import { RiskProfile } from '../../models/risk-profile.entity';
 import { OutboxEventRepository } from '../../repositories/outbox-event.repository';
 import { ProcessedEventRepository } from '../../repositories/processed-event.repository';
 import { RiskQuantitativeProfileScoringModule } from '../risk-quantitative-profile-scoring/risk-quantitative-profile-scoring.module';
+import { OffersModule } from '../offers/offers.module';
 import { IntakeAdminController } from './intake-admin.controller';
 import { IntakeConsumerController } from './intake-consumer.controller';
 import { PortalApplicationController } from './portal-application.controller';
@@ -36,6 +37,7 @@ import { PortalJwtGuard } from './portal-jwt.guard';
       ProcessedEvent,
     ]),
     RiskQuantitativeProfileScoringModule,
+    OffersModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow<string>('JWT_SECRET'),

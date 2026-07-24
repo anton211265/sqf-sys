@@ -1176,6 +1176,60 @@ to funder org 2 via env DEFAULT_FUNDER_ORG_ID).
   acceptance + registration fee + passkey e-signature (after the
   Provisional Offer workspace, per the agreed sequencing).
 
+## Provisional Offer workspace (BUILT 2026-07-24, CRC pass 2)
+
+Per the agreed design `docs/design/provisional-offer-design.md` (all six
+rulings recorded there). Keys `risk_offers_view/manage/check/approve/resolve`
+(migration 1785800000000 — dictionary **73**).
+
+- **Cashflow simulator** `apps/risk-operation/src/sqf/offers/cashflow-simulator.ts`
+  — pure functions decoded from `cashflow simulator.xlsx`: POST_FACTORING
+  (AR + the post block), PRE_POST_FACTORING (IF: flat lock-in pre block +
+  post), TERM_LOAN (FLAT and REDUCING_BALANCE conventions, first instalment
+  + processing fee deducted upfront), SCF (buyer-led ≤100% advance less
+  discount over buyer terms). Nothing hardcoded (remittance fee, day-count,
+  rates are inputs). Outputs: monthly economics, month-by-month schedule,
+  profit projection lines, **highest exposure {amount, monthIndex}**.
+  e2e asserts hand-computed workbook values exactly.
+- **Rate-card mirror**: risk-operation is the first RATE_CARD_PUBLISHED
+  consumer → `rate_card_mirror` (funder+product unique). Both configurator
+  emit sites now carry `params` (governed publish AND bespoke create —
+  bespoke creation previously emitted nothing; a bespoke IS a publish).
+  No backfill script: cards published before 2026-07-24 mirror on their
+  next publish (dev only had IF v1; republish or bespoke as needed).
+- **`provisional_offer`** (migration `2026-07-24-provisional-offers.sql`):
+  DRAFT → PENDING_CHECK → CHECKED → APPROVED(auto-SENT) → ACCEPTED /
+  DECLINED / LAPSED / CLOSED_ARCHIVED; one live offer per application
+  (partial unique index); rate-card snapshot + CRA override diffs
+  ("was X") stored; maker≠checker≠approver code-side (e2e proves even a
+  super admin can't self-check/approve). Creating an offer = CRA pickup:
+  application → IN_CRC_REVIEW + SLA `CRA_PROVISIONAL_OFFER`; approve
+  auto-sends (stub email until portal pass 2) + SLA `OFFER_ACCEPTANCE`
+  (5 WORKING_DAYS — create templates per funder); the shared SLA_BREACHED
+  consumer dispatches by slaCode (engagement→close app, acceptance→LAPSE
+  offer). RM resolve: refresh (unchanged re-send), close, and dev-stub
+  accept/decline until the portal acceptance ceremony.
+- **APIs** `/risk-operation/api/offers…` incl. stateless
+  `POST /api/offers/simulate` (live preview uses the same engine — no
+  client-side math duplication). Screens: `/crc/offers` queue (pickup from
+  the CRC bucket) + `/crc/offers/:id` workspace (scenario input form with
+  override badges vs card defaults, exposure tile, Recharts funding-
+  exposure curve, profit-projection table, lifecycle buttons per
+  status+key) — browser-verified; Sunrise's AR offer drafted through the
+  UI (seed kept, DRAFT).
+- **E2E:** `node apps/risk-operation/scripts/e2e-offers.mjs` — **17
+  checks**: mirror via real outbox→Kafka→consumer hop (bespoke create),
+  workbook worked example (monthly economics/exposure/profit exact),
+  guard denies, full chain with segregation negatives, acceptance-breach
+  lapse via a genuine Kafka hop, refresh/resolve, audit trail. Gotcha
+  rediscovered: after service recreates, nginx caches upstream IPs —
+  restart backend-gateway when a healthy service 404s through the proxy.
+- **Deferred**: TL+post-factoring combo toggle in the UI (engine input
+  `includePostFactoring` reserved), invoice-schedule editor (milestones
+  grid), offer PDF/ILO doc generation, real applicant acceptance +
+  registration fee (Customer Portal pass 2 — next in sequence with the
+  OL/Product Fulfillment chain).
+
 ## Document Conversion (Markitdown)
 
 [Microsoft Markitdown](https://github.com/microsoft/markitdown) converts Word/Excel/PowerPoint documents to Markdown before LLM extraction. Markdown is far cheaper in tokens than raw OOXML-derived text and preserves structure (tables, headings) better than naive extraction.

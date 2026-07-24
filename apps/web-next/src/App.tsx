@@ -28,6 +28,8 @@ import CrcDashboard from 'screens/Crc/CrcDashboard';
 import RiskModelLibrary from 'screens/Crc/RiskModelLibrary';
 import RiskModelBuilder from 'screens/Crc/RiskModelBuilder';
 import RunAssessment from 'screens/Crc/RunAssessment';
+import OfferQueue from 'screens/Crc/OfferQueue';
+import OfferWorkspace from 'screens/Crc/OfferWorkspace';
 import Pipeline from 'screens/Crm/Pipeline';
 import SupervisorDashboard from 'screens/Crm/SupervisorDashboard';
 import SiteVisits from 'screens/Crm/SiteVisits';
@@ -114,6 +116,8 @@ function Pages() {
         <Route path={CRC.MODELS} element={<RiskModelLibrary />} />
         <Route path={CRC.MODEL_DETAIL} element={<RiskModelBuilder />} />
         <Route path={CRC.ASSESSMENTS} element={<RunAssessment />} />
+        <Route path={CRC.OFFERS} element={<OfferQueue />} />
+        <Route path={CRC.OFFER_DETAIL} element={<OfferWorkspace />} />
         <Route path={CRM.SUPERVISOR} element={<SupervisorDashboard />} />
         <Route path={CRM.PIPELINE} element={<Pipeline />} />
         <Route path={CRM.SITE_VISITS} element={<SiteVisits />} />

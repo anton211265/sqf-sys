@@ -74,6 +74,7 @@ const NAV_SECTIONS: { title: string | null; items: NavItem[] }[] = [
       { label: 'CRC Dashboard', route: CRC.DASHBOARD, gateKey: 'risk_applications_view', icon: Activity },
       { label: 'Risk Models (Filter 2)', route: CRC.MODELS, gateKey: 'risk_models_view', icon: SlidersHorizontal },
       { label: 'Run Assessment', route: CRC.ASSESSMENTS, gateKey: 'risk_assessments_view', icon: ClipboardCheck },
+      { label: 'Provisional Offers', route: CRC.OFFERS, gateKey: 'risk_offers_view', icon: Handshake },
     ],
   },
   {
