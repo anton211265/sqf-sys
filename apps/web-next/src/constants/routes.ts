@@ -31,3 +31,12 @@ export const CONFIG = {
   POLICIES: '/config/policies',
   RISK_PROFILES: '/config/risk-profiles',
 };
+
+// CRM domain — customer-relationship-management service.
+export const CRM = {
+  SUPERVISOR: '/crm/supervisor',
+  PIPELINE: '/crm/pipeline',
+  SITE_VISITS: '/crm/site-visits',
+  APPLICANTS: '/crm/applicants',
+  CLIENTS: '/crm/clients',
+};

@@ -7,7 +7,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { store, persistor, RootState } from 'redux/store';
 import { setData } from 'redux/user';
 import axiosClient, { getAccessToken, setAccessToken } from 'api/axiosClient';
-import { ADMIN, AUTH, CONFIG, HOME } from 'constants/routes';
+import { ADMIN, AUTH, CONFIG, CRM, HOME } from 'constants/routes';
 import PortalLayout from 'components/layout/PortalLayout';
 import Login from 'screens/Auth/Login';
 import Enroll from 'screens/Auth/Enroll';
@@ -24,6 +24,10 @@ import BillingFees from 'screens/Config/BillingFees';
 import ClearingCalendar from 'screens/Config/ClearingCalendar';
 import GovernancePolicies from 'screens/Config/GovernancePolicies';
 import RiskProfiles from 'screens/Config/RiskProfiles';
+import Pipeline from 'screens/Crm/Pipeline';
+import SupervisorDashboard from 'screens/Crm/SupervisorDashboard';
+import SiteVisits from 'screens/Crm/SiteVisits';
+import { MyApplicants, MyClients } from 'screens/Crm/PhaseBoundary';
 
 const client = new QueryClient();
 
@@ -102,6 +106,11 @@ function Pages() {
         <Route path={CONFIG.CALENDAR} element={<ClearingCalendar />} />
         <Route path={CONFIG.POLICIES} element={<GovernancePolicies />} />
         <Route path={CONFIG.RISK_PROFILES} element={<RiskProfiles />} />
+        <Route path={CRM.SUPERVISOR} element={<SupervisorDashboard />} />
+        <Route path={CRM.PIPELINE} element={<Pipeline />} />
+        <Route path={CRM.SITE_VISITS} element={<SiteVisits />} />
+        <Route path={CRM.APPLICANTS} element={<MyApplicants />} />
+        <Route path={CRM.CLIENTS} element={<MyClients />} />
       </Route>
       <Route path="*" element={<Navigate to={AUTH.LOGIN} />} />
     </Routes>

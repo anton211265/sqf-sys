@@ -2,8 +2,13 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
+  Briefcase,
   CalendarDays,
+  ClipboardList,
+  Contact,
   Gauge,
+  Handshake,
+  LineChart,
   FileText,
   Gavel,
   History,
@@ -17,7 +22,7 @@ import {
 
 import { setAccessToken } from 'api/axiosClient';
 import { Button } from 'components/ui/button';
-import { ADMIN, AUTH, CONFIG, HOME } from 'constants/routes';
+import { ADMIN, AUTH, CONFIG, CRM, HOME } from 'constants/routes';
 import { useManifest } from 'hooks/useRbac';
 import { cn } from 'lib/utils';
 import { RootState } from 'redux/store';
@@ -58,6 +63,16 @@ const NAV_SECTIONS: { title: string | null; items: NavItem[] }[] = [
       { label: 'Legal Templates', route: CONFIG.TEMPLATES, gateKey: 'config_products_view', icon: FileText },
       { label: 'Config Audit', route: CONFIG.AUDIT, gateKey: 'config_products_view', icon: History },
       { label: 'Risk Profiles', route: CONFIG.RISK_PROFILES, gateKey: 'risk_profiles_view', icon: Gauge },
+    ],
+  },
+  {
+    title: 'Customer Relationship Mgmt',
+    items: [
+      { label: 'Supervisor Dashboard', route: CRM.SUPERVISOR, gateKey: 'crm_supervisor_view', icon: LineChart },
+      { label: 'My Pipeline', route: CRM.PIPELINE, gateKey: 'crm_pipeline_view', icon: Handshake },
+      { label: 'Site Visits', route: CRM.SITE_VISITS, gateKey: 'crm_pipeline_view', icon: ClipboardList },
+      { label: 'My Applicants', route: CRM.APPLICANTS, gateKey: 'onboarding_applicants_view', icon: Contact },
+      { label: 'My Clients', route: CRM.CLIENTS, gateKey: 'onboarding_clients_view', icon: Briefcase },
     ],
   },
   {

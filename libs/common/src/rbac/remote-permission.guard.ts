@@ -80,6 +80,11 @@ export class RemotePermissionGuard implements CanActivate {
         `Missing required permission: ${requiredKey}`,
       );
     }
+    // Expose the resolved grant so handlers can branch on ADDITIONAL keys
+    // (e.g. an org-wide "team" scope needing a supervisor key on top of the
+    // endpoint's gate) without a second manifest round-trip.
+    request.userContext.permissions = grant.permissions;
+    request.userContext.isSuperAdmin = grant.isSuperAdmin;
     return true;
   }
 

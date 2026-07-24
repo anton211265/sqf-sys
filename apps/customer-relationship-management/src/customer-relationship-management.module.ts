@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { z } from 'zod';
 import { ProcessedEvent } from '@app/common/database/processed-event.entity';
 import { ClientAssigneeModule } from './client-assignee/client-assignee.module';
+import { CrmModule } from './crm/crm.module';
 import { ClientAssignee } from './models';
 import { ClientAssigneeRepository, ProcessedEventRepository } from './repositories';
 
@@ -26,6 +27,8 @@ import { ClientAssigneeRepository, ProcessedEventRepository } from './repositori
             PORT: z.coerce.number(),
             KAFKA_BROKERS: z.string(),
             TRADE_DIRECTORY_URL: z.string(),
+            JWT_SECRET: z.string(),
+            RBAC_MANIFEST_URL: z.string(),
             FRONTEND_DOMAIN: z.string(),
           })
           .parse(config);
@@ -33,6 +36,7 @@ import { ClientAssigneeRepository, ProcessedEventRepository } from './repositori
     }),
     LoggerModule,
     ClientAssigneeModule,
+    CrmModule,
   ],
   controllers: [],
   providers: [

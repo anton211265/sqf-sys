@@ -892,6 +892,59 @@ files (a later phase); the renderer is a dependency-free mini-engine
   `.entity.ts` or migrations fail with "Entity metadata not found" (the
   grouped `*.entities.ts` files were renamed to comply).
 
+## CRM domain (BUILT 2026-07-24)
+
+First blueprint domain after the Funder Administration Portal, built per the
+approved annotation `docs/design/crm-sitemap-annotation.md` (funnel LEAD →
+PROSPECT → PROMOTED → onboarding; kanban stages QUALIFIED → PROPOSAL →
+NEGOTIATION → WON|LOST; applicant intake stays with the Customer Portal/CRC
+domains — "My Applicants" and the supervisor web-intake queue are labelled
+empty states until then).
+
+- **customer-relationship-management service** finally has its domain:
+  migration `1785400000000-CrmDomain.ts` — `lead`, `deal`,
+  `deal_stage_history` (append-only stage moves = conversion analytics +
+  audit), `site_visit_report`, plus `outbox_event` (first PUBLISHER role for
+  this service). APIs under `/api/crm/…` (RemotePermissionGuard, third
+  adopter): leads CRUD + qualify/close transitions (validated state map),
+  `POST leads/:id/assign` (crm_assignees_manage), `POST leads/:id/promote`
+  (crm_prospects_promote — Section-1 process 4's CRM side: marks PROMOTED
+  and in the same transaction outboxes SEND_EMAIL (stub onboarding link)
+  + SLA_TIMER_START slaCode `RM_ONBOARDING_RESPONSE` subjectType LEAD —
+  **first real business-flow producer for the SLA engine**; funders without
+  that template lose nothing, the engine drops unknown codes). Deals carry
+  value/product/expected-close; stage moves append history; WON/LOST set
+  closedAt and closed deals are immutable. `GET /api/crm/performance`
+  (crm_supervisor_view) computes per-RM funnel metrics + qualification/win
+  rates. Every list endpoint takes `?scope=team` which requires
+  crm_supervisor_view ON TOP of the endpoint gate — enabled by a guard
+  enhancement: RemotePermissionGuard now attaches the resolved permission
+  set to `request.userContext.permissions` so handlers can branch on
+  additional keys without a second manifest call. Row rule everywhere:
+  own rows only, supervisors act on any.
+- **Keys**: migration `1784900000000-CrmDomainPermissions.ts` — 5 new keys
+  (crm_supervisor_view/pipeline_view/leads_manage/deals_manage/
+  prospects_promote); dictionary now 64. Supervisor assignment reuses
+  crm_assignees_manage; applicants/clients/site-visits reuse onboarding_*.
+- **Screens** (`screens/Crm/`): Pipeline (leads funnel + deal kanban with
+  per-card stage selects; drag-and-drop waits for the design pass),
+  SupervisorDashboard (KPI tiles, per-RM performance, team leads with
+  reassign dialog), SiteVisits, and PhaseBoundary empty-states (My
+  Applicants / My Clients). New nav section "Customer Relationship Mgmt".
+- **E2E regression guard:**
+  `node apps/customer-relationship-management/scripts/e2e-crm.mjs` (host,
+  Node ≥22) — 29 checks: per-key guard denies, own-vs-team queue rules,
+  lifecycle transitions incl. invalid ones, promotion outbox + the
+  cross-service Kafka loop asserted end-to-end (CRM outbox → relay → Kafka
+  → SLA engine timer RUNNING), stage-history trail, supervisor assignment,
+  performance math, tenant isolation via a script-created org.
+- **Org-2 dev seed** (created via UI/API during verification, kept):
+  blueprint roles "Relationship Manager" + "RM Supervisor" (7 keys each),
+  SLA template RM_ONBOARDING_RESPONSE (5 WORKING_DAYS → NOTIFY_RM), demo
+  lead "Delta Manufacturing Sdn Bhd" (PROMOTED, owner admin@sqf.local),
+  its IF deal (350k, QUALIFIED) and a RUNNING onboarding SLA timer visible
+  on the Governance Policies monitor.
+
 ## Risk profile governance (BUILT 2026-07-24)
 
 The Funder Admin Portal's risk-profile weighting screens and their
