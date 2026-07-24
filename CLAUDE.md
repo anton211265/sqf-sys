@@ -980,7 +980,96 @@ approval + a risk audit log).
   Dev seed kept: org 2's IF product assigned INFORMATION_TECHNOLOGY-USD-100K;
   the demo change-request/audit history rows in risk-operation stay
   (append-only philosophy — they record real approved changes that were
-  reverted through the same governed flow).
+  reverted through the same governed flow). **Superseded 2026-07-24 (CRC
+  pass 1): the Filter-2 assignment dropdown now lists PUBLISHED risk models
+  from /api/crc (org 2's IF reassigned to RM_25Z5BU); a legacy stored code
+  still displays/selects so old assignments never break.**
+
+## CRC domain — pass 1: Filter-2 risk models + assessments (BUILT 2026-07-24)
+
+Built per the approved annotation `docs/design/crc-sitemap-annotation.md` and
+the `SQF ARCHITECTURE/Risk Model Template- Specs & Workflow.md` spec, with
+Tony's four rulings baked in: (1) **score orientation coexists per domain —
+Filter-2 is risk-points (HIGH total = HIGH risk, e.g. Low 0–20/Med 21–50/High
+51–100), the OPPOSITE of Filter-1; the two numbers are never combined and
+every screen labels the band**; (2) Filter-2 is a qualitative overlay, never
+a Filter-1 replacement — the CO picks any published model from a pulldown at
+assessment time (the product assignment is just the default suggestion);
+(3) roll-up math v1 = leaf points ÷ method range-max, weighted bottom-up to
+0–100, isolated in one engine file for future formula swaps; (4) publish is
+maker-checker: CO maker → second CO checker → CM publish.
+
+- **Adopt-and-govern (per-domain swap executed):** the 2024 legacy
+  `risk_model`/`risk_factor`/`risk_high_classification_factor` tables were
+  extended in place (migration
+  `apps/risk-operation/migrations/2026-07-24-crc-risk-models.sql` — manual
+  psql apply): funderOrganizationId (NOT NULL), modelShape, maker-checker
+  columns, status enum values PENDING_CHECK/CHECKED, scoringConfig jsonb,
+  4 new scoring-method enum values, name uniqueness re-scoped per funder,
+  2 tenancy-less demo rows wiped. The seven unguarded legacy Filter-2 CRUD
+  modules are UNREGISTERED from risk-operation.module.ts (their entities
+  stay — `risk_application_scoring` is shared with the Filter-1 chain and
+  was left semantically untouched; only its riskModelId refs were nulled).
+  Legacy apps/web risk-model screens now 404 — expected, same as the
+  document-management precedent.
+- **Backend** `apps/risk-operation/src/sqf/crc/` (4th RemotePermissionGuard
+  adopter): `scoring-engine.ts` = pure functions (validateModelStructure,
+  computeAssessment, all 8 methods: NUMERIC, LABEL incl. nested sub-scoring
+  ≤ parent-label points + highest-label-must-equal-range-max, CONDITIONAL_
+  NUMERIC GT/LT/EQ first-match, DROPDOWN, COUNTRY, BOOLEAN, DATE_RANGE,
+  DATE_BASED; weights must total 100 at every level; thresholds contiguous
+  over 0–100; a tripped override short-circuits to 100/HIGH without
+  requiring other answers). `crc.service.ts` persists the structure as
+  risk_factor rows (parentId hierarchy, whole-set replace, only DRAFT
+  editable — published models are immutable, duplicate-existing to modify)
+  and enforces maker≠checker≠publisher code-side (beyond the key gates —
+  a super admin holding every key still cannot self-check/self-publish).
+  Assessments (`risk_assessment` + `risk_assessment_answer`, append-only)
+  snapshot the full model structure per assessment; subject = bare client
+  organizationId. Audit rows reuse risk-operation's `risk_audit_log`
+  (MODEL_CREATED/…/ASSESSMENT_CONDUCTED) in the same transaction.
+- **APIs** `/risk-operation/api/crc/…`: `risk-models` CRUD + `submit` (full
+  validation gate) + `check`/`return` (risk_models_check) + `publish`/
+  `reject`/`archive` (risk_models_publish); `assessments` list/detail
+  (risk_assessments_view) + conduct (risk_assessments_conduct, PUBLISHED
+  models only). Keys migration `1785500000000-CrcDomainPermissions.ts` —
+  dictionary now **68**.
+- **Screens** (`apps/web-next/src/screens/Crc/`, nav section "Credit Risk &
+  Compliance"): CrcDashboard (`/crc/dashboard`, gate risk_applications_view
+  — tiles + phase-boundary placeholders: application bucket activates with
+  Customer Portal intake, monitors with the Compliance & Policy Agent),
+  RiskModelLibrary + RiskModelBuilder (`/crc/risk-models[/:id]` — factor
+  tabs/categories/sub-factor editors, 8 scoring-method config editors,
+  country CSV paste (client-side parse — no upload endpoint needed), live
+  weight-total badges, Recharts weight pies, threshold band editor, survey
+  preview with live scoring, lifecycle buttons per status+key),
+  RunAssessment (`/crc/assessments` — published-model pulldown, survey with
+  progress bar + live score from the client mirror `lib/crcScoring.ts`
+  (presentation only — the server result is authoritative), override
+  checklist, history + per-answer contribution drawer). Client selection is
+  manual organizationId entry in pass 1.
+- **E2E regression guard:** `node apps/risk-operation/scripts/e2e-crc.mjs`
+  (host, Node ≥22) — **40 checks**: guard denies, all validation rules,
+  full maker-checker lifecycle incl. self-check/self-publish negatives with
+  every key held, worked example asserting 56.8 → HIGH across all 8
+  methods, override short-circuit, snapshot immutability across archive,
+  duplicate-existing, tenant isolation, audit trail.
+  verify-default-profile-scoring.ts re-run green (Filter-1 untouched);
+  e2e-product-configurator 89 + e2e-rbac 58 still green. Transient gotcha:
+  6 rapid passkey enrollments can brush the auth throttle window — rerun.
+- **Org-2 dev seed (built through the real UI + APIs, kept):** roles
+  "Compliance Officer" (8 keys) + "Compliance Manager" (5 keys), users
+  co.officer@sqf.local / cm.manager@sqf.local, model **RM_25Z5BU "Trade
+  Counterparty Risk — Standard"** (multi-factor: Counterparty Profile 60%
+  [PEP BOOLEAN, ownership DROPDOWN] + Geography 40% [country CSV 6 rows],
+  override "Sanctions hit", PUBLISHED via the full 3-person chain), one
+  SUMMERSCAPE assessment (27/100 MEDIUM), IF product's Filter-2 assignment
+  → RM_25Z5BU.
+- **Deferred to later CRC passes** (annotation records the reserved key
+  names): provisional-offer workspace + cashflow simulator (own design
+  session), credit-limit assign/approve, mock KYC agency,
+  request-additional-documents, clear/reject recommendation chain, SLA
+  timers for CRA pickup/CM approval.
 
 ## Document Conversion (Markitdown)
 

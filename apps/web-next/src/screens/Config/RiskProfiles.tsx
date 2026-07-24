@@ -13,6 +13,7 @@ import {
   TableRow,
 } from 'components/ui/table';
 import { useConfigProducts } from 'hooks/useConfigurator';
+import { useRiskModels } from 'hooks/useCrc';
 import { useHasPermission, useManifest } from 'hooks/useRbac';
 import {
   useApproveChangeRequest,
@@ -126,9 +127,14 @@ const RiskProfiles: React.FC = () => {
   };
 
   // ---- Filter-2 → product assignment ----
+  // Since CRC pass 1 the assignment source is PUBLISHED risk models from
+  // the CRC model library (the stored riskProfileCode carries the model's
+  // RM_ code). Listing them needs risk_models_view; without it the current
+  // assignment still displays read-only.
   const productIds = products.map((p) => p.id);
   const { data: filterAssignments = {} } = useProductRiskFilters(productIds);
-  const filter2Profiles = profiles.filter((p) => !p.isDefault);
+  const canListModels = hasPermission('risk_models_view');
+  const { data: publishedModels = [] } = useRiskModels('PUBLISHED', canListModels);
 
   const myPersonId = manifest?.user?.personId;
 
@@ -359,11 +365,18 @@ const RiskProfiles: React.FC = () => {
                     }}
                   >
                     <option value="">(none — default profile only)</option>
-                    {filter2Profiles.map((p) => (
-                      <option key={p.id} value={p.riskProfileCode}>
-                        {p.riskProfileCode}
+                    {publishedModels.map((m) => (
+                      <option key={m.id} value={m.riskModelNumber}>
+                        {m.riskModelNumber} — {m.riskModelName}
                       </option>
                     ))}
+                    {/* keep an unknown stored code selectable/displayed */}
+                    {filterAssignments[product.id] &&
+                      !publishedModels.some((m) => m.riskModelNumber === filterAssignments[product.id]) && (
+                        <option value={filterAssignments[product.id] as string}>
+                          {filterAssignments[product.id]}
+                        </option>
+                      )}
                   </select>
                 </TableCell>
               </TableRow>
@@ -371,8 +384,10 @@ const RiskProfiles: React.FC = () => {
           </TableBody>
         </Table>
         <p className="mt-2 text-xs text-muted-foreground">
-          Filter-2 profiles are authored in the Credit Risk & Compliance
-          domain; this screen only assigns published profiles to products.
+          Filter-2 risk models are authored in the Credit Risk &amp; Compliance
+          domain (maker-checker publish); this screen assigns a published
+          model as the product&apos;s default second filter — the CO can still
+          pick any published model at assessment time.
         </p>
       </section>
     </div>

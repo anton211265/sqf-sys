@@ -17,19 +17,20 @@ import { OutboxEvent } from '@app/common/database/outbox-event.entity';
 import { ProcessedEvent } from '@app/common/database/processed-event.entity';
 import { SqfApplicationModule } from './sqf/application/application.module';
 import { ApplicationPersonModule } from './sqf/application-person/application-person.module';
-import { RiskModelModule } from './sqf/risk-model/risk-model.module';
 import { RiskModelRepository } from './repositories/risk-model.repository';
 import { RiskModel } from './models/risk-model.entity';
 import { RiskEvaluationParameter } from './models/risk-evaluation-parameter.entity';
 import { RiskApplicationScoring } from './models/risk-application-scoring.entity';
 import { RiskFactorScoring } from './models/risk-factor-scoring.entity';
 import { RiskHighClassificationScoring } from './models/risk-high-classification-scoring.entity';
-import { RiskFactorModule } from './sqf/risk-factor/risk-factor.module';
-import { RiskEvaluationParameterModule } from './sqf/risk-evaluation-parameter/risk-evaluation-parameter.module';
-import { RiskHighClassificationFactorModule } from './sqf/risk-high-classification-factor/risk-high-classification-factor.module';
-import { RiskApplicationScoringModule } from './sqf/risk-application-scoring/risk-application-scoring.module';
-import { RiskHighClassificationScoringModule } from './sqf/risk-high-classification-scoring/risk-high-classification-scoring.module';
-import { RiskFactorScoringModule } from './sqf/risk-factor-scoring/risk-factor-scoring.module';
+// CRC pass 1 (2026-07-24): the seven unguarded 2024 Filter-2 CRUD modules
+// (risk-model, risk-factor, risk-evaluation-parameter,
+// risk-high-classification-factor/-scoring, risk-factor-scoring,
+// risk-application-scoring) are unregistered — CrcModule is the governed
+// replacement over the same tables (per-domain swap). The entities stay
+// registered: application/quantitative Filter-1 modules still use
+// RiskApplicationScoring et al.
+import { CrcModule } from './sqf/crc/crc.module';
 import { FinancialCreditReport } from './models/financial-credit-report.entity';
 import { RiskProfile } from './models/risk-profile.entity';
 import { RiskQuantitativeProfileWeight } from './models/risk-quantitative-profile-weight.entity';
@@ -98,13 +99,7 @@ import { FinancialReportIntakeModule } from './sqf/financial-report-intake/finan
     // ----------------------SQF----------------------
     SqfApplicationModule,
     ApplicationPersonModule,
-    RiskModelModule,
-    RiskFactorModule,
-    RiskEvaluationParameterModule,
-    RiskHighClassificationFactorModule,
-    RiskApplicationScoringModule,
-    RiskHighClassificationScoringModule,
-    RiskFactorScoringModule,
+    CrcModule,
     FinancialCreditReportModule,
     RiskQuantitativeProfileScoringModule,
     RiskProfileModule,

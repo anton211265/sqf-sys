@@ -76,6 +76,15 @@ export class RiskFactor extends AbstractEntity<RiskFactor> {
   @Column({ type: 'integer', nullable: true })
   scoreRangeMax: number;
 
+  /**
+   * CRC pass 1: per-node scoring-method configuration for all 8 methods
+   * (labels/points/sub-scoring, dropdown options, conditions, boolean
+   * scores, date rules, country rows). Shape validated in
+   * scoring-engine.ts; the legacy countryList jsonb below is unused by v2.
+   */
+  @Column({ type: 'jsonb', nullable: true })
+  scoringConfig?: Record<string, any>;
+
   @Column({ type: 'jsonb', nullable: true })
   countryList?: {
     highRisk: { countryName: string; score: number }[];

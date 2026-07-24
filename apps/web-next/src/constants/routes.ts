@@ -32,6 +32,15 @@ export const CONFIG = {
   RISK_PROFILES: '/config/risk-profiles',
 };
 
+// Credit Risk & Compliance domain — risk-operation /api/crc (Filter-2 risk
+// models + assessments; risk-points orientation).
+export const CRC = {
+  DASHBOARD: '/crc/dashboard',
+  MODELS: '/crc/risk-models',
+  MODEL_DETAIL: '/crc/risk-models/:id',
+  ASSESSMENTS: '/crc/assessments',
+};
+
 // CRM domain — customer-relationship-management service.
 export const CRM = {
   SUPERVISOR: '/crm/supervisor',

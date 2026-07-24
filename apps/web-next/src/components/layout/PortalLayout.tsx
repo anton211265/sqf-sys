@@ -2,11 +2,14 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
+  Activity,
   Briefcase,
   CalendarDays,
+  ClipboardCheck,
   ClipboardList,
   Contact,
   Gauge,
+  SlidersHorizontal,
   Handshake,
   LineChart,
   FileText,
@@ -22,7 +25,7 @@ import {
 
 import { setAccessToken } from 'api/axiosClient';
 import { Button } from 'components/ui/button';
-import { ADMIN, AUTH, CONFIG, CRM, HOME } from 'constants/routes';
+import { ADMIN, AUTH, CONFIG, CRC, CRM, HOME } from 'constants/routes';
 import { useManifest } from 'hooks/useRbac';
 import { cn } from 'lib/utils';
 import { RootState } from 'redux/store';
@@ -63,6 +66,14 @@ const NAV_SECTIONS: { title: string | null; items: NavItem[] }[] = [
       { label: 'Legal Templates', route: CONFIG.TEMPLATES, gateKey: 'config_products_view', icon: FileText },
       { label: 'Config Audit', route: CONFIG.AUDIT, gateKey: 'config_products_view', icon: History },
       { label: 'Risk Profiles', route: CONFIG.RISK_PROFILES, gateKey: 'risk_profiles_view', icon: Gauge },
+    ],
+  },
+  {
+    title: 'Credit Risk & Compliance',
+    items: [
+      { label: 'CRC Dashboard', route: CRC.DASHBOARD, gateKey: 'risk_applications_view', icon: Activity },
+      { label: 'Risk Models (Filter 2)', route: CRC.MODELS, gateKey: 'risk_models_view', icon: SlidersHorizontal },
+      { label: 'Run Assessment', route: CRC.ASSESSMENTS, gateKey: 'risk_assessments_view', icon: ClipboardCheck },
     ],
   },
   {

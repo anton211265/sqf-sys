@@ -46,8 +46,40 @@ export class RiskModel extends AbstractEntity<RiskModel> {
   @Column({ type: 'varchar', unique: true })
   riskModelNumber: string;
 
-  @Column({ type: 'varchar', unique: true })
+  // Name uniqueness is per funder since CRC pass 1 (DB index
+  // uq_risk_model_funder_name), no longer global.
+  @Column({ type: 'varchar' })
   riskModelName: string;
+
+  // ------------------ CRC pass 1 (2026-07-24) ------------------
+
+  /** Tenant scope — caller's JWT orgId (bare trade-directory org id). */
+  @Column({ type: 'integer' })
+  funderOrganizationId: number;
+
+  /** SIMPLE_WEIGHTED (flat factors) | MULTI_FACTOR (factor>category>sub). */
+  @Column({ type: 'varchar', default: 'MULTI_FACTOR' })
+  modelShape: string;
+
+  @Column({ type: 'integer', nullable: true })
+  createdByPersonId?: number;
+
+  @Column({ type: 'integer', nullable: true })
+  checkedByPersonId?: number;
+
+  @Column({ type: 'integer', nullable: true })
+  publishedByPersonId?: number;
+
+  @Column({ type: 'timestamp without time zone', nullable: true })
+  submittedAt?: Date;
+
+  @Column({ type: 'timestamp without time zone', nullable: true })
+  checkedAt?: Date;
+
+  @Column({ type: 'timestamp without time zone', nullable: true })
+  publishedAt?: Date;
+
+  // ------------------ CRC pass 1 ------------------
 
   @Column({ type: 'varchar', nullable: true })
   description?: string;
