@@ -55,6 +55,11 @@ export enum KafkaTopicEnum {
   REQUEST_KYC_REPORT = 'request_kyc_report',
   RECEIVE_KYC_REPORT = 'receive_kyc_report',
   SEND_EMAIL = 'send_email',
+  // Customer Portal pass 1 (2026-07-24): emitted by risk-operation when a
+  // web-intake application gets its Filter-1 default-profile result (and
+  // again on an RM fail->pass override). Consumed by CRM for the
+  // supervisor "new applicants (web)" queue projection.
+  APPLICATION_SCORED = 'application_scored',
   CREATE_CLIENT_ASSIGNEE = 'create_client_assignee',
 
   // ---------------------- SQF ----------------------

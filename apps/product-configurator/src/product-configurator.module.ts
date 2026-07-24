@@ -44,6 +44,8 @@ import { ProcessedEventRepository } from './repositories/processed-event.reposit
 import { SlaBreachService } from './sla/sla-breach.service';
 import { SlaConsumer } from './sla/sla.consumer';
 import { SlaController } from './sla/sla.controller';
+import { PublicOnboardingController } from './public/public-onboarding.controller';
+import { PublicOnboardingService } from './public/public-onboarding.service';
 import { SlaTimerService } from './sla/sla-timer.service';
 import { OutboxRelayService } from './outbox/outbox-relay.service';
 import { ProductsController } from './products/products.controller';
@@ -127,6 +129,7 @@ import { OutboxEventRepository } from './repositories/outbox-event.repository';
     PoliciesController,
     SlaController,
     SlaConsumer,
+    PublicOnboardingController,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
@@ -142,6 +145,7 @@ import { OutboxEventRepository } from './repositories/outbox-event.repository';
     PoliciesService,
     SlaTimerService,
     SlaBreachService,
+    PublicOnboardingService,
     OutboxEventRepository,
     ProcessedEventRepository,
     OutboxRelayService,

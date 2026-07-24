@@ -11,11 +11,13 @@ export enum DocumentClassEnum {
 
 // Onboarding classes reject image-only files at upload (no vision fallback) —
 // see CLAUDE.md "Planned: Document Management redesign".
+// DIRECTOR_IDENTIFICATION was removed 2026-07-24 per the blueprint KYC-format
+// ruling: identity/evidence documents (passports, site photos) are JPEG/PNG
+// and go through the eKYC/vision path, not the text-layer pipeline.
 export const ONBOARDING_DOCUMENT_CLASSES: readonly DocumentClassEnum[] = [
   DocumentClassEnum.COMPANY_REGISTRY,
   DocumentClassEnum.KYC_CREDIT_REPORT,
   DocumentClassEnum.BANK_STATEMENT,
   DocumentClassEnum.PROOF_OF_ADDRESS,
-  DocumentClassEnum.DIRECTOR_IDENTIFICATION,
   DocumentClassEnum.FINANCIAL_STATEMENTS,
 ];

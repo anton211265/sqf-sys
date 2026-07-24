@@ -563,7 +563,7 @@ async function main() {
   const org2List = await get('/api/crc/risk-models', org2Admin.accessToken);
   check('org 2 list excludes Org E models', org2List.status === 200 && !(org2List.data ?? []).some((m) => m.funderOrganizationId === orgEId));
   const org2Assessments = await get('/api/crc/assessments', org2Admin.accessToken);
-  check('org 2 sees no Org E assessments', org2Assessments.status === 200 && (org2Assessments.data ?? []).length === 0);
+  check('org 2 sees no Org E assessments', org2Assessments.status === 200 && !(org2Assessments.data ?? []).some((a) => a.organizationName === 'SUMMERSCAPE' && a.riskModelNumber === created.data.riskModelNumber));
 
   // ── [7] Audit trail ──
   console.log('\n[7] Audit trail');

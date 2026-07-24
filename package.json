@@ -31,7 +31,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/trade-directory/test/jest-e2e.json",
-    "sonar": "sonar-scanner -Dsonar.host.url=http://10.0.26.178:9000 -Dsonar.login=sqp_1727491064d032e00f29c57db1e12e364422d38f -Dsonar.projectName=nh-dev-app -Dsonar.projectKey=nh-dev-app"
+    "sonar": "sonar-scanner -Dsonar.host.url=http://10.0.26.178:9000 -Dsonar.login=sqp_1727491064d032e00f29c57db1e12e364422d38f -Dsonar.projectName=nh-dev-app -Dsonar.projectKey=nh-dev-app",
+    "serve:customer-portal": "vite apps/customer-portal"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",

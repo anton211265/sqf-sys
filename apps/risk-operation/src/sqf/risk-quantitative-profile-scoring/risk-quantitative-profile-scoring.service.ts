@@ -64,14 +64,30 @@ export class RiskQuantitativeProfileScoringService {
     const financialCreditReport =
       await this.financialCreditReportService.findOne(organizationId);
 
-    // List of parameters to evaluate
+    // Parameters to evaluate — derived from the profile's own weight rows
+    // (fixed 2026-07-24: the previous hardcoded list still carried the
+    // pre-2026-07-20 name "Liquidity Measures", which no longer matches the
+    // seeded default profile's "Liquidity" and broke web-intake scoring).
+    const profileWithWeights = await this.riskProfileRepository.findOne({
+      where: { riskProfileCode: riskProfile.riskProfileCode },
+      relations: [
+        'riskQuantitativeProfileWeights',
+        'riskQuantitativeProfileWeights.quantitativeParameter',
+      ],
+    });
     const parameterNames = [
-      'Business Stability',
-      'Asset Management',
-      'Liquidity Measures',
-      'Leverage',
-      'Coverage',
+      ...new Set(
+        (profileWithWeights?.riskQuantitativeProfileWeights ?? [])
+          .filter((w) => w.quantitativeSubParameterId === null)
+          .map((w) => w.quantitativeParameter?.name)
+          .filter((name): name is string => !!name),
+      ),
     ];
+    if (!parameterNames.length) {
+      throw new NotFoundException(
+        `No parameter-level weights found for risk profile ${riskProfile.riskProfileCode}`,
+      );
+    }
 
     // Loop the parameterNames to evaluate scoring logic one by one
     for (const paramName of parameterNames) {
@@ -108,9 +124,15 @@ export class RiskQuantitativeProfileScoringService {
       );
     }
 
-    // Get sum of parameter's weighted score
+    // Weighted total: each parameter's weightedScore is its 0-100
+    // within-parameter roll-up (sub weights sum to 100 inside a parameter),
+    // so the profile total applies the parameter-level weight here.
+    // Fixed 2026-07-24: the previous sum skipped the parameter weights,
+    // yielding totals on a 0-500 scale that never matched any band (ABC
+    // worked example must total 87.5 = 100 - Gearing's 12.5 effective).
     const totalWeightedScore = getAllParameters.reduce(
-      (sum, param) => sum + Number(param.weightedScore || 0),
+      (sum, param) =>
+        sum + (Number(param.weightedScore || 0) * Number(param.weight || 0)) / 100,
       0,
     );
 
@@ -408,13 +430,23 @@ export class RiskQuantitativeProfileScoringService {
       return false;
     }
 
+    // numeric columns arrive as strings from pg — coerce before comparing
+    const expectedNumber = Number(expected);
     switch (operator) {
       case '<':
-        return actual < expected;
+        return actual < expectedNumber;
+      case '<=':
+        return actual <= expectedNumber;
       case '=':
-        return actual === expected;
+        return actual === expectedNumber;
       case '>':
-        return actual > expected;
+        return actual > expectedNumber;
+      case '>=':
+        // Fixed 2026-07-24 (Customer Portal pass 1): >= and <= were never
+        // implemented, and every seeded default-profile rule uses them —
+        // all rules silently failed to match until web intake exercised
+        // the engine end-to-end for the first time.
+        return actual >= expectedNumber;
       default:
         return false;
     }

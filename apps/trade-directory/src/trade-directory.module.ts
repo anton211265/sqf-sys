@@ -9,6 +9,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { z } from 'zod';
 import { AuthModule } from './auth/auth.module';
 import { RbacModule } from './rbac/rbac.module';
+import { PortalOnboardingModule } from './portal/portal-onboarding.module';
 import { KycAgencyModule } from './kyc-agency/kyc-agency.module';
 import {
   ClientPersona,
@@ -55,6 +56,7 @@ import { PersonaSubscribersModule } from './models/subscribers/persona-subscribe
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     AuthModule,
     RbacModule,
+    PortalOnboardingModule,
     DatabaseModule,
     DatabaseModule.forFeature([
       Person,

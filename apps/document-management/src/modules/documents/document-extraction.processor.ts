@@ -143,8 +143,12 @@ export class DocumentExtractionProcessor {
         // No text layer. Invoices fall back to vision transcription; the
         // happy path is gated by the Phase 5 arithmetic check, not human
         // review (design decision 2026-07-19).
+        // DIRECTOR_IDENTIFICATION joined the vision path 2026-07-24
+        // (Customer Portal pass 1): passports are JPEG/PNG per the KYC
+        // format ruling, and the transcribed name feeds the eKYC match.
         if (
-          document.documentClass === DocumentClassEnum.INVOICE &&
+          (document.documentClass === DocumentClassEnum.INVOICE ||
+            document.documentClass === DocumentClassEnum.DIRECTOR_IDENTIFICATION) &&
           VISION_MIMETYPES.has(document.mimeType)
         ) {
           rawText = await this.visionExtractionService.transcribeToMarkdown(

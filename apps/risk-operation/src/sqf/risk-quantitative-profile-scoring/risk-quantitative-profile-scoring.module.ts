@@ -74,5 +74,9 @@ import { RiskQuantitativeParameter } from '../../models/risk-quantitative-parame
       inject: [ConfigService],
     },
   ],
+  // Exported for PortalApplicationModule (Customer Portal pass 1): submit
+  // triggers Filter-1 default-profile scoring through the same service the
+  // verify script exercises.
+  exports: [RiskQuantitativeProfileScoringService],
 })
 export class RiskQuantitativeProfileScoringModule {}

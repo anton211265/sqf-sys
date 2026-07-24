@@ -76,6 +76,41 @@ export class Application extends AbstractEntity<Application> {
   @Column({ type: 'varchar', unique: true, nullable: true })
   applicationNumber: string;
 
+  // ------------------ Customer Portal pass 1 (2026-07-24) ------------------
+
+  /** Tenant scope: the funder this application applies to (dev: org 2). */
+  @Column({ type: 'integer', nullable: true })
+  funderOrganizationId?: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  productCode?: string;
+
+  /** Wizard state — shape owned by PortalApplicationService. */
+  @Column({ type: 'jsonb', nullable: true })
+  applicationPayload?: Record<string, any>;
+
+  /** Mock-eKYC + FLAG_ONLY policy hits, surfaced to the CO. */
+  @Column({ type: 'jsonb', nullable: true })
+  complianceFlags?: Record<string, any>;
+
+  @Column({ type: 'timestamp without time zone', nullable: true })
+  submittedAt?: Date;
+
+  @Column({ type: 'timestamp without time zone', nullable: true })
+  scoredAt?: Date;
+
+  /** RM fail->pass override (recorded per the blueprint's system-log rule). */
+  @Column({ type: 'integer', nullable: true })
+  statusOverriddenByPersonId?: number;
+
+  @Column({ type: 'timestamp without time zone', nullable: true })
+  statusOverriddenAt?: Date;
+
+  @Column({ type: 'timestamp without time zone', nullable: true })
+  closedAt?: Date;
+
+  // ------------------ Customer Portal pass 1 ------------------
+
   @Column({ type: 'timestamp without time zone', nullable: true })
   applicationDate?: Date;
 

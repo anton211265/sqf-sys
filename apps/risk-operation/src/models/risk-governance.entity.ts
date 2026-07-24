@@ -72,6 +72,9 @@ export enum RiskAuditEvent {
   CHANGE_REQUESTED = 'CHANGE_REQUESTED',
   CHANGE_APPROVED = 'CHANGE_APPROVED',
   CHANGE_REJECTED = 'CHANGE_REJECTED',
+  /** RM flipped a web-intake application's Filter-1 FAIL to pass
+   * (Customer Portal pass 1 — blueprint system-log rule). */
+  APPLICATION_STATUS_OVERRIDDEN = 'APPLICATION_STATUS_OVERRIDDEN',
 }
 
 /** Append-only risk audit trail (no UPDATE/DELETE paths in code). */

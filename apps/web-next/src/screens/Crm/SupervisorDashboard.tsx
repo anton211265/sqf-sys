@@ -14,6 +14,7 @@ import {
   TableRow,
 } from 'components/ui/table';
 import { useAssignLead, useDeals, useLeads, usePerformance } from 'hooks/useCrm';
+import { useAssignWebApplicant, useOverrideIntakePass, useWebApplicants } from 'hooks/useIntake';
 import { useHasPermission, useUsers } from 'hooks/useRbac';
 import { LeadRow } from 'types/CrmTypes';
 import { getApiResponseErrorMsg } from 'utils/apiHelper';
@@ -37,6 +38,13 @@ const SupervisorDashboard: React.FC = () => {
   const [assigning, setAssigning] = React.useState<LeadRow | null>(null);
   const [rmInput, setRmInput] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
+
+  // Customer Portal pass 1: the web-intake queue is live.
+  const { data: webApplicants = [] } = useWebApplicants();
+  const assignApplicant = useAssignWebApplicant();
+  const overridePass = useOverrideIntakePass();
+  const canManageApplications = hasPermission('onboarding_applications_manage');
+  const [intakeError, setIntakeError] = React.useState<string | null>(null);
 
   const personLabel = (personId: number) => {
     const user = users.find((u) => u.personId === personId);
@@ -83,10 +91,94 @@ const SupervisorDashboard: React.FC = () => {
         ))}
       </div>
 
-      <section className="rounded-lg border border-dashed bg-muted/30 p-4 text-sm text-muted-foreground">
-        <strong>New applicants (web intake):</strong> this queue activates when
-        the Customer Portal onboarding lands — walk-in applicants will appear
-        here with their default risk score for assignment to an RM.
+      <section className="rounded-lg border bg-background p-4">
+        <h2 className="mb-1 font-medium">New applicants (web intake)</h2>
+        <p className="mb-3 text-xs text-muted-foreground">
+          Walk-in applications from the Customer Portal with their default risk
+          (Filter-1) result. FAIL rows can be overridden to pass after offline
+          engagement — the override is recorded in the system log.
+        </p>
+        {intakeError && <p className="mb-2 text-sm text-destructive">{intakeError}</p>}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Company</TableHead>
+              <TableHead>Product</TableHead>
+              <TableHead>Filter-1</TableHead>
+              <TableHead>Result</TableHead>
+              <TableHead>Assigned RM</TableHead>
+              <TableHead />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {webApplicants.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-muted-foreground">
+                  No web applications yet.
+                </TableCell>
+              </TableRow>
+            )}
+            {webApplicants.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell className="font-medium">{row.companyName ?? `org #${row.organizationId}`}</TableCell>
+                <TableCell className="font-mono text-xs">{row.productCode ?? '—'}</TableCell>
+                <TableCell className="text-xs text-muted-foreground">
+                  {row.filter1Score ?? '—'} ({row.filter1Category ?? '—'} risk)
+                </TableCell>
+                <TableCell>
+                  <Badge variant={row.result === 'PASS' ? 'green' : 'red'}>
+                    {row.result}
+                    {row.overridden ? ' (OVERRIDDEN)' : ''}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-xs text-muted-foreground">
+                  {row.assignedRmPersonId ? personLabel(row.assignedRmPersonId) : 'Unassigned'}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    {canAssign && users.length > 0 && (
+                      <select
+                        aria-label={`assign-applicant-${row.id}`}
+                        className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+                        value={row.assignedRmPersonId ?? ''}
+                        onChange={async (e) => {
+                          setIntakeError(null);
+                          try {
+                            await assignApplicant.mutateAsync({ id: row.id, rmPersonId: parseInt(e.target.value, 10) });
+                          } catch (err) {
+                            setIntakeError(getApiResponseErrorMsg(err));
+                          }
+                        }}
+                      >
+                        <option value="">Assign RM…</option>
+                        {users.map((u) => (
+                          <option key={u.personId} value={u.personId}>{u.name ?? u.email}</option>
+                        ))}
+                      </select>
+                    )}
+                    {canManageApplications && row.result === 'FAIL' && !row.overridden && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={overridePass.isPending}
+                        onClick={async () => {
+                          setIntakeError(null);
+                          try {
+                            await overridePass.mutateAsync(row.applicationId);
+                          } catch (err) {
+                            setIntakeError(getApiResponseErrorMsg(err));
+                          }
+                        }}
+                      >
+                        Override to pass
+                      </Button>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
 
       <section className="rounded-lg border bg-background p-4">

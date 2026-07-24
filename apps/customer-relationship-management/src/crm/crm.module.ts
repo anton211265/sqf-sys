@@ -13,6 +13,14 @@ import {
   Lead,
   SiteVisitReport,
 } from '../models/crm.entity';
+import { ApplicantIntake } from '../models/applicant-intake.entity';
+import { ProcessedEvent } from '@app/common/database/processed-event.entity';
+import { ProcessedEventRepository } from '../repositories';
+import {
+  WebIntakeConsumerController,
+  WebIntakeController,
+} from './web-intake.controller';
+import { WebIntakeService } from './web-intake.service';
 import { OutboxEventRepository } from '../repositories';
 import { CrmController } from './crm.controller';
 import { CrmService } from './crm.service';
@@ -26,6 +34,8 @@ import { OutboxRelayService } from './outbox-relay.service';
       DealStageHistory,
       SiteVisitReport,
       OutboxEvent,
+      ApplicantIntake,
+      ProcessedEvent,
     ]),
     ScheduleModule.forRoot(),
     JwtModule.registerAsync({
@@ -54,9 +64,11 @@ import { OutboxRelayService } from './outbox-relay.service';
       },
     ]),
   ],
-  controllers: [CrmController],
+  controllers: [CrmController, WebIntakeController, WebIntakeConsumerController],
   providers: [
     CrmService,
+    WebIntakeService,
+    ProcessedEventRepository,
     RemotePermissionGuard,
     OutboxEventRepository,
     OutboxRelayService,

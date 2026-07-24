@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Badge } from 'components/ui/badge';
 import { CONFIG, CRC } from 'constants/routes';
 import { useAssessments, useRiskModels } from 'hooks/useCrc';
+import { useIntakeApplications } from 'hooks/useIntake';
 import { useHasPermission } from 'hooks/useRbac';
 import { classificationBadge } from 'lib/crcScoring';
 
@@ -18,6 +19,7 @@ const CrcDashboard: React.FC = () => {
   const hasPermission = useHasPermission();
   const { data: models = [] } = useRiskModels();
   const { data: assessments = [] } = useAssessments();
+  const { data: crcBucket = [] } = useIntakeApplications('crc');
 
   const published = models.filter((m) => m.status === 'PUBLISHED');
   const inChain = models.filter((m) => m.status === 'PENDING_CHECK' || m.status === 'CHECKED');
@@ -46,10 +48,35 @@ const CrcDashboard: React.FC = () => {
         ))}
       </div>
 
-      <section className="rounded-lg border border-dashed bg-muted/30 p-4 text-sm text-muted-foreground">
-        <strong>New application bucket:</strong> activates when Customer Portal onboarding
-        lands — applications passing Filter-1 (or flipped to pass by the RM) queue here
-        for CRA pickup, oldest first, with the provisional-offer SLA timer running.
+      <section className="rounded-lg border bg-background p-4">
+        <h2 className="mb-1 font-medium">New application bucket</h2>
+        <p className="mb-3 text-xs text-muted-foreground">
+          Applications that passed Filter-1 (or were flipped to pass by the RM), oldest
+          first — CRA pickup and the provisional-offer workspace arrive with the next
+          CRC pass.
+        </p>
+        {crcBucket.length === 0 && (
+          <p className="text-sm text-muted-foreground">No applications waiting.</p>
+        )}
+        <ul className="space-y-1 text-sm">
+          {crcBucket.map((a) => (
+            <li key={a.id} className="flex flex-wrap items-center gap-2">
+              <span className="font-medium">{a.companyName || `org #${a.organizationId}`}</span>
+              <span className="font-mono text-xs text-muted-foreground">{a.applicationNumber}</span>
+              <Badge variant="outline">{a.productCode ?? '—'}</Badge>
+              <span className="text-xs text-muted-foreground">
+                Filter-1 {a.filter1Score ?? '—'} ({a.filter1Category ?? '—'} risk)
+              </span>
+              {a.overriddenByPersonId && <Badge variant="amber">RM OVERRIDE</Badge>}
+              {a.complianceFlags?.directorNameMismatches && (
+                <Badge variant="red">DIRECTOR NAME MISMATCH</Badge>
+              )}
+              {a.complianceFlags?.bankCountryMismatch && (
+                <Badge variant="red">BANK COUNTRY FLAG</Badge>
+              )}
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="rounded-lg border border-dashed bg-muted/30 p-4 text-sm text-muted-foreground">

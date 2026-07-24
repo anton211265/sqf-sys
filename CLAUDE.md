@@ -1071,6 +1071,111 @@ maker-checker: CO maker → second CO checker → CM publish.
   request-additional-documents, clear/reject recommendation chain, SLA
   timers for CRA pickup/CM approval.
 
+## Customer Portal — pass 1: onboarding funnel (BUILT 2026-07-24)
+
+Third frontend app + the full web-intake flow, per the approved annotation
+`docs/design/customer-portal-annotation.md` (all six questions confirmed:
+scope = onboarding funnel; portal authorization = org membership, NO funder
+permission keys for clients; adopt-and-extend risk-operation's application
+table; static KYC doc sets v1; Malaysia dev disclaimer; dev applicants bind
+to funder org 2 via env DEFAULT_FUNDER_ORG_ID).
+
+- **App**: `apps/customer-portal` (Vite, port **3003**, `npm run
+  serve:customer-portal`, launch.json "customer-portal") — web-next chassis
+  clone (single axiosClient, redux-persist, React Query, shadcn/Tailwind).
+  Origins are now 3001 legacy / 3002 web-next / 3003 portal: nginx CORS map
+  regex + every service's FRONTEND_DOMAIN extended; trade-directory has
+  CUSTOMER_PORTAL_URL (portal enrollment-link base) + ONBOARDING_CONFIG_URL.
+  Dev gotcha: all three apps share the localhost cookie jar — signing into
+  the portal replaces a web-next session in another tab (re-mint via
+  ui-session; production domains differ).
+- **Public funnel**: Login "New user application" → Disclaimer
+  (scroll-to-accept enforced, dual checkboxes, funder-editable
+  `PORTAL_DISCLAIMER` legal template in product-configurator — the
+  acceptance records the body's sha256 as its version) → Register →
+  check-email. product-configurator `GET /api/public/onboarding-config`
+  (only unauthenticated endpoint there; throttled; disclaimer + policy
+  modes + active products; fail-closed without a disclaimer template).
+  trade-directory `POST /portal/register` (public, 10/min): both consents
+  required, corporate-email blocklist per funder mode (BLOCK/FLAG_ONLY),
+  disclaimer-hash staleness 409, person+applicant-org dedup (adopts a
+  member-less auto-created org; occupied org/email → 409), immutable
+  `disclaimer_acceptance` row (migration 1785600000000), enrollment token
+  with the 3003 link base, SEND_EMAIL via outbox (dev: link also in the
+  service log). Config reads cross-service use the cached-sync-read
+  pattern (60s cache, fail closed) mirroring the RBAC manifest guard.
+- **Wizard** (`/application`, org-membership gating via `PortalJwtGuard` —
+  clients hold no permission keys; row scope = own orgId): 7 resumable
+  steps — company profile (+registered directors), product picker (active
+  products), per-product form (blueprint §1 parameter sets), KYC document
+  checklist (per-product static map `REQUIRED_DOCUMENT_CLASSES`; uploads go
+  to document-management, uuids recorded in the payload), settlement bank
+  account (IBAN pos1-2 / SWIFT pos5-6 country extraction vs registered
+  country per funder bankCountryMatch mode — HARD_BLOCK 400s at submit,
+  FLAG_ONLY records complianceFlags), directors & eResolution (2+ directors
+  need the signed resolution; every director a passport; deterministic
+  name-match vs company-profile directors — mismatches FLAG, not block;
+  eKYC = MOCK provider in dev, vendor Web-SDK slot for production), review
+  & submit. DIRECTOR_IDENTIFICATION now accepts images (removed from
+  ONBOARDING_DOCUMENT_CLASSES per the KYC-format ruling) and joins the
+  vision-extraction fallback.
+- **Lifecycle** (risk-operation `sqf/portal-application/`, migration
+  `migrations/2026-07-24-portal-application.sql`, add-only statuses):
+  DRAFT → SUBMITTED → SCORED_PASS | SCORED_FAIL → IN_CRC_REVIEW /
+  CLOSED_ARCHIVED on the SAME application table that anchors Filter-1.
+  Submit runs default-profile scoring immediately when the financial
+  report has flowed through document-management, else a 60s cron retries.
+  Pass rule v1: Filter-1 category LOW/MEDIUM = PASS, HIGH = FAIL. Emits
+  `APPLICATION_SCORED` (new topic) via outbox; FAIL also starts SLA timer
+  `RM_APPLICANT_ENGAGEMENT` (create the template per funder — engine drops
+  unknown codes) and risk-operation is the **first SLA_BREACHED consumer**:
+  breach closes+archives an unengaged FAIL. RM fail→pass override
+  `POST /api/intake/applications/:id/override-pass`
+  (onboarding_applications_manage) — audited in risk_audit_log
+  (APPLICATION_STATUS_OVERRIDDEN) + cancels the timer. Funder reads:
+  `GET /api/intake/applications[?bucket=crc]` + `/:id`
+  (risk_applications_view). The client status endpoint never exposes
+  scores/bands — outcome copy only.
+- **Funder queues activated**: CRM consumes APPLICATION_SCORED →
+  `applicant_intake` projection (migration 1785700000000) →
+  SupervisorDashboard "New applicants (web)" is a real queue (assign RM =
+  crm_assignees_manage, Override-to-pass button = risk-operation call);
+  CrcDashboard "new application bucket" lists SCORED_PASS oldest-first with
+  compliance-flag badges. All consumers drop malformed/poison messages
+  (house rule) — a null-field event once crash-looped the CRM group.
+- **Three latent Filter-1 engine bugs fixed** (exposed by the first real
+  end-to-end scoring run; verify-default-profile-scoring.ts re-run green,
+  and the engine's own `create()` now produces exactly 87.5 → LOW for ABC):
+  (1) `compare()` never implemented `>=`/`<=` — every seeded rule uses
+  them, so no rule ever matched; (2) rule scores were seeded 1 but the
+  engine scales score/10 — pass must award full weight (migration
+  `2026-07-24-threshold-rule-pass-score.sql` sets them to 10); (3) the
+  profile total ignored parameter-level weights (summed raw 0-100
+  per-parameter roll-ups). Also `create()` now derives parameter names
+  from the profile's own weights instead of a stale hardcoded list
+  ("Liquidity Measures" predated the 2026-07-20 seed rename).
+- **E2E regression guard:**
+  `node apps/customer-portal/scripts/e2e-portal-onboarding.mjs` (host,
+  Node ≥22) — **29 checks**: policy denies (consents, free-mail, stale
+  hash, duplicates), acceptance-record hash, 3003 link base, applicant
+  passkey login, wizard saves + product validation, real uploads (4
+  classes through nginx→MinIO), HARD_BLOCK bank mismatch, submit→87.5
+  PASS, mock-eKYC flags, real-Kafka CRM projection + assignment, CRC
+  bucket + detail, client-token 403 on funder endpoints, override +
+  audit + timer cancel, and an SLA_BREACHED close via a genuine
+  outbox→Kafka hop. Throttle note: e2e suites brush the shared auth
+  windows when run back-to-back — space them ~75s apart.
+- **Dev seed kept**: applicant org "Sunrise Components Sdn Bhd" (org 56,
+  finance@sunrisecomponents.example, applied AR via the real UI end-to-end,
+  scored 87.5 PASS, sitting in both funder queues). Known accepted quirk:
+  funder staff hitting the client endpoints would create a draft for their
+  own org — harmless in dev, revisit if portal/funder identities ever mix.
+- **Pass 2+ (deferred)**: Global Portal Dashboard, product workspaces
+  (AR/IF/SCF/TL incl. disputes workbench — freeze-scope + partial-dispute
+  questions parked in customer_portal.docx), predictive alerts, offer
+  acceptance + registration fee + passkey e-signature (after the
+  Provisional Offer workspace, per the agreed sequencing).
+
 ## Document Conversion (Markitdown)
 
 [Microsoft Markitdown](https://github.com/microsoft/markitdown) converts Word/Excel/PowerPoint documents to Markdown before LLM extraction. Markdown is far cheaper in tokens than raw OOXML-derived text and preserves structure (tables, headings) better than naive extraction.

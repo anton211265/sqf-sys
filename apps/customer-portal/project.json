@@ -1,0 +1,48 @@
+{
+  "name": "customer-portal",
+  "sourceRoot": "apps/customer-portal/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:frontend"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite build apps/customer-portal",
+        "cwd": "{workspaceRoot}"
+      },
+      "configurations": {
+        "production": {
+          "command": "vite build apps/customer-portal --mode production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite apps/customer-portal",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "preview": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite preview apps/customer-portal",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint \"apps/customer-portal/src/**/*.{ts,tsx}\" --fix",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p apps/customer-portal/tsconfig.json",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}
